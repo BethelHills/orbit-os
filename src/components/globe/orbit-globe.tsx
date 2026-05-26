@@ -5,8 +5,6 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { ArrowRight, Info } from "lucide-react";
 
-void import("@/components/globe/globe-scene");
-
 const GlobeScene = dynamic(
   () => import("@/components/globe/globe-scene").then((m) => m.GlobeScene),
   { ssr: false }

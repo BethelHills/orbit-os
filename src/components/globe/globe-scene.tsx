@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import Globe from "react-globe.gl";
+import dynamic from "next/dynamic";
 import type { GlobeMethods } from "react-globe.gl";
+import { BUMP_TEXTURE, GLOBE_TEXTURE } from "@/components/globe/globe-textures";
 
-const GLOBE_TEXTURE = "/globe/earth-night.jpg";
-const BUMP_TEXTURE = "/globe/earth-topology.png";
+const Globe = dynamic(() => import("react-globe.gl"), { ssr: false });
 
 const arcsData = [
   {
@@ -86,5 +86,3 @@ export function GlobeScene({ width, height }: GlobeSceneProps) {
     />
   );
 }
-
-export { GLOBE_TEXTURE, BUMP_TEXTURE };
