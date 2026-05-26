@@ -2,13 +2,28 @@
 
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
+import { ArrowRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 const Globe = dynamic(() => import("react-globe.gl"), { ssr: false });
 
+const stats = [
+  { label: "Active Agents", value: "12,458", change: "+24.3%" },
+  { label: "Actions Executed", value: "47,892", change: "+31.2%" },
+  { label: "Data Points Processed", value: "2.14TB", change: "+18.7%" },
+];
+
+const nodes = [
+  { name: "Aerodrome", agents: "2,847", lat: 52, lng: -10, color: "#6366f1" },
+  { name: "Zora", agents: "1,923", lat: 38, lng: -95, color: "#a855f7" },
+  { name: "Limitless", agents: "1,456", lat: -20, lng: 140, color: "#22d3ee" },
+  { name: "Avantis", agents: "987", lat: 20, lng: 75, color: "#3b82f6" },
+  { name: "Monad", agents: "654", lat: -30, lng: -60, color: "#8b5cf6" },
+];
+
 export function OrbitGlobe() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [dims, setDims] = useState({ w: 600, h: 420 });
+  const [dims, setDims] = useState({ w: 600, h: 480 });
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -23,28 +38,43 @@ export function OrbitGlobe() {
     return () => ro.disconnect();
   }, []);
 
+  const arcs = nodes.flatMap((a, i) =>
+    nodes.slice(i + 1).map((b) => ({
+      startLat: a.lat,
+      startLng: a.lng,
+      endLat: b.lat,
+      endLng: b.lng,
+      color: ["rgba(168,85,247,0.4)", "rgba(59,130,246,0.15)"],
+    }))
+  );
+
   return (
     <motion.section
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6 }}
-      className="glass-strong neon-border relative min-h-[420px] overflow-hidden rounded-3xl lg:min-h-[520px]"
+      className="glass-strong relative min-h-[480px] overflow-hidden rounded-3xl lg:min-h-[540px]"
     >
-      <div className="relative z-10 p-6">
-        <p className="text-xs uppercase tracking-[0.2em] text-purple-400">
-          Network Matrix
-        </p>
-        <h2 className="neon-text mt-1 text-2xl font-bold lg:text-3xl">
-          Orbit Protocol Globe
-        </h2>
-        <p className="mt-2 max-w-lg text-sm text-slate-400">
-          Aomi agents routing Zora creator flows across Base in real time.
-        </p>
+      <div className="absolute left-0 top-0 z-10 flex flex-col gap-4 p-6">
+        {stats.map((s, i) => (
+          <motion.div
+            key={s.label}
+            initial={{ opacity: 0, x: -12 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 + i * 0.1 }}
+          >
+            <p className="text-[10px] uppercase tracking-[0.15em] text-slate-500">
+              {s.label}
+            </p>
+            <p className="mt-0.5 text-2xl font-bold text-white">{s.value}</p>
+            <p className="text-xs font-medium text-green-400">{s.change}</p>
+          </motion.div>
+        ))}
       </div>
 
       <div
         ref={containerRef}
-        className="absolute inset-x-0 bottom-0 top-16 flex items-center justify-center"
+        className="absolute inset-0 flex items-center justify-center"
       >
         {mounted && (
           <Globe
@@ -53,27 +83,47 @@ export function OrbitGlobe() {
             backgroundColor="rgba(0,0,0,0)"
             globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
             atmosphereColor="#a855f7"
-            atmosphereAltitude={0.18}
-            pointsData={[
-              { lat: 37.77, lng: -122.42, size: 0.7, color: "#a855f7" },
-              { lat: 40.71, lng: -74.01, size: 0.5, color: "#3b82f6" },
-              { lat: 51.51, lng: -0.13, size: 0.45, color: "#22d3ee" },
-            ]}
-            pointAltitude="size"
+            atmosphereAltitude={0.22}
+            pointsData={nodes.map((n) => ({
+              lat: n.lat,
+              lng: n.lng,
+              size: 0.6,
+              color: n.color,
+            }))}
+            pointAltitude={0.05}
             pointColor="color"
-            pointRadius={0.5}
+            pointRadius={0.45}
+            arcsData={arcs}
+            arcColor="color"
+            arcDashLength={0.4}
+            arcDashGap={0.2}
+            arcDashAnimateTime={2000}
+            arcStroke={0.5}
           />
         )}
       </div>
 
-      <div className="absolute bottom-4 left-4 right-4 z-10 grid grid-cols-3 gap-2">
-        {["Zora", "Aerodrome", "Avantis"].map((node) => (
-          <div key={node} className="glass rounded-xl px-3 py-2 text-center">
-            <p className="text-[10px] text-slate-500">{node}</p>
-            <p className="text-xs font-medium text-green-300">Connected</p>
-          </div>
-        ))}
-      </div>
+      {nodes.map((node, i) => (
+        <motion.div
+          key={node.name}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 + i * 0.08 }}
+          className="absolute z-10 hidden rounded-xl border border-white/10 bg-black/50 px-3 py-2 backdrop-blur-md lg:block"
+          style={{
+            top: `${18 + i * 14}%`,
+            right: i % 2 === 0 ? "8%" : "22%",
+          }}
+        >
+          <p className="text-[10px] font-medium text-white">{node.name}</p>
+          <p className="text-[10px] text-purple-300">{node.agents} agents</p>
+        </motion.div>
+      ))}
+
+      <button className="absolute bottom-5 left-6 z-10 flex items-center gap-2 rounded-xl border border-purple-500/30 bg-purple-500/10 px-4 py-2 text-xs font-medium text-purple-200 transition hover:bg-purple-500/20">
+        View Network Map
+        <ArrowRight size={14} />
+      </button>
     </motion.section>
   );
 }

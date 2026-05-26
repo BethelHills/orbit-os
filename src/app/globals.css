@@ -88,10 +88,16 @@
 
 body {
   background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.18), transparent),
-    radial-gradient(circle at top, #12061f 0%, #050510 40%, #02030a 100%);
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.15), transparent),
+    radial-gradient(circle at top, #0a0614 0%, #050510 40%, #050505 100%);
   color: white;
   overflow-x: hidden;
+}
+
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(14deg); }
+  75% { transform: rotate(-8deg); }
 }
 
 .glass {

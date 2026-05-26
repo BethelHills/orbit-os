@@ -28,21 +28,61 @@ export const SEED_COIN: CreatorCoin = {
 };
 
 export const SEED_LOGS: AgentLogEntry[] = [
-  { id: "1", message: "User selected Zora creator persona", status: "success", timestamp: "" },
-  { id: "2", message: "Aomi selected Zora protocol on Base", status: "success", timestamp: "" },
-  { id: "3", message: "mint_coin simulated on Zora/Base", tool: "mint_coin", status: "success", timestamp: "" },
-  { id: "4", message: "Initial price set to 0.2 ETH", tool: "set_pricing", status: "success", timestamp: "" },
-  { id: "5", message: "Holder monitoring enabled", tool: "get_holder_count", status: "success", timestamp: "" },
-  { id: "6", message: "Price alert set at 0.5 ETH", tool: "set_price_alert", status: "success", timestamp: "" },
+  {
+    id: "1",
+    message: "New holder detected — 0x4a2f…8c91 bought 0.5 ETH of MOONJOY",
+    kind: "holder",
+    status: "success",
+    timestamp: "2m ago",
+  },
+  {
+    id: "2",
+    message: "Price alert triggered at 0.5 ETH threshold for MOONJOY",
+    kind: "alert",
+    status: "success",
+    timestamp: "5m ago",
+  },
+  {
+    id: "3",
+    message: "Coin MOONJOY launched on Zora (Base) at 0.2 ETH",
+    kind: "launch",
+    tool: "mint_coin",
+    status: "success",
+    timestamp: "12m ago",
+  },
+  {
+    id: "4",
+    message: "24h volume reached 6.1 ETH — trending on Base",
+    kind: "volume",
+    tool: "get_24h_volume",
+    status: "success",
+    timestamp: "18m ago",
+  },
+  {
+    id: "5",
+    message: "Message sent to recent buyer 0x9b3c…1f22",
+    kind: "message",
+    tool: "message_recent_buyer",
+    status: "success",
+    timestamp: "24m ago",
+  },
+  {
+    id: "6",
+    message: "Holder count updated — 42 active holders",
+    kind: "holder",
+    tool: "get_holder_count",
+    status: "success",
+    timestamp: "32m ago",
+  },
 ];
 
 export const SEED_MESSAGES = [
   {
     role: "user" as const,
-    text: 'Launch a new Zora creator coin called "MOONJOY" with initial price 0.2 ETH.',
+    text: "Launch a new coin called 'MOONJOY' on Zora with initial price 0.2 ETH",
   },
   {
     role: "agent" as const,
-    text: 'Done — Launch Zora creator coin MOONJOY on Zora (Base). "MOONJOY" (MOONJO) is ready at 0.2 ETH. Monitoring 42 holders. Use the dashboard to track volume, top buyers, and alerts.',
+    text: "🚀 Coin 'MOONJOY' has been successfully launched on Zora!\n\n• Initial Price: 0.2 ETH\n• Network: Base\n• Contract: 0x7ora…0001\n• Status: Live & monitoring",
   },
 ];

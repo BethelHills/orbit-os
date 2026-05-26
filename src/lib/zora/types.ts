@@ -49,6 +49,7 @@ export interface AgentLogEntry {
   id: string;
   message: string;
   tool?: ZoraToolName;
+  kind?: "holder" | "alert" | "launch" | "volume" | "message";
   status: "pending" | "success" | "error";
   timestamp: string;
 }

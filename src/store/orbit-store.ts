@@ -75,6 +75,7 @@ export const useOrbitStore = create<OrbitState>((set, get) => ({
   runQuickAction: async (action: string) => {
     const prompts: Record<string, string> = {
       "Show holders": "How many holders does my coin have?",
+      "Set price alert": "Set a price alert at 0.5 ETH",
       "Set alert": "Set a price alert at 0.5 ETH",
       "View analytics": "Show 24h volume and analytics",
       "Launch coin": 'Launch a new Zora creator coin called "MOONJOY" with initial price 0.2 ETH',
