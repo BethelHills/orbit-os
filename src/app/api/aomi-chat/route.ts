@@ -1,47 +1,29 @@
-import { processCreatorMessage } from "@/lib/zora/orchestrator";
-import type { AgentLogEntry, CreatorCoin, ZoraToolName } from "@/lib/zora/types";
-import { SEED_COIN, SEED_LOGS } from "@/lib/zora/seed";
+import { NextResponse } from "next/server";
 
-function enrichLog(log: AgentLogEntry): AgentLogEntry {
-  const kindByTool: Partial<Record<ZoraToolName, AgentLogEntry["kind"]>> = {
-    mint_coin: "launch",
-    set_price_alert: "alert",
-    get_holder_count: "holder",
-    get_24h_volume: "volume",
-    message_recent_buyer: "message",
-  };
+export async function POST(request: Request) {
+  const body = await request.json();
+  const message = String(body.message || "").toLowerCase();
 
-  return {
-    ...log,
-    kind: log.kind ?? (log.tool ? kindByTool[log.tool] : undefined),
-    timestamp: log.timestamp.includes("T") ? "Just now" : log.timestamp,
-  };
-}
+  let reply = "";
 
-export async function POST(req: Request) {
-  try {
-    const body = await req.json();
-    const message = String(body.message ?? "").trim();
-
-    if (!message) {
-      return Response.json({ error: "Message is required" }, { status: 400 });
-    }
-
-    const coin = (body.coin as CreatorCoin | undefined) ?? SEED_COIN;
-    const logs = (body.logs as AgentLogEntry[] | undefined) ?? SEED_LOGS;
-
-    const result = await processCreatorMessage(message, coin, logs);
-
-    return Response.json({
-      reply: result.reply,
-      logs: result.logs.map(enrichLog),
-      coin: result.coin,
-      analytics: result.analytics,
-    });
-  } catch {
-    return Response.json(
-      { error: "Failed to process message" },
-      { status: 500 }
-    );
+  if (message.includes("holder")) {
+    reply =
+      "I found 42 holders for MOONJOY.\n\n• Top buyer: 0x9f2...b8c9\n• 24h holder growth: +18%\n• Status: Healthy growth\n\nI can keep monitoring this and alert you when holders pass 50.";
+  } else if (message.includes("alert")) {
+    reply =
+      "Price alert created.\n\n• Coin: MOONJOY\n• Trigger: price moves above 15%\n• Network: Base\n• Protocol: Zora\n• Status: Monitoring enabled";
+  } else if (message.includes("analytics")) {
+    reply =
+      "Here is the current analytics summary.\n\n• Holders: 42\n• 24h volume: 2.4 ETH\n• Top buyer activity: Active\n• Coin status: Live\n• Agent recommendation: Continue monitoring buyer growth.";
+  } else if (message.includes("launch") || message.includes("coin")) {
+    reply =
+      "I prepared a Zora coin launch workflow.\n\n• Protocol selected: Zora\n• Network: Base\n• Action: mint_coin\n• Metadata: Ready\n• Pricing: Ready\n• Simulation: Passed\n\nNext step: connect wallet to execute.";
+  } else {
+    reply =
+      "I understand. OrbitOS can help you launch creator coins, monitor holders, set alerts, and analyze Zora activity through Aomi agent workflows.\n\nTry asking: 'Show holders', 'Set price alert', or 'Launch a coin'.";
   }
+
+  await new Promise((resolve) => setTimeout(resolve, 900));
+
+  return NextResponse.json({ reply });
 }

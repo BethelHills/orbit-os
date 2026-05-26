@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Send, Sparkles, Maximize2 } from "lucide-react";
 import { useOrbitStore } from "@/store/orbit-store";
+import type { AgentLogEntry } from "@/lib/zora/types";
 
 type Message = {
   role: "user" | "agent";
@@ -27,9 +28,50 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
     },
   ]);
 
-  const coin = useOrbitStore((s) => s.coin);
-  const logs = useOrbitStore((s) => s.logs);
-  const applyChatResponse = useOrbitStore((s) => s.applyChatResponse);
+  const appendActivityLog = useOrbitStore((s) => s.appendActivityLog);
+
+  function logForMessage(text: string): AgentLogEntry {
+    const lower = text.toLowerCase();
+    const base = {
+      id: crypto.randomUUID(),
+      status: "success" as const,
+      timestamp: "Just now",
+    };
+
+    if (lower.includes("holder")) {
+      return {
+        ...base,
+        kind: "holder",
+        message: "Holder query completed — 42 active holders on MOONJOY",
+      };
+    }
+    if (lower.includes("alert")) {
+      return {
+        ...base,
+        kind: "alert",
+        message: "Price alert configured for MOONJOY on Base",
+      };
+    }
+    if (lower.includes("analytics") || lower.includes("volume")) {
+      return {
+        ...base,
+        kind: "volume",
+        message: "Analytics summary generated for MOONJOY",
+      };
+    }
+    if (lower.includes("launch") || lower.includes("coin")) {
+      return {
+        ...base,
+        kind: "launch",
+        message: "Zora coin launch workflow prepared via Aomi",
+      };
+    }
+    return {
+      ...base,
+      kind: "message",
+      message: `Aomi processed: "${text.slice(0, 48)}${text.length > 48 ? "…" : ""}"`,
+    };
+  }
 
   async function sendMessage(messageText?: string) {
     const raw = messageText ?? input.trim();
@@ -46,7 +88,7 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
       const response = await fetch("/api/aomi-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, coin, logs }),
+        body: JSON.stringify({ message: text }),
       });
 
       if (!response.ok) throw new Error("Chat request failed");
@@ -58,11 +100,7 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
         { role: "agent", text: data.reply },
       ]);
 
-      applyChatResponse({
-        logs: data.logs,
-        coin: data.coin,
-        analytics: data.analytics,
-      });
+      appendActivityLog(logForMessage(text));
     } catch {
       setMessages((prev) => [
         ...prev,

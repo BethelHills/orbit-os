@@ -23,6 +23,7 @@ interface OrbitState {
   coin: CreatorCoin;
   analytics: AnalyticsPoint[];
   applyChatResponse: (data: ChatApiResponse) => void;
+  appendActivityLog: (log: AgentLogEntry) => void;
 }
 
 export const useOrbitStore = create<OrbitState>((set) => ({
@@ -36,5 +37,9 @@ export const useOrbitStore = create<OrbitState>((set) => ({
       coin: data.coin,
       analytics: data.analytics,
     });
+  },
+
+  appendActivityLog: (log) => {
+    set((s) => ({ logs: [...s.logs, log] }));
   },
 }));
