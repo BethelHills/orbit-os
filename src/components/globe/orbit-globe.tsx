@@ -144,20 +144,6 @@ export function OrbitGlobe() {
           />
         )}
 
-        {/* Motion overlays — must not block globe canvas interaction/render */}
-        <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-            className="absolute h-[210px] w-[min(560px,90%)] rounded-full border border-blue-500/70 shadow-[0_0_35px_rgba(59,130,246,0.45)]"
-          />
-          <motion.div
-            animate={{ rotate: -360 }}
-            transition={{ duration: 24, repeat: Infinity, ease: "linear" }}
-            className="absolute h-[280px] w-[min(620px,95%)] rotate-12 rounded-full border border-violet-500/45 shadow-[0_0_45px_rgba(168,85,247,0.35)]"
-          />
-        </div>
-
         {/* Lightning strikes */}
         <Lightning className="left-[44%] top-[30%] rotate-[18deg]" />
         <Lightning className="left-[56%] top-[43%] rotate-[-35deg]" />
