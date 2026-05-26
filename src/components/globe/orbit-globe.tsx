@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { ArrowRight, Info } from "lucide-react";
+import type { GlobeMethods } from "react-globe.gl";
 
 const Globe = dynamic(() => import("react-globe.gl"), { ssr: false });
 
@@ -56,8 +57,18 @@ const pulseDots = [
 
 export function OrbitGlobe() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const globeRef = useRef<GlobeMethods | undefined>(undefined);
   const [dims, setDims] = useState({ w: 900, h: 430 });
   const [mounted, setMounted] = useState(false);
+
+  const enableAutoRotate = useCallback(() => {
+    const controls = globeRef.current?.controls();
+    if (!controls) return;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.85;
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -70,6 +81,11 @@ export function OrbitGlobe() {
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    enableAutoRotate();
+  }, [mounted, enableAutoRotate, dims.w, dims.h]);
 
   return (
     <section className="relative min-h-[430px] overflow-hidden rounded-[28px] border border-violet-500/20 bg-[#050510] shadow-[0_0_70px_rgba(124,58,237,0.18)]">
@@ -105,8 +121,11 @@ export function OrbitGlobe() {
       >
         {mounted && (
           <Globe
+            ref={globeRef}
+            onGlobeReady={enableAutoRotate}
             width={dims.w}
             height={dims.h}
+            globeOffset={[80, 0]}
             globeImageUrl="https://unpkg.com/three-globe/example/img/earth-night.jpg"
             bumpImageUrl="https://unpkg.com/three-globe/example/img/earth-topology.png"
             backgroundColor="rgba(0,0,0,0)"
@@ -125,8 +144,8 @@ export function OrbitGlobe() {
           />
         )}
 
-        {/* Rotating orbit rings */}
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        {/* Motion overlays — must not block globe canvas interaction/render */}
+        <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center">
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
