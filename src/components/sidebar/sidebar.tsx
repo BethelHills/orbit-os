@@ -31,6 +31,8 @@ const links = [
   { name: "Settings", icon: Settings },
 ];
 
+const EARLY_FORGE_END = new Date("2026-06-01T00:00:00Z");
+
 function useCountdown(target: Date) {
   const [time, setTime] = useState({ d: 0, h: 0, m: 0, s: 0 });
 
