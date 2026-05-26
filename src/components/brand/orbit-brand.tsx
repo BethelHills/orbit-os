@@ -19,19 +19,19 @@ export function OrbitBrand({
       <Image
         src="/images/OrbitOS.logo.png"
         alt="OrbitOS"
-        width={compact ? 128 : 160}
-        height={compact ? 44 : 56}
+        width={compact ? 192 : 240}
+        height={compact ? 66 : 84}
         priority
         className={cn(
           "w-auto object-contain object-left",
-          compact ? "h-8 sm:h-9" : "h-10 sm:h-11"
+          compact ? "h-12 sm:h-14" : "h-16 sm:h-[4.5rem]"
         )}
       />
       {showTagline && (
         <p
           className={cn(
-            "mt-1.5 leading-snug text-purple-300/90",
-            compact ? "truncate text-[10px]" : "text-[11px]"
+            "mt-2 leading-snug text-purple-300/90",
+            compact ? "truncate text-[10px] sm:text-[11px]" : "text-[11px] sm:text-xs"
           )}
         >
           {ORBIT_TAGLINE}
