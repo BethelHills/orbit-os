@@ -6,7 +6,7 @@ export function AgentLogs() {
   const logs = useOrbitStore((s) => s.logs);
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+    <section className="glass rounded-3xl p-6">
       <p className="text-sm text-purple-300">Agent Actions</p>
       <h2 className="text-2xl font-bold mt-1">Live Execution Log</h2>
 

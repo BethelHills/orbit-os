@@ -41,10 +41,10 @@ export function ProtocolCards() {
       {protocols.map((protocol) => (
         <div
           key={protocol.name}
-          className={`rounded-3xl border p-5 shadow-2xl ${
+          className={`rounded-3xl p-5 shadow-2xl ${
             protocol.primary
-              ? "border-purple-500/40 bg-purple-500/10"
-              : "border-white/10 bg-white/[0.03]"
+              ? "glass border border-purple-500/40"
+              : "glass"
           }`}
         >
           <div className="flex items-center justify-between">

@@ -23,7 +23,7 @@ export function AomiChat() {
   }
 
   return (
-    <aside className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 h-fit">
+    <aside className="glass rounded-3xl p-5 h-fit">
       <div>
         <h2 className="text-xl font-bold">Aomi Chat</h2>
         <p className="text-sm text-slate-400 mt-1">

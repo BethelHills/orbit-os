@@ -8,7 +8,7 @@ import { AgentLogs } from "@/components/dashboard/agent-logs";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#050511] text-white">
+    <main className="min-h-screen text-white">
       <div className="flex">
         <Sidebar />
 

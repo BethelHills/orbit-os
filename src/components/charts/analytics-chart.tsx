@@ -18,7 +18,7 @@ export function AnalyticsChart() {
   const change = (((latest - first) / first) * 100).toFixed(1);
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+    <section className="glass rounded-3xl p-6">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-purple-300">Analytics</p>
