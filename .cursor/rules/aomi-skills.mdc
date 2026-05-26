@@ -1,36 +1,38 @@
 ---
-description: OrbitOS Aomi skills — use all installed skills from aomi-labs/skills
+description: OrbitOS Aomi skills — aomi-transact, aomi-build, manage-aomi-skill only
 alwaysApply: true
 ---
 
 # OrbitOS: Aomi Skills
 
-Aomi is installed via `.agents/skills/` from `aomi-labs/skills`. Use **all installed skills** when relevant to the task.
+Aomi is installed via `.agents/skills/` from `aomi-labs/skills`. Use **only these skills** for OrbitOS work:
 
-## All skills
+## Active skills
 
 | Skill | Use for |
 |-------|---------|
-| **aomi-transact** | Chat-based on-chain actions — swaps, launches, monitoring, wallet-signed EVM flows |
+| **aomi-transact** | Chat-based on-chain actions — swaps, launches, monitoring, wallet-signed EVM flows on Base |
 | **aomi-build** | Protocol-specific tools — scaffold Zora, Aerodrome, Avantis integrations from API specs |
 | **manage-aomi-skill** | Install, update, or configure Aomi skills in the project |
-| **coinbase-agentkit** | Coinbase AgentKit — wallets, swaps, contracts, NFTs on Base and other EVM chains |
-| **brian-api** | Natural language → Web3 transactions across chains |
-| **goat** | GOAT toolkit — broad DeFi/protocol integrations across many chains |
-| **eliza** | elizaOS multi-agent framework — personality, plugins, platform connectors |
-| **solana-agent-kit** | Solana-specific agent actions and integrations |
-| **x402** | HTTP 402 agent payments and agent-to-agent commerce |
-| **crypto-skill-creator** | Author new crypto/Web3 agent skills |
+
+## Do not use yet
+
+These are installed but **out of scope** unless the user explicitly requests them:
+
+- coinbase-agentkit
+- brian-api
+- goat
+- eliza
+- solana-agent-kit
+- x402
+- crypto-skill-creator
 
 ## OrbitOS mapping
 
-- `src/components/chat/aomi-chat.tsx` → **aomi-transact** (+ **brian-api**, **goat** when useful)
+- `src/components/chat/aomi-chat.tsx` → **aomi-transact**
+- `src/lib/zora/` tool registry + executor → **aomi-build**
 - Protocol cards (Zora, Aerodrome, Avantis, Monad) → **aomi-build**
-- Connect Wallet / Base Network → **coinbase-agentkit**, **aomi-transact**
-- Monad / multi-chain → **goat**, **aomi-transact**
-- Solana flows → **solana-agent-kit**
-- Agent payments → **x402**
-- New protocol skill → **crypto-skill-creator**, **manage-aomi-skill**
+- Connect Wallet / Base Network → **aomi-transact** (not coinbase-agentkit)
 
 ## When to read skills
 

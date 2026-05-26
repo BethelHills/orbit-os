@@ -6,10 +6,12 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # OrbitOS + Aomi
 
-Use all installed Aomi skills from `.agents/skills/` when relevant:
+Use only these Aomi skills:
 
 - **aomi-transact** — chat-based on-chain actions
 - **aomi-build** — protocol-specific tools (Zora, Aerodrome, Avantis, etc.)
-- **manage-aomi-skill**, **coinbase-agentkit**, **brian-api**, **goat**, **eliza**, **solana-agent-kit**, **x402**, **crypto-skill-creator**
+- **manage-aomi-skill** — skill configuration
 
-See `.cursor/rules/aomi-skills.mdc` for full mapping.
+Do **not** use yet: coinbase-agentkit, brian-api, goat, eliza, solana-agent-kit, x402, crypto-skill-creator.
+
+See `.cursor/rules/aomi-skills.mdc` for full scope.
