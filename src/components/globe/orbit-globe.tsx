@@ -1,43 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { ArrowRight, Info } from "lucide-react";
-import type { GlobeMethods } from "react-globe.gl";
 
-const Globe = dynamic(() => import("react-globe.gl"), { ssr: false });
+void import("@/components/globe/globe-scene");
 
-const arcsData = [
-  {
-    startLat: 6.5244,
-    startLng: 3.3792,
-    endLat: 37.7749,
-    endLng: -122.4194,
-    color: ["#8b5cf6", "#3b82f6"],
-  },
-  {
-    startLat: 51.5072,
-    startLng: -0.1276,
-    endLat: 35.6762,
-    endLng: 139.6503,
-    color: ["#a855f7", "#22d3ee"],
-  },
-  {
-    startLat: -23.5505,
-    startLng: -46.6333,
-    endLat: 48.8566,
-    endLng: 2.3522,
-    color: ["#7c3aed", "#2563eb"],
-  },
-];
-
-const pointsData = [
-  { lat: 6.5244, lng: 3.3792 },
-  { lat: 37.7749, lng: -122.4194 },
-  { lat: 51.5072, lng: -0.1276 },
-  { lat: 35.6762, lng: 139.6503 },
-];
+const GlobeScene = dynamic(
+  () => import("@/components/globe/globe-scene").then((m) => m.GlobeScene),
+  { ssr: false }
+);
 
 const nodes = [
   { name: "AERODROME", count: "2,341 agents", side: "left" as const, top: "18%", left: "34%" },
@@ -57,39 +30,23 @@ const pulseDots = [
 
 export function OrbitGlobe() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const globeRef = useRef<GlobeMethods | undefined>(undefined);
   const [dims, setDims] = useState({ w: 900, h: 430 });
-  const [mounted, setMounted] = useState(false);
-
-  const enableAutoRotate = useCallback(() => {
-    const controls = globeRef.current?.controls();
-    if (!controls) return;
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = 0.85;
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.08;
-  }, []);
 
   useEffect(() => {
-    setMounted(true);
     const el = containerRef.current;
     if (!el) return;
     const ro = new ResizeObserver(([entry]) => {
       const { width, height } = entry.contentRect;
-      setDims({ w: width, h: height });
+      if (width > 0 && height > 0) {
+        setDims({ w: width, h: height });
+      }
     });
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (!mounted) return;
-    enableAutoRotate();
-  }, [mounted, enableAutoRotate, dims.w, dims.h]);
-
   return (
     <section className="relative min-h-[430px] overflow-hidden rounded-[28px] border border-violet-500/20 bg-[#050510] shadow-[0_0_70px_rgba(124,58,237,0.18)]">
-      {/* Glow + stars */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_50%,rgba(124,58,237,0.22),transparent_35%),radial-gradient(circle_at_45%_70%,rgba(37,99,235,0.16),transparent_30%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(124,58,237,0.25),transparent_45%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(168,85,247,0.8)_1px,transparent_1px)] opacity-60 [background-size:34px_34px]" />
@@ -101,7 +58,6 @@ export function OrbitGlobe() {
         <Info size={16} className="text-blue-400" />
       </div>
 
-      {/* Left stats */}
       <div className="absolute left-6 top-20 z-20 hidden w-[250px] rounded-2xl border border-white/10 bg-white/[0.035] p-5 backdrop-blur-xl lg:block">
         <Stat label="ACTIVE AGENTS" value="12,458" growth="+ 24h +8.2%" />
         <Divider />
@@ -114,42 +70,13 @@ export function OrbitGlobe() {
         </button>
       </div>
 
-      {/* 3D globe + motion overlays */}
-      <div
-        ref={containerRef}
-        className="relative z-10 h-[430px] w-full"
-      >
-        {mounted && (
-          <Globe
-            ref={globeRef}
-            onGlobeReady={enableAutoRotate}
-            width={dims.w}
-            height={dims.h}
-            globeOffset={[80, 0]}
-            globeImageUrl="https://unpkg.com/three-globe/example/img/earth-night.jpg"
-            bumpImageUrl="https://unpkg.com/three-globe/example/img/earth-topology.png"
-            backgroundColor="rgba(0,0,0,0)"
-            atmosphereColor="#a855f7"
-            atmosphereAltitude={0.22}
-            arcsData={arcsData}
-            arcColor="color"
-            arcDashLength={0.4}
-            arcDashGap={2}
-            arcDashAnimateTime={1800}
-            arcStroke={0.8}
-            pointsData={pointsData}
-            pointColor={() => "#a855f7"}
-            pointAltitude={0.02}
-            pointRadius={0.45}
-          />
-        )}
+      <div ref={containerRef} className="relative z-10 h-[430px] w-full">
+        <GlobeScene width={dims.w} height={dims.h} />
 
-        {/* Lightning strikes */}
         <Lightning className="left-[44%] top-[30%] rotate-[18deg]" />
         <Lightning className="left-[56%] top-[43%] rotate-[-35deg]" />
         <Lightning className="left-[49%] top-[61%] rotate-[55deg]" />
 
-        {/* Pulse dots */}
         {pulseDots.map((pos) => (
           <motion.span
             key={pos}
@@ -159,7 +86,6 @@ export function OrbitGlobe() {
           />
         ))}
 
-        {/* Ambient glow pulse */}
         <motion.div
           animate={{ opacity: [0.35, 0.65, 0.35], scale: [0.95, 1.05, 0.95] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -167,7 +93,6 @@ export function OrbitGlobe() {
         />
       </div>
 
-      {/* Protocol nodes */}
       {nodes.map((node) => (
         <Node key={node.name} {...node} />
       ))}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/components/providers";
+import { GlobePrefetch } from "@/components/globe/globe-prefetch";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -57,7 +58,12 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <link rel="preload" href="/globe/earth-night.jpg" as="image" />
+        <link rel="preload" href="/globe/earth-topology.png" as="image" />
+      </head>
       <body className="min-h-full flex flex-col">
+        <GlobePrefetch />
         <Providers>{children}</Providers>
       </body>
     </html>
