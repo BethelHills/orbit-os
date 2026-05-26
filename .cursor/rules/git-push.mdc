@@ -1,24 +1,28 @@
 ---
-description: Commit and push all OrbitOS changes to GitHub after completing work
+description: Always commit and push OrbitOS changes to GitHub after completing work
 alwaysApply: true
 ---
 
-# Git: Commit and Push to GitHub
+# Git: Always Push to GitHub
 
-After completing meaningful changes in this project, commit and push to:
+**Always push to GitHub** after completing meaningful work in OrbitOS. Do not wait for the user to ask.
 
-https://github.com/BethelHills/orbit-os.git
+Remote: https://github.com/BethelHills/orbit-os.git
 
-## Workflow
+## Required workflow
 
-1. Run `git status`, `git diff`, and `git log -3` in `/Users/hb/orbit-os`
-2. Stage only project files under `orbit-os` (never parent home-directory repos)
-3. Write a concise commit message focused on **why**
-4. Commit and push: `git push origin main`
-5. Never force-push to `main`
+After every task that changes code, config, or docs:
 
-## Scope
+1. `cd /Users/hb/orbit-os`
+2. Run `git status`, `git diff`, and `git log -3`
+3. Stage relevant files (never parent home-directory repos)
+4. Commit with a concise message focused on **why**
+5. **Always push:** `git push origin main`
+6. Confirm push succeeded before finishing the task
 
-- Repository root: `/Users/hb/orbit-os`
-- Remote: `origin` → `https://github.com/BethelHills/orbit-os.git`
-- Do not commit `.env*` files, `node_modules`, or `.next`
+## Rules
+
+- Push on `main` to `origin` after every commit — no local-only commits
+- Never force-push to `main`
+- Do not commit `.env*`, `node_modules`, or `.next`
+- Repository root: `/Users/hb/orbit-os` only
