@@ -6,7 +6,8 @@ export function DashboardHeader() {
           Good evening, Bethel 👋
         </h1>
         <p className="text-slate-400 mt-1">
-          OrbitOS is your Aomi-powered AI operating system for on-chain actions.
+          Aomi-powered Zora Creator Assistant on Base — launch, monitor, and
+          manage your creator coin from chat.
         </p>
       </div>
 

@@ -1,0 +1,30 @@
+---
+description: OrbitOS build target — Aomi-powered Zora Creator Assistant on Base
+alwaysApply: true
+---
+
+# OrbitOS Build Target
+
+**OrbitOS = Aomi-powered Zora Creator Assistant on Base.**
+
+## Product
+
+A non-crypto creator launches, monitors, and manages a **Zora creator coin** from one chat interface on **Base**.
+
+## Stack
+
+- **Frontend:** Next.js dashboard (chat, agent logs, protocol cards, analytics)
+- **Agent:** Aomi (`aomi-transact` for execution, `aomi-build` for Zora tools)
+- **Protocol:** Zora on Base (chain id 8453)
+- **Persona:** Creator — not a DeFi power user
+
+## Scope
+
+- In scope: Zora creator coin lifecycle (mint, price, pool, metadata, holders, volume, buyers, alerts)
+- Out of scope for now: other chains, Solana, x402 payments, third-party agent kits (see `aomi-skills.mdc`)
+
+## Code anchors
+
+- Tools: `src/lib/zora/`
+- Chat orchestration: `src/app/api/chat/route.ts`
+- Shared UI state: `src/store/orbit-store.ts`

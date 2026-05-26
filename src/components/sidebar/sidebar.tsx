@@ -26,7 +26,7 @@ export function Sidebar() {
       <div className="mb-10">
         <div className="text-3xl font-bold tracking-tight">OrbitOS</div>
         <p className="text-sm text-purple-300 mt-1">
-          Aomi AI Command Center
+          Zora Creator Assistant · Base
         </p>
       </div>
 
