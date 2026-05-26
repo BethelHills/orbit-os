@@ -5,32 +5,23 @@ import { OrbitGlobe } from "@/components/globe/orbit-globe";
 import { AomiChat } from "@/components/chat/aomi-chat";
 import { AnalyticsChart } from "@/components/charts/analytics-chart";
 import { AgentLogs } from "@/components/dashboard/agent-logs";
+import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 
 export default function Home() {
   return (
-    <main className="min-h-screen text-white">
-      <div className="flex">
-        <Sidebar />
+    <DashboardShell assistant={<AomiChat />}>
+      <DashboardHeader />
 
-        <section className="flex-1 p-6">
-          <DashboardHeader />
+      <div className="mt-6 space-y-6">
+        <ProtocolCards />
 
-          <div className="grid grid-cols-1 xl:grid-cols-[1fr_390px] gap-6 mt-6">
-            <div className="space-y-6">
-              <ProtocolCards />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_380px]">
+          <OrbitGlobe />
+          <AgentLogs />
+        </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
-                <OrbitGlobe />
-                <AgentLogs />
-              </div>
-
-              <AnalyticsChart />
-            </div>
-
-            <AomiChat />
-          </div>
-        </section>
+        <AnalyticsChart />
       </div>
-    </main>
+    </DashboardShell>
   );
 }

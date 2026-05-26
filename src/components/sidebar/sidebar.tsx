@@ -22,7 +22,7 @@ const links = [
 
 export function Sidebar() {
   return (
-    <aside className="hidden lg:flex w-72 min-h-screen border-r border-white/10 bg-black/30 p-5 flex-col">
+    <aside className="hidden lg:flex h-screen w-72 shrink-0 flex-col border-r border-white/10 bg-black/30 p-5 sticky top-0">
       <div className="mb-10">
         <div className="text-3xl font-bold tracking-tight">OrbitOS</div>
         <p className="text-sm text-purple-300 mt-1">
