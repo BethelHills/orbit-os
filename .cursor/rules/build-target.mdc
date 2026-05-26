@@ -17,6 +17,12 @@ A non-crypto creator launches, monitors, and manages a **Zora creator coin** fro
 - **Agent:** Aomi (`aomi-transact` for execution, `aomi-build` for Zora tools)
 - **Protocol:** Zora on Base (chain id 8453)
 - **Persona:** Creator — not a DeFi power user
+- **Animations:** `tw-animate-css` (Tailwind v4) + Framer Motion + GSAP — **not** `tailwindcss-animate`
+
+## CSS / animations
+
+- `package.json`: use `tw-animate-css` only; never add `tailwindcss-animate`
+- `globals.css`: keep `@import "tailwindcss";` and `@import "tw-animate-css";`
 
 ## Scope
 
