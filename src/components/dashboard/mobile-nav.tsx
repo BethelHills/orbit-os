@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Bell, Menu, Orbit } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
+import { OrbitBrand } from "@/components/brand/orbit-brand";
 import {
   Sheet,
   SheetContent,
@@ -16,13 +17,7 @@ export function MobileNav() {
   return (
     <header className="glass-strong sticky top-0 z-40 flex shrink-0 items-center justify-between border-b border-purple-500/10 px-4 py-3 lg:hidden">
       <div className="flex min-w-0 items-center gap-2.5">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 shadow-[0_0_16px_rgba(168,85,247,0.45)]">
-          <Orbit className="size-4 text-white" />
-        </div>
-        <div className="min-w-0">
-          <p className="neon-text truncate text-base font-bold tracking-tight">OrbitOS</p>
-          <p className="truncate text-[10px] text-purple-300/80">Base · Online</p>
-        </div>
+        <OrbitBrand compact showTagline={false} />
       </div>
 
       <div className="flex shrink-0 items-center gap-1.5">

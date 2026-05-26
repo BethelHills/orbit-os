@@ -19,31 +19,31 @@ const siteUrl =
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "OrbitOS — Zora Creator Assistant on Base",
+  title: "OrbitOS — AI Operating System for On-chain Actions",
   description:
-    "Aomi-powered Zora Creator Assistant on Base. Launch, monitor, and manage your creator coin from one chat.",
+    "AI Operating System for On-chain Actions. Launch, monitor, and manage on-chain activity from one command center.",
   applicationName: "OrbitOS",
   openGraph: {
     type: "website",
     url: siteUrl,
     siteName: "OrbitOS",
-    title: "OrbitOS — Zora Creator Assistant on Base",
+    title: "OrbitOS — AI Operating System for On-chain Actions",
     description:
-      "Aomi-powered Zora Creator Assistant on Base. Launch, monitor, and manage your creator coin from one chat.",
+      "AI Operating System for On-chain Actions. Launch, monitor, and manage on-chain activity from one command center.",
     images: [
       {
         url: "/og-preview.png",
         width: 1024,
         height: 682,
-        alt: "OrbitOS cyberpunk dashboard — Zora Creator Assistant on Base",
+        alt: "OrbitOS — AI Operating System for On-chain Actions",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "OrbitOS — Zora Creator Assistant on Base",
+    title: "OrbitOS — AI Operating System for On-chain Actions",
     description:
-      "Aomi-powered Zora Creator Assistant on Base. Launch, monitor, and manage your creator coin from one chat.",
+      "AI Operating System for On-chain Actions. Launch, monitor, and manage on-chain activity from one command center.",
     images: ["/og-preview.png"],
   },
 };

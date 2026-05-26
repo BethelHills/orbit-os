@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { SSR_SAFE_INITIAL } from "@/lib/motion";
+import { OrbitBrand } from "@/components/brand/orbit-brand";
 import {
   LayoutDashboard,
   MessageCircle,
@@ -16,7 +17,6 @@ import {
   Settings,
   ChevronDown,
   Gem,
-  Orbit,
 } from "lucide-react";
 
 const links = [
@@ -69,17 +69,7 @@ export function SidebarContent({ onNavigate }: SidebarContentProps) {
         animate={{ opacity: 1, x: 0 }}
         className="border-b border-white/5 px-5 py-5"
       >
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-blue-600 shadow-[0_0_20px_rgba(168,85,247,0.5)]">
-            <Orbit className="size-5 text-white" />
-          </div>
-          <div>
-            <div className="neon-text text-xl font-bold tracking-tight">OrbitOS</div>
-            <p className="text-[11px] text-purple-300/90">
-              Zora Creator Assistant · Base
-            </p>
-          </div>
-        </div>
+        <OrbitBrand />
       </motion.div>
 
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
