@@ -115,8 +115,8 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
   }
 
   const shellClass = compact
-    ? "glass-strong neon-border flex h-full flex-col rounded-2xl p-4"
-    : "rounded-[32px] border border-purple-500/25 bg-[#070711]/80 p-6 shadow-[0_0_80px_rgba(126,34,206,0.18)]";
+    ? "glass-strong neon-border flex h-full min-h-0 flex-col rounded-2xl p-4"
+    : "flex h-full min-h-0 flex-col rounded-2xl border border-purple-500/25 bg-[#070711]/80 p-4 shadow-[0_0_80px_rgba(126,34,206,0.18)] sm:rounded-[32px] sm:p-6";
 
   return (
     <aside className={shellClass}>
@@ -128,7 +128,7 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
               className={
                 compact
                   ? "text-sm font-bold tracking-wide text-white"
-                  : "font-serif text-2xl font-bold text-white"
+                  : "font-serif text-lg font-bold text-white sm:text-2xl"
               }
             >
               AOMI ASSISTANT
@@ -137,7 +137,7 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
               className={
                 compact
                   ? "text-[9px] uppercase tracking-wider text-purple-400/80"
-                  : "mt-1 text-sm uppercase tracking-widest text-purple-300"
+                  : "mt-0.5 text-[10px] uppercase tracking-widest text-purple-300 sm:mt-1 sm:text-sm"
               }
             >
               Beta
@@ -149,7 +149,7 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
 
       <div
         className={`min-h-0 flex-1 space-y-3 overflow-y-auto pr-1 ${
-          compact ? "mt-3" : "mt-8 max-h-[520px] space-y-5 pr-2"
+          compact ? "mt-3" : "mt-4 space-y-4 pr-2 sm:mt-6 sm:space-y-5"
         }`}
       >
         {messages.slice(compact ? -4 : undefined).map((message, index) => (
@@ -159,10 +159,10 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
               message.role === "user"
                 ? compact
                   ? "ml-6 rounded-2xl bg-gradient-to-r from-purple-600 to-violet-700 px-3.5 py-3 text-xs text-white"
-                  : "ml-auto max-w-[85%] rounded-[28px] bg-gradient-to-r from-purple-600 to-violet-700 px-7 py-5 text-white"
+                  : "ml-auto max-w-[85%] rounded-2xl bg-gradient-to-r from-purple-600 to-violet-700 px-4 py-3 text-sm text-white sm:rounded-[28px] sm:px-7 sm:py-5"
                 : compact
                   ? "mr-2 rounded-2xl border border-white/10 bg-slate-950/70 px-3.5 py-3 text-xs text-slate-100"
-                  : "max-w-[90%] rounded-[28px] border border-slate-700 bg-slate-950/70 px-7 py-5 text-slate-100"
+                  : "max-w-[90%] rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm text-slate-100 sm:rounded-[28px] sm:px-7 sm:py-5"
             }
           >
             {message.role === "agent" && (
@@ -175,7 +175,7 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
                 <span>Aomi</span>
               </div>
             )}
-            <p className={`whitespace-pre-line ${compact ? "leading-relaxed" : "leading-8"}`}>
+            <p className={`whitespace-pre-line ${compact ? "leading-relaxed" : "leading-relaxed sm:leading-8"}`}>
               {message.text}
             </p>
           </div>
@@ -194,7 +194,7 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
         )}
       </div>
 
-      <div className={`grid shrink-0 grid-cols-3 gap-1.5 ${compact ? "mt-2" : "mt-8 gap-3"}`}>
+      <div className={`grid shrink-0 grid-cols-3 gap-1.5 ${compact ? "mt-2" : "mt-4 gap-2 sm:mt-6 sm:gap-3"}`}>
         {QUICK_ACTIONS.map((item) => (
           <button
             key={item}
@@ -204,7 +204,7 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
             className={
               compact
                 ? "rounded-lg border border-white/10 px-2 py-1.5 text-[10px] text-slate-400 transition hover:border-purple-500/30 hover:text-white disabled:opacity-50"
-                : "rounded-2xl border border-white/10 px-4 py-3 text-sm text-slate-300 transition hover:border-purple-500/40 hover:text-white disabled:opacity-50"
+                : "rounded-xl border border-white/10 px-2 py-2 text-[11px] text-slate-300 transition hover:border-purple-500/40 hover:text-white disabled:opacity-50 sm:rounded-2xl sm:px-4 sm:py-3 sm:text-sm"
             }
           >
             {item}
@@ -220,7 +220,7 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
         className={`flex shrink-0 items-center gap-2 ${
           compact
             ? "mt-3 rounded-xl border border-purple-500/20 bg-black/40 px-3 py-2.5"
-            : "mt-6 gap-3 rounded-[24px] border border-purple-500/30 bg-black/40 px-5 py-4"
+            : "mt-4 gap-2 rounded-xl border border-purple-500/30 bg-black/40 px-3 py-3 sm:mt-6 sm:gap-3 sm:rounded-[24px] sm:px-5 sm:py-4"
         }`}
       >
         <input

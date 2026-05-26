@@ -24,9 +24,9 @@ export default function Home() {
 
         <AssetsTable />
 
-        {/* Mobile / tablet: activity + chat below main */}
+        {/* Mobile / tablet: full assistant + activity below main */}
         <div className="space-y-4 xl:hidden">
-          <div className="h-[420px]">
+          <div className="h-[min(680px,calc(100dvh-11rem))] min-h-[520px]">
             <AomiChat />
           </div>
           <ActivityFeed />
