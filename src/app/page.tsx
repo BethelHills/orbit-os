@@ -1,26 +1,36 @@
-import { Sidebar } from "@/components/sidebar/sidebar";
-import { DashboardHeader } from "@/components/dashboard/dashboard-header";
-import { ProtocolCards } from "@/components/protocol-cards/protocol-cards";
-import { OrbitGlobe } from "@/components/globe/orbit-globe";
 import { AomiChat } from "@/components/chat/aomi-chat";
-import { AnalyticsChart } from "@/components/charts/analytics-chart";
-import { AgentLogs } from "@/components/dashboard/agent-logs";
+import { DashboardHeader } from "@/components/dashboard/dashboard-header";
+import { ProtocolMatrix } from "@/components/dashboard/protocol-matrix";
+import { OrbitGlobe } from "@/components/globe/orbit-globe";
+import { PortfolioOverview } from "@/components/dashboard/portfolio-overview";
+import { AssetsTable } from "@/components/dashboard/assets-table";
+import { AssistantPanel } from "@/components/dashboard/assistant-panel";
+import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 
 export default function Home() {
   return (
-    <DashboardShell assistant={<AomiChat />}>
+    <DashboardShell
+      assistant={<AssistantPanel />}
+    >
       <DashboardHeader />
 
-      <div className="mt-6 space-y-6">
-        <ProtocolCards />
+      <div className="space-y-6">
+        <ProtocolMatrix />
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_380px]">
-          <OrbitGlobe />
-          <AgentLogs />
+        <OrbitGlobe />
+
+        <PortfolioOverview />
+
+        <AssetsTable />
+
+        {/* Mobile / tablet: activity + chat below main */}
+        <div className="space-y-4 xl:hidden">
+          <div className="h-[420px]">
+            <AomiChat />
+          </div>
+          <ActivityFeed />
         </div>
-
-        <AnalyticsChart />
       </div>
     </DashboardShell>
   );

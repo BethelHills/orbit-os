@@ -81,15 +81,15 @@
   --sidebar-accent-foreground: #e9d5ff;
   --sidebar-border: rgba(255, 255, 255, 0.08);
   --sidebar-ring: rgba(139, 92, 246, 0.4);
+  --neon-purple: #a855f7;
+  --neon-blue: #3b82f6;
+  --neon-cyan: #22d3ee;
 }
 
 body {
-  background: radial-gradient(
-    circle at top,
-    #12061f 0%,
-    #050510 40%,
-    #02030a 100%
-  );
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.18), transparent),
+    radial-gradient(circle at top, #12061f 0%, #050510 40%, #02030a 100%);
   color: white;
   overflow-x: hidden;
 }
@@ -99,6 +99,30 @@ body {
   backdrop-filter: blur(30px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 0 50px rgba(139, 92, 246, 0.12);
+}
+
+.glass-strong {
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.08) 0%,
+    rgba(59, 130, 246, 0.04) 50%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  backdrop-filter: blur(40px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow:
+    0 0 60px rgba(139, 92, 246, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.neon-text {
+  text-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
+}
+
+.neon-border {
+  box-shadow:
+    0 0 20px rgba(139, 92, 246, 0.3),
+    inset 0 0 20px rgba(139, 92, 246, 0.05);
 }
 
 @layer base {

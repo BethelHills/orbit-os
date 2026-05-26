@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "framer-motion";
 import {
   LayoutDashboard,
   MessageCircle,
@@ -22,39 +25,47 @@ const links = [
 
 export function Sidebar() {
   return (
-    <aside className="hidden lg:flex h-screen w-72 shrink-0 flex-col border-r border-white/10 bg-black/30 p-5 sticky top-0">
-      <div className="mb-10">
-        <div className="text-3xl font-bold tracking-tight">OrbitOS</div>
-        <p className="text-sm text-purple-300 mt-1">
+    <aside className="glass-strong hidden h-screen w-[18rem] shrink-0 flex-col border-r border-purple-500/10 p-4 lg:flex">
+      <motion.div
+        initial={{ opacity: 0, x: -12 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="mb-8 px-2"
+      >
+        <div className="neon-text text-2xl font-bold tracking-tight">OrbitOS</div>
+        <p className="mt-1 text-xs text-purple-300/90">
           Zora Creator Assistant · Base
         </p>
-      </div>
+      </motion.div>
 
-      <nav className="space-y-2">
+      <nav className="flex-1 space-y-1 overflow-y-auto">
         {links.map((item, index) => {
           const Icon = item.icon;
+          const active = index === 0;
 
           return (
-            <button
+            <motion.button
               key={item.name}
-              className={`w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-sm transition ${
-                index === 0
-                  ? "bg-purple-600/30 text-white border border-purple-500/40"
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.04 }}
+              className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition ${
+                active
+                  ? "bg-gradient-to-r from-purple-600/30 to-blue-600/20 text-white neon-border"
                   : "text-slate-400 hover:bg-white/5 hover:text-white"
               }`}
             >
-              <Icon size={18} />
+              <Icon size={17} className={active ? "text-purple-300" : ""} />
               {item.name}
-            </button>
+            </motion.button>
           );
         })}
       </nav>
 
-      <div className="mt-auto rounded-2xl border border-purple-500/30 bg-purple-500/10 p-4">
-        <p className="text-sm text-purple-200">Early Forge</p>
-        <h3 className="font-semibold mt-1">Build. Ship. Earn.</h3>
-        <p className="text-xs text-slate-400 mt-2">
-          Submit public GitHub, demo video, live app, and README.
+      <div className="mt-4 rounded-xl border border-purple-500/25 bg-purple-500/10 p-4">
+        <p className="text-xs text-purple-200">Early Forge</p>
+        <h3 className="mt-1 text-sm font-semibold">Build. Ship. Earn.</h3>
+        <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
+          Submit GitHub, demo video, live app, and README.
         </p>
       </div>
     </aside>
