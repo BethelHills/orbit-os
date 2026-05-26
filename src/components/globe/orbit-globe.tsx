@@ -19,8 +19,7 @@ const nodes = [
     side: "left" as const,
     top: "18%",
     left: "34%",
-    mobileTop: "20%",
-    mobileLeft: "1%",
+    mobileDock: true,
   },
   {
     name: "ZORA",
@@ -28,8 +27,7 @@ const nodes = [
     side: "left" as const,
     top: "42%",
     left: "31%",
-    mobileTop: "44%",
-    mobileLeft: "0%",
+    mobileDock: true,
   },
   {
     name: "LIMITLESS",
@@ -100,7 +98,7 @@ export function OrbitGlobe() {
         <Info size={14} className="shrink-0 text-blue-400 sm:size-4" />
       </div>
 
-      <div className="absolute left-3 top-[3.75rem] z-20 w-[46%] max-w-[220px] rounded-xl border border-white/10 bg-white/[0.04] p-3 backdrop-blur-xl sm:left-4 sm:top-[4.25rem] sm:max-w-[240px] sm:p-4 lg:left-6 lg:top-20 lg:w-[250px] lg:max-w-none lg:rounded-2xl lg:p-5">
+      <div className="absolute left-3 top-[3.75rem] z-30 w-[46%] max-w-[220px] rounded-xl border border-white/10 bg-white/[0.04] p-3 backdrop-blur-xl sm:left-4 sm:top-[4.25rem] sm:max-w-[240px] sm:p-4 lg:left-6 lg:top-20 lg:z-20 lg:w-[250px] lg:max-w-none lg:rounded-2xl lg:p-5">
         <Stat label="ACTIVE AGENTS" value="12,458" growth="+ 24h +8.2%" compact />
         <Divider compact />
         <Stat label="ACTIONS EXECUTED" value="47,892" growth="+ 24h +18.6%" compact />
@@ -141,9 +139,19 @@ export function OrbitGlobe() {
         />
       </div>
 
-      {nodes.map((node) => (
-        <Node key={node.name} {...node} isDesktop={isDesktop} />
-      ))}
+      {nodes
+        .filter((node) => isDesktop || !node.mobileDock)
+        .map((node) => (
+          <Node key={node.name} {...node} isDesktop={isDesktop} />
+        ))}
+
+      <div className="relative z-20 grid grid-cols-2 gap-2 px-4 pb-4 pt-1 sm:gap-3 sm:px-6 sm:pb-5 lg:hidden">
+        {nodes
+          .filter((node) => node.mobileDock)
+          .map((node) => (
+            <MobileDockNode key={node.name} name={node.name} count={node.count} />
+          ))}
+      </div>
     </section>
   );
 }
@@ -213,9 +221,10 @@ function Node({
   top: string;
   left?: string;
   right?: string;
-  mobileTop: string;
+  mobileTop?: string;
   mobileLeft?: string;
   mobileRight?: string;
+  mobileDock?: boolean;
   isDesktop: boolean;
 }) {
   const style = isDesktop
@@ -223,7 +232,7 @@ function Node({
     : { top: mobileTop, left: mobileLeft, right: mobileRight };
 
   return (
-    <div className="absolute z-30" style={style}>
+    <div className="absolute z-30 lg:z-30" style={style}>
       <div className="relative">
         <motion.div
           animate={{ opacity: [0.35, 1, 0.35] }}
@@ -248,6 +257,20 @@ function Node({
           <p className="mt-0.5 text-[9px] text-violet-300 sm:mt-1 sm:text-[11px] lg:mt-2 lg:text-sm">
             {count}
           </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MobileDockNode({ name, count }: { name: string; count: string }) {
+  return (
+    <div className="rounded-xl border border-violet-500/25 bg-black/50 px-3 py-2.5 backdrop-blur-xl shadow-[0_0_35px_rgba(124,58,237,0.18)] sm:px-4 sm:py-3">
+      <div className="flex items-center gap-2">
+        <span className="h-2 w-2 shrink-0 rounded-full bg-fuchsia-400 shadow-[0_0_12px_rgba(217,70,239,1)]" />
+        <div className="min-w-0">
+          <h4 className="truncate text-[11px] font-bold text-white sm:text-xs">{name}</h4>
+          <p className="truncate text-[10px] text-violet-300 sm:text-[11px]">{count}</p>
         </div>
       </div>
     </div>
