@@ -21,3 +21,11 @@ Use only:
 Do **not** use yet: coinbase-agentkit, brian-api, goat, eliza, solana-agent-kit, x402, crypto-skill-creator.
 
 See `.cursor/rules/build-target.mdc` and `.cursor/rules/aomi-skills.mdc`.
+
+## Git
+
+**Always commit and push to GitHub** after meaningful work. See `.cursor/rules/git-push.mdc`.
+
+- Remote: https://github.com/BethelHills/orbit-os.git
+- Branch: `main` → `origin`
+- Never leave unpushed commits

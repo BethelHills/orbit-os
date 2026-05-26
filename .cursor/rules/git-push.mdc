@@ -1,11 +1,11 @@
 ---
-description: Always commit and push OrbitOS changes to GitHub after completing work
+description: Always commit and push OrbitOS changes to GitHub after completing work — no exceptions
 alwaysApply: true
 ---
 
 # Git: Always Push to GitHub
 
-**Always push to GitHub** after completing meaningful work in OrbitOS. Do not wait for the user to ask.
+**Always commit and push to GitHub** after any meaningful work in OrbitOS. Never leave changes local-only. Do not wait for the user to ask.
 
 Remote: https://github.com/BethelHills/orbit-os.git
 
@@ -20,9 +20,12 @@ After every task that changes code, config, or docs:
 5. **Always push:** `git push origin main`
 6. Confirm push succeeded before finishing the task
 
+If there is nothing to commit, still run `git push origin main` to confirm the branch is synced.
+
 ## Rules
 
-- Push on `main` to `origin` after every commit — no local-only commits
+- **Every commit must be pushed** on `main` to `origin` — no local-only commits
+- Never finish a coding task without verifying `git status` is clean and pushed
 - Never force-push to `main`
 - Do not commit `.env*`, `node_modules`, or `.next`
 - Repository root: `/Users/hb/orbit-os` only
