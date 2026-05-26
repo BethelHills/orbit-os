@@ -68,19 +68,23 @@ const pulseDots = [
 
 export function OrbitGlobe() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [dims, setDims] = useState({ w: 900, h: 420 });
+  const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const globeOffset: [number, number] = isDesktop ? [80, 0] : [55, 0];
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const ro = new ResizeObserver(([entry]) => {
-      const { width, height } = entry.contentRect;
+
+    const measure = () => {
+      const { width, height } = el.getBoundingClientRect();
       if (width > 0 && height > 0) {
-        setDims({ w: width, h: height });
+        setDims({ w: Math.round(width), h: Math.round(height) });
       }
-    });
+    };
+
+    measure();
+    const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
@@ -115,9 +119,15 @@ export function OrbitGlobe() {
 
       <div
         ref={containerRef}
-        className="relative z-10 mx-auto mt-1 h-[520px] w-full max-w-full sm:mt-2 sm:h-[580px] lg:mt-0 lg:h-[430px]"
+        className="relative z-10 mx-auto mt-1 h-[520px] w-full max-w-full touch-none sm:mt-2 sm:h-[580px] lg:mt-0 lg:h-[430px]"
       >
-        <GlobeScene width={dims.w} height={dims.h} globeOffset={globeOffset} />
+        {dims ? (
+          <GlobeScene
+            width={dims.w}
+            height={dims.h}
+            globeOffset={globeOffset}
+          />
+        ) : null}
 
         <Lightning className="left-[44%] top-[30%] rotate-[18deg] max-lg:left-[48%] max-lg:w-24" />
         <Lightning className="left-[56%] top-[43%] rotate-[-35deg] max-lg:left-[58%] max-lg:w-24" />

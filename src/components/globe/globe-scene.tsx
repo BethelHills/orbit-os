@@ -49,16 +49,38 @@ export function GlobeScene({ width, height, globeOffset = [0, 0] }: GlobeScenePr
 
   const enableAutoRotate = useCallback(() => {
     const controls = globeRef.current?.controls();
-    if (!controls) return;
+    if (!controls) return false;
+
     controls.autoRotate = true;
     controls.autoRotateSpeed = 0.85;
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
+    controls.enablePan = false;
+    return true;
   }, []);
 
   useEffect(() => {
+    let frameId = 0;
+    let attempts = 0;
+
+    const tick = () => {
+      const controls = globeRef.current?.controls();
+      if (controls) {
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.85;
+        controls.update();
+      } else if (attempts < 120) {
+        attempts += 1;
+      }
+
+      frameId = requestAnimationFrame(tick);
+    };
+
     enableAutoRotate();
-  }, [enableAutoRotate, width, height]);
+    frameId = requestAnimationFrame(tick);
+
+    return () => cancelAnimationFrame(frameId);
+  }, [enableAutoRotate, width, height, globeOffset[0], globeOffset[1]]);
 
   return (
     <Globe
