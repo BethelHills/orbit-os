@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { ArrowRight, Info } from "lucide-react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 const GlobeScene = dynamic(
   () => import("@/components/globe/globe-scene").then((m) => m.GlobeScene),
@@ -26,9 +27,17 @@ const pulseDots = [
   "left-[61%] top-[69%]",
 ];
 
+const mobileStats = [
+  { label: "Agents", value: "12,458", growth: "+8.2%" },
+  { label: "Actions", value: "47,892", growth: "+18.6%" },
+  { label: "Data", value: "2.14TB", growth: "+32.4%" },
+];
+
 export function OrbitGlobe() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [dims, setDims] = useState({ w: 900, h: 430 });
+  const [dims, setDims] = useState({ w: 900, h: 320 });
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const globeOffset: [number, number] = isDesktop ? [80, 0] : [0, 0];
 
   useEffect(() => {
     const el = containerRef.current;
@@ -44,16 +53,33 @@ export function OrbitGlobe() {
   }, []);
 
   return (
-    <section className="relative min-h-[430px] overflow-hidden rounded-[28px] border border-violet-500/20 bg-[#050510] shadow-[0_0_70px_rgba(124,58,237,0.18)]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_50%,rgba(124,58,237,0.22),transparent_35%),radial-gradient(circle_at_45%_70%,rgba(37,99,235,0.16),transparent_30%)]" />
+    <section className="relative min-h-[320px] overflow-hidden rounded-2xl border border-violet-500/20 bg-[#050510] shadow-[0_0_70px_rgba(124,58,237,0.18)] sm:min-h-[380px] sm:rounded-[28px] lg:min-h-[430px]">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(124,58,237,0.22),transparent_35%),radial-gradient(circle_at_45%_70%,rgba(37,99,235,0.16),transparent_30%)] lg:bg-[radial-gradient(circle_at_60%_50%,rgba(124,58,237,0.22),transparent_35%),radial-gradient(circle_at_45%_70%,rgba(37,99,235,0.16),transparent_30%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(124,58,237,0.25),transparent_45%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(168,85,247,0.8)_1px,transparent_1px)] opacity-60 [background-size:34px_34px]" />
 
-      <div className="relative z-20 flex items-center gap-2 px-6 pt-6">
-        <h2 className="text-sm font-bold tracking-[0.12em] text-violet-100 md:text-base">
+      <div className="relative z-20 flex items-center gap-2 px-4 pt-4 sm:px-6 sm:pt-6">
+        <h2 className="text-xs font-bold tracking-[0.1em] text-violet-100 sm:text-sm sm:tracking-[0.12em] md:text-base">
           AOMI NETWORK VISUALIZATION
         </h2>
-        <Info size={16} className="text-blue-400" />
+        <Info size={14} className="shrink-0 text-blue-400 sm:size-4" />
+      </div>
+
+      <div className="relative z-20 grid grid-cols-3 gap-2 px-4 pt-3 sm:gap-3 lg:hidden">
+        {mobileStats.map((stat) => (
+          <div
+            key={stat.label}
+            className="rounded-xl border border-white/10 bg-white/[0.035] px-2 py-2.5 backdrop-blur-xl sm:px-3"
+          >
+            <p className="truncate text-[9px] font-semibold tracking-wider text-slate-400 sm:text-[10px]">
+              {stat.label}
+            </p>
+            <p className="mt-1 truncate text-sm font-semibold text-white sm:text-base">
+              {stat.value}
+            </p>
+            <p className="truncate text-[10px] font-medium text-emerald-400">{stat.growth}</p>
+          </div>
+        ))}
       </div>
 
       <div className="absolute left-6 top-20 z-20 hidden w-[250px] rounded-2xl border border-white/10 bg-white/[0.035] p-5 backdrop-blur-xl lg:block">
@@ -62,32 +88,44 @@ export function OrbitGlobe() {
         <Stat label="ACTIONS EXECUTED" value="47,892" growth="+ 24h +18.6%" />
         <Divider />
         <Stat label="DATA POINTS PROCESSED" value="2.14TB" growth="+ 24h +32.4%" />
-        <button className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl border border-violet-500/50 bg-violet-600/15 px-4 py-3 font-semibold text-white shadow-[0_0_25px_rgba(168,85,247,0.28)] transition hover:bg-violet-600/25">
+        <button
+          type="button"
+          className="mt-6 flex w-full items-center justify-center gap-3 rounded-xl border border-violet-500/50 bg-violet-600/15 px-4 py-3 font-semibold text-white shadow-[0_0_25px_rgba(168,85,247,0.28)] transition hover:bg-violet-600/25"
+        >
           View Network Map
           <ArrowRight size={18} />
         </button>
       </div>
 
-      <div ref={containerRef} className="relative z-10 h-[430px] w-full">
-        <GlobeScene width={dims.w} height={dims.h} />
+      <div
+        ref={containerRef}
+        className="relative z-10 mx-auto mt-2 h-[280px] w-full max-w-full sm:mt-3 sm:h-[340px] lg:mt-0 lg:h-[430px]"
+      >
+        <GlobeScene
+          width={dims.w}
+          height={dims.h}
+          globeOffset={globeOffset}
+        />
 
-        <Lightning className="left-[44%] top-[30%] rotate-[18deg]" />
-        <Lightning className="left-[56%] top-[43%] rotate-[-35deg]" />
-        <Lightning className="left-[49%] top-[61%] rotate-[55deg]" />
+        <div className="hidden lg:contents">
+          <Lightning className="left-[44%] top-[30%] rotate-[18deg]" />
+          <Lightning className="left-[56%] top-[43%] rotate-[-35deg]" />
+          <Lightning className="left-[49%] top-[61%] rotate-[55deg]" />
 
-        {pulseDots.map((pos) => (
-          <motion.span
-            key={pos}
-            animate={{ scale: [1, 1.8, 1], opacity: [0.7, 1, 0.7] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className={`pointer-events-none absolute ${pos} z-20 h-3 w-3 rounded-full bg-fuchsia-400 shadow-[0_0_20px_rgba(217,70,239,1)]`}
-          />
-        ))}
+          {pulseDots.map((pos) => (
+            <motion.span
+              key={pos}
+              animate={{ scale: [1, 1.8, 1], opacity: [0.7, 1, 0.7] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className={`pointer-events-none absolute ${pos} z-20 h-3 w-3 rounded-full bg-fuchsia-400 shadow-[0_0_20px_rgba(217,70,239,1)]`}
+            />
+          ))}
+        </div>
 
         <motion.div
           animate={{ opacity: [0.35, 0.65, 0.35], scale: [0.95, 1.05, 0.95] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/20 blur-3xl"
+          className="pointer-events-none absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/20 blur-3xl sm:h-64 sm:w-64"
         />
       </div>
 

@@ -41,9 +41,10 @@ const pointsData = [
 interface GlobeSceneProps {
   width: number;
   height: number;
+  globeOffset?: [number, number];
 }
 
-export function GlobeScene({ width, height }: GlobeSceneProps) {
+export function GlobeScene({ width, height, globeOffset = [0, 0] }: GlobeSceneProps) {
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
 
   const enableAutoRotate = useCallback(() => {
@@ -66,7 +67,7 @@ export function GlobeScene({ width, height }: GlobeSceneProps) {
       height={height}
       animateIn={false}
       waitForGlobeReady={false}
-      globeOffset={[80, 0]}
+      globeOffset={globeOffset}
       globeImageUrl={GLOBE_TEXTURE}
       bumpImageUrl={BUMP_TEXTURE}
       backgroundColor="rgba(0,0,0,0)"

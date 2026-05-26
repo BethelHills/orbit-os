@@ -1,3 +1,4 @@
+import { MobileNav } from "@/components/dashboard/mobile-nav";
 import { Sidebar } from "@/components/sidebar/sidebar";
 import { StatusBar } from "@/components/dashboard/status-bar";
 
@@ -12,8 +13,10 @@ export function DashboardShell({ children, assistant }: DashboardShellProps) {
       <Sidebar />
 
       <div className="relative flex min-w-0 flex-1 flex-col">
+        <MobileNav />
+
         <div className="flex min-h-0 flex-1">
-          <main className="min-w-0 flex-1 overflow-y-auto p-4 pb-24 md:p-6 md:pb-28">
+          <main className="min-w-0 flex-1 overflow-y-auto p-3 pb-24 sm:p-4 md:p-6 md:pb-28">
             {children}
           </main>
 
