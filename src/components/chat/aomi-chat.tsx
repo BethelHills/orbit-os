@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { Maximize2, Send, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import { SSR_SAFE_INITIAL } from "@/lib/motion";
 import { useOrbitStore } from "@/store/orbit-store";
 
 const QUICK_ACTIONS = ["Show holders", "Set price alert", "View analytics"];
@@ -45,7 +46,7 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
         {messages.slice(compact ? -3 : undefined).map((message, index) => (
           <motion.div
             key={index}
-            initial={{ opacity: 0, y: 6 }}
+            initial={SSR_SAFE_INITIAL}
             animate={{ opacity: 1, y: 0 }}
             className={`rounded-2xl px-3.5 py-3 text-xs leading-relaxed ${
               message.role === "user"

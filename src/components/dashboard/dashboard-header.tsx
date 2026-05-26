@@ -3,10 +3,12 @@
 import { motion } from "framer-motion";
 import { Bell, Sun, ChevronDown } from "lucide-react";
 
+import { SSR_SAFE_INITIAL } from "@/lib/motion";
+
 export function DashboardHeader() {
   return (
     <motion.header
-      initial={{ opacity: 0, y: -8 }}
+      initial={SSR_SAFE_INITIAL}
       animate={{ opacity: 1, y: 0 }}
       className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
     >

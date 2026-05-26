@@ -9,6 +9,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+import { SSR_SAFE_INITIAL } from "@/lib/motion";
+
 const portfolioData = [
   { t: "Mon", v: 14200 },
   { t: "Tue", v: 15100 },
@@ -33,7 +35,7 @@ export function PortfolioOverview() {
   return (
     <section className="grid grid-cols-1 gap-3 lg:grid-cols-2">
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={SSR_SAFE_INITIAL}
         animate={{ opacity: 1, y: 0 }}
         className="glass-strong overflow-hidden rounded-2xl p-5"
       >
@@ -69,7 +71,7 @@ export function PortfolioOverview() {
       </motion.div>
 
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={SSR_SAFE_INITIAL}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.08 }}
         className="glass-strong overflow-hidden rounded-2xl p-5"

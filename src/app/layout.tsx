@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Providers } from "@/components/providers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,10 +13,38 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://orbit-os-rho.vercel.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "OrbitOS — Zora Creator Assistant on Base",
   description:
     "Aomi-powered Zora Creator Assistant on Base. Launch, monitor, and manage your creator coin from one chat.",
+  applicationName: "OrbitOS",
+  openGraph: {
+    type: "website",
+    url: siteUrl,
+    siteName: "OrbitOS",
+    title: "OrbitOS — Zora Creator Assistant on Base",
+    description:
+      "Aomi-powered Zora Creator Assistant on Base. Launch, monitor, and manage your creator coin from one chat.",
+    images: [
+      {
+        url: "/og-preview.png",
+        width: 1024,
+        height: 682,
+        alt: "OrbitOS cyberpunk dashboard — Zora Creator Assistant on Base",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "OrbitOS — Zora Creator Assistant on Base",
+    description:
+      "Aomi-powered Zora Creator Assistant on Base. Launch, monitor, and manage your creator coin from one chat.",
+    images: ["/og-preview.png"],
+  },
 };
 
 export default function RootLayout({
@@ -28,7 +57,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

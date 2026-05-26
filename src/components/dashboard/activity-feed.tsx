@@ -9,6 +9,7 @@ import {
   MessageSquare,
   Shield,
 } from "lucide-react";
+import { SSR_SAFE_INITIAL } from "@/lib/motion";
 import { useOrbitStore } from "@/store/orbit-store";
 
 const iconMap: Record<string, typeof Bell> = {
@@ -48,7 +49,7 @@ export function ActivityFeed() {
           return (
             <motion.div
               key={log.id}
-              initial={{ opacity: 0, x: 8 }}
+              initial={SSR_SAFE_INITIAL}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.04 }}
               className="flex items-start gap-3 rounded-xl border border-white/5 bg-black/30 p-3"

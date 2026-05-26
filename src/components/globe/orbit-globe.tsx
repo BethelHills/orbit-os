@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { SSR_SAFE_INITIAL } from "@/lib/motion";
+
 const Globe = dynamic(() => import("react-globe.gl"), { ssr: false });
 
 const stats = [
@@ -50,7 +52,7 @@ export function OrbitGlobe() {
 
   return (
     <motion.section
-      initial={{ opacity: 0, scale: 0.98 }}
+      initial={SSR_SAFE_INITIAL}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6 }}
       className="glass-strong relative min-h-[480px] overflow-hidden rounded-3xl lg:min-h-[540px]"
@@ -59,7 +61,7 @@ export function OrbitGlobe() {
         {stats.map((s, i) => (
           <motion.div
             key={s.label}
-            initial={{ opacity: 0, x: -12 }}
+            initial={SSR_SAFE_INITIAL}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 + i * 0.1 }}
           >
@@ -106,7 +108,7 @@ export function OrbitGlobe() {
       {nodes.map((node, i) => (
         <motion.div
           key={node.name}
-          initial={{ opacity: 0 }}
+          initial={SSR_SAFE_INITIAL}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 + i * 0.08 }}
           className="absolute z-10 hidden rounded-xl border border-white/10 bg-black/50 px-3 py-2 backdrop-blur-md lg:block"

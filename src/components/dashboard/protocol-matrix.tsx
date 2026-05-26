@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
+import { SSR_SAFE_INITIAL } from "@/lib/motion";
 
 const protocols = [
   {
@@ -52,7 +53,7 @@ export function ProtocolMatrix() {
       {protocols.map((p, i) => (
         <motion.div
           key={p.name}
-          initial={{ opacity: 0, y: 16 }}
+          initial={SSR_SAFE_INITIAL}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.07, duration: 0.4 }}
           className="glass-strong relative overflow-hidden rounded-2xl p-4"

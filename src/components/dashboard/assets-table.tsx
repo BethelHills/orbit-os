@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
+import { SSR_SAFE_INITIAL } from "@/lib/motion";
 import {
   Table,
   TableBody,
@@ -89,7 +90,7 @@ function MiniSparkline({ data, accent }: { data: number[]; accent: string }) {
 export function AssetsTable() {
   return (
     <motion.section
-      initial={{ opacity: 0, y: 16 }}
+      initial={SSR_SAFE_INITIAL}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.15 }}
       className="glass-strong overflow-hidden rounded-2xl"

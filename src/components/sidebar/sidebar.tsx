@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { SSR_SAFE_INITIAL } from "@/lib/motion";
 import {
   LayoutDashboard,
   MessageCircle,
@@ -55,12 +56,12 @@ function useCountdown(target: Date) {
 }
 
 export function Sidebar() {
-  const countdown = useCountdown(new Date("2026-06-01T00:00:00Z"));
+  const countdown = useCountdown(EARLY_FORGE_END);
 
   return (
     <aside className="glass-strong hidden h-screen w-[17.5rem] shrink-0 flex-col border-r border-purple-500/10 lg:flex">
       <motion.div
-        initial={{ opacity: 0, x: -12 }}
+        initial={SSR_SAFE_INITIAL}
         animate={{ opacity: 1, x: 0 }}
         className="border-b border-white/5 px-5 py-5"
       >
@@ -85,7 +86,7 @@ export function Sidebar() {
           return (
             <motion.button
               key={item.name}
-              initial={{ opacity: 0, x: -8 }}
+              initial={SSR_SAFE_INITIAL}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.03 }}
               className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-[13px] transition ${
