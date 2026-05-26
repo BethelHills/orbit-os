@@ -15,6 +15,7 @@ import {
   Settings,
   ChevronDown,
   Gem,
+  Orbit,
 } from "lucide-react";
 
 const links = [
@@ -59,15 +60,17 @@ export function Sidebar() {
       <motion.div
         initial={{ opacity: 0, x: -12 }}
         animate={{ opacity: 1, x: 0 }}
-        className="flex items-center gap-3 border-b border-white/5 px-5 py-5"
+        className="border-b border-white/5 px-5 py-5"
       >
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-blue-600 text-lg font-bold shadow-[0_0_20px_rgba(168,85,247,0.5)]">
-          A
-        </div>
-        <div>
-          <div className="text-sm font-bold tracking-wide text-white">AOMI</div>
-          <div className="text-[10px] uppercase tracking-[0.15em] text-purple-300/80">
-            AI Agent OS
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-blue-600 shadow-[0_0_20px_rgba(168,85,247,0.5)]">
+            <Orbit className="size-5 text-white" />
+          </div>
+          <div>
+            <div className="neon-text text-xl font-bold tracking-tight">OrbitOS</div>
+            <p className="text-[11px] text-purple-300/90">
+              Zora Creator Assistant · Base
+            </p>
           </div>
         </div>
       </motion.div>
