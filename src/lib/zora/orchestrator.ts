@@ -76,19 +76,40 @@ function buildAgentReply(
   toolMessages: string[],
   coin: CreatorCoin
 ): string {
-  if (userMessage.toLowerCase().includes("launch") || userMessage.toLowerCase().includes("mint")) {
+  const lower = userMessage.toLowerCase();
+
+  if (lower.includes("launch") || lower.includes("mint") || lower.includes("create coin")) {
+    const contract = coin.address
+      ? `${coin.address.slice(0, 6)}…${coin.address.slice(-4)}`
+      : "pending";
     return [
-      `Done — ${summary} on Zora (Base).`,
-      coin.name
-        ? `"${coin.name}" (${coin.symbol}) is ready${coin.initialPriceEth ? ` at ${coin.initialPriceEth} ETH` : ""}.`
-        : "",
-      coin.holderCount ? `Monitoring ${coin.holderCount} holders.` : "",
-      "Use the dashboard to track volume, top buyers, and alerts.",
-    ]
-      .filter(Boolean)
-      .join(" ");
+      `🚀 Coin '${coin.name ?? "MOONJOY"}' has been successfully launched on Zora!`,
+      "",
+      `• Initial Price: ${coin.initialPriceEth ?? 0.2} ETH`,
+      "• Network: Base",
+      `• Contract: ${contract}`,
+      "• Status: Live & monitoring",
+    ].join("\n");
+  }
+
+  if (lower.includes("holder")) {
+    return `MOONJOY currently has ${coin.holderCount} holders on Base. Monitoring is active — I'll notify you when new buyers join.`;
+  }
+
+  if (lower.includes("volume") || lower.includes("analytics")) {
+    return [
+      `📊 24h analytics for ${coin.name ?? "MOONJOY"}`,
+      `• 24h Volume: ${coin.volume24hEth} ETH`,
+      `• Holders: ${coin.holderCount}`,
+      `• Price alert: ${coin.priceAlertEth ?? "not set"} ETH`,
+    ].join("\n");
+  }
+
+  if (lower.includes("alert")) {
+    return `✅ Price alert set at ${coin.priceAlertEth} ETH for ${coin.name ?? "MOONJOY"}. I'll ping you when it triggers.`;
   }
 
   if (toolMessages.length === 1) return toolMessages[0];
-  return `${summary}. ${toolMessages.join(" ")}`;
+  if (toolMessages.length > 1) return `${summary}\n\n${toolMessages.join("\n")}`;
+  return `${summary}. Ask me to launch a coin, check holders, set alerts, or view analytics.`;
 }

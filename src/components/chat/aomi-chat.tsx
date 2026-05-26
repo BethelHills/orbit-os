@@ -1,110 +1,211 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import { Maximize2, Send, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
-import { SSR_SAFE_INITIAL } from "@/lib/motion";
+import { useState } from "react";
+import { Send, Sparkles, Maximize2 } from "lucide-react";
 import { useOrbitStore } from "@/store/orbit-store";
+
+type Message = {
+  role: "user" | "agent";
+  text: string;
+};
 
 const QUICK_ACTIONS = ["Show holders", "Set price alert", "View analytics"];
 
+const QUICK_PROMPTS: Record<string, string> = {
+  "Show holders": "How many holders does my coin have?",
+  "Set price alert": "Set a price alert at 0.5 ETH",
+  "View analytics": "Show 24h volume and analytics",
+};
+
 export function AomiChat({ compact = false }: { compact?: boolean }) {
   const [input, setInput] = useState("");
-  const { messages, isLoading, sendMessage, runQuickAction } = useOrbitStore();
+  const [loading, setLoading] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      role: "agent",
+      text: "🚀 Coin 'MOONJOY' has been successfully launched on Zora!\n\n• Initial Price: 0.2 ETH\n• Network: Base\n• Contract: 0x7ora…0001\n• Status: Live & monitoring",
+    },
+  ]);
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    const text = input;
+  const coin = useOrbitStore((s) => s.coin);
+  const logs = useOrbitStore((s) => s.logs);
+  const applyChatResponse = useOrbitStore((s) => s.applyChatResponse);
+
+  async function sendMessage(messageText?: string) {
+    const raw = messageText ?? input.trim();
+    const text = QUICK_PROMPTS[raw] ?? raw;
+    if (!text || loading) return;
+
+    const userMessage: Message = { role: "user", text: raw === text ? text : raw };
+
+    setMessages((prev) => [...prev, userMessage]);
     setInput("");
-    await sendMessage(text);
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/aomi-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text, coin, logs }),
+      });
+
+      if (!response.ok) throw new Error("Chat request failed");
+
+      const data = await response.json();
+
+      setMessages((prev) => [
+        ...prev,
+        { role: "agent", text: data.reply },
+      ]);
+
+      applyChatResponse({
+        logs: data.logs,
+        coin: data.coin,
+        analytics: data.analytics,
+      });
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "agent",
+          text: "I could not complete that request right now. Please try again.",
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
   }
 
+  const shellClass = compact
+    ? "glass-strong neon-border flex h-full flex-col rounded-2xl p-4"
+    : "rounded-[32px] border border-purple-500/25 bg-[#070711]/80 p-6 shadow-[0_0_80px_rgba(126,34,206,0.18)]";
+
   return (
-    <div
-      className={`glass-strong flex flex-col rounded-2xl neon-border ${
-        compact ? "h-full p-4" : "h-full min-h-[480px] p-5"
-      }`}
-    >
-      <div className="flex shrink-0 items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Sparkles className="size-4 text-purple-400" />
+    <aside className={shellClass}>
+      <div className="flex shrink-0 items-start justify-between">
+        <div className="flex items-center gap-3">
+          <Sparkles className={compact ? "size-4 text-purple-300" : "text-purple-300"} />
           <div>
-            <h2 className="text-sm font-bold tracking-wide text-white">
+            <h2
+              className={
+                compact
+                  ? "text-sm font-bold tracking-wide text-white"
+                  : "font-serif text-2xl font-bold text-white"
+              }
+            >
               AOMI ASSISTANT
             </h2>
-            <span className="text-[9px] uppercase tracking-wider text-purple-400/80">
+            <p
+              className={
+                compact
+                  ? "text-[9px] uppercase tracking-wider text-purple-400/80"
+                  : "mt-1 text-sm uppercase tracking-widest text-purple-300"
+              }
+            >
               Beta
-            </span>
+            </p>
           </div>
         </div>
-        <button className="rounded-lg p-1.5 text-slate-500 transition hover:bg-white/5 hover:text-white">
-          <Maximize2 size={14} />
-        </button>
+        <Maximize2 className="text-slate-500" size={compact ? 14 : 18} />
       </div>
 
-      <div className="mt-3 min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
-        {messages.slice(compact ? -3 : undefined).map((message, index) => (
-          <motion.div
+      <div
+        className={`min-h-0 flex-1 space-y-3 overflow-y-auto pr-1 ${
+          compact ? "mt-3" : "mt-8 max-h-[520px] space-y-5 pr-2"
+        }`}
+      >
+        {messages.slice(compact ? -4 : undefined).map((message, index) => (
+          <div
             key={index}
-            initial={SSR_SAFE_INITIAL}
-            animate={{ opacity: 1, y: 0 }}
-            className={`rounded-2xl px-3.5 py-3 text-xs leading-relaxed ${
+            className={
               message.role === "user"
-                ? "ml-6 bg-gradient-to-r from-purple-600/90 to-violet-700/90 text-white"
-                : "mr-2 border border-white/10 bg-slate-900/70 text-slate-200"
-            }`}
+                ? compact
+                  ? "ml-6 rounded-2xl bg-gradient-to-r from-purple-600 to-violet-700 px-3.5 py-3 text-xs text-white"
+                  : "ml-auto max-w-[85%] rounded-[28px] bg-gradient-to-r from-purple-600 to-violet-700 px-7 py-5 text-white"
+                : compact
+                  ? "mr-2 rounded-2xl border border-white/10 bg-slate-950/70 px-3.5 py-3 text-xs text-slate-100"
+                  : "max-w-[90%] rounded-[28px] border border-slate-700 bg-slate-950/70 px-7 py-5 text-slate-100"
+            }
           >
             {message.role === "agent" && (
-              <div className="mb-2 flex items-center gap-1.5">
-                <Sparkles size={12} className="text-purple-400" />
-                <span className="text-[10px] font-medium text-purple-300">Aomi</span>
+              <div
+                className={`mb-2 flex items-center gap-2 text-purple-300 ${
+                  compact ? "text-[10px]" : "mb-3"
+                }`}
+              >
+                <Sparkles size={compact ? 12 : 16} />
+                <span>Aomi</span>
               </div>
             )}
-            <div className="whitespace-pre-wrap">{message.text}</div>
-          </motion.div>
+            <p className={`whitespace-pre-line ${compact ? "leading-relaxed" : "leading-8"}`}>
+              {message.text}
+            </p>
+          </div>
         ))}
-        {isLoading && (
-          <p className="animate-pulse text-xs text-purple-300">
-            Running Zora tools…
-          </p>
+
+        {loading && (
+          <div
+            className={
+              compact
+                ? "rounded-2xl border border-white/10 bg-slate-950/70 px-3.5 py-3 text-xs text-purple-300"
+                : "max-w-[90%] rounded-[28px] border border-slate-700 bg-slate-950/70 px-7 py-5 text-purple-300"
+            }
+          >
+            Aomi is thinking…
+          </div>
         )}
       </div>
 
-      {!isLoading && messages.length > 0 && (
-        <div className="mt-2 grid shrink-0 grid-cols-3 gap-1.5">
-          {QUICK_ACTIONS.map((item) => (
-            <button
-              key={item}
-              type="button"
-              disabled={isLoading}
-              onClick={() => runQuickAction(item)}
-              className="rounded-lg border border-white/10 bg-black/30 px-2 py-1.5 text-[10px] text-slate-400 transition hover:border-purple-500/30 hover:text-white disabled:opacity-50"
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-      )}
+      <div className={`grid shrink-0 grid-cols-3 gap-1.5 ${compact ? "mt-2" : "mt-8 gap-3"}`}>
+        {QUICK_ACTIONS.map((item) => (
+          <button
+            key={item}
+            type="button"
+            disabled={loading}
+            onClick={() => sendMessage(item)}
+            className={
+              compact
+                ? "rounded-lg border border-white/10 px-2 py-1.5 text-[10px] text-slate-400 transition hover:border-purple-500/30 hover:text-white disabled:opacity-50"
+                : "rounded-2xl border border-white/10 px-4 py-3 text-sm text-slate-300 transition hover:border-purple-500/40 hover:text-white disabled:opacity-50"
+            }
+          >
+            {item}
+          </button>
+        ))}
+      </div>
 
       <form
-        onSubmit={handleSubmit}
-        className="mt-3 flex shrink-0 items-center gap-2 rounded-xl border border-purple-500/20 bg-black/40 px-3 py-2.5"
+        onSubmit={(event) => {
+          event.preventDefault();
+          sendMessage();
+        }}
+        className={`flex shrink-0 items-center gap-2 ${
+          compact
+            ? "mt-3 rounded-xl border border-purple-500/20 bg-black/40 px-3 py-2.5"
+            : "mt-6 gap-3 rounded-[24px] border border-purple-500/30 bg-black/40 px-5 py-4"
+        }`}
       >
         <input
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(event) => setInput(event.target.value)}
           placeholder="Ask Aomi anything…"
-          disabled={isLoading}
-          className="flex-1 bg-transparent text-xs outline-none placeholder:text-slate-600 disabled:opacity-50"
+          disabled={loading}
+          className={`flex-1 bg-transparent text-white outline-none placeholder:text-slate-500 disabled:opacity-50 ${
+            compact ? "text-xs" : ""
+          }`}
         />
         <button
           type="submit"
-          disabled={isLoading || !input.trim()}
-          className="rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 p-2 disabled:opacity-50"
+          disabled={loading || !input.trim()}
+          className={
+            compact
+              ? "rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 p-2 text-white disabled:opacity-50"
+              : "rounded-full bg-gradient-to-r from-purple-600 to-blue-600 p-3 text-white disabled:opacity-50"
+          }
         >
-          <Send size={14} />
+          <Send size={compact ? 14 : 18} />
         </button>
       </form>
-    </div>
+    </aside>
   );
 }
