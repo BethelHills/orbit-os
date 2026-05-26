@@ -1,0 +1,31 @@
+---
+description: OrbitOS Aomi skill scope — use only aomi-transact and aomi-build
+alwaysApply: true
+---
+
+# OrbitOS: Aomi Skills
+
+Aomi is installed via `.agents/skills/` from `aomi-labs/skills`. For OrbitOS, use **only these two skills** unless the user explicitly asks to expand scope:
+
+## Primary skills
+
+| Skill | Use for |
+|-------|---------|
+| **aomi-transact** | Chat-based on-chain actions — swaps, launches, monitoring, wallet-signed EVM flows driven from Aomi Chat |
+| **aomi-build** | Protocol-specific tools — scaffold Zora, Aerodrome, Avantis, and other integration tools from API specs |
+
+## Do not use by default
+
+Ignore these installed skills unless explicitly requested:
+
+- brian-api, coinbase-agentkit, goat, eliza, solana-agent-kit, x402, crypto-skill-creator, manage-aomi-skill
+
+## When to read each skill
+
+- **Chat / agent actions / `/actions` / wallet flows** → read `.agents/skills/aomi-transact/SKILL.md`
+- **New protocol integration / Zora coin launch tools / API wrappers** → read `.agents/skills/aomi-build/SKILL.md`
+
+## OrbitOS mapping
+
+- `src/components/chat/aomi-chat.tsx` → powered by **aomi-transact**
+- Protocol cards (Zora, Aerodrome, Avantis, Monad) → tools built with **aomi-build**
