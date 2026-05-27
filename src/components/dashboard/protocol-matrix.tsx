@@ -3,8 +3,17 @@
 import { motion } from "framer-motion";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { SSR_SAFE_INITIAL } from "@/lib/motion";
+import { ProtocolIcon } from "@/components/dashboard/protocol-icon";
+import type { ProtocolName } from "@/lib/protocol-logos";
 
-const protocols = [
+const protocols: {
+  name: ProtocolName;
+  tvl: string;
+  change: string;
+  positive: boolean;
+  spark: number[];
+  accent: string;
+}[] = [
   {
     name: "Aerodrome",
     tvl: "$1.23B",
@@ -12,8 +21,6 @@ const protocols = [
     positive: true,
     spark: [8, 12, 10, 18, 22, 20, 28],
     accent: "#6366f1",
-    icon: "A",
-    iconBg: "from-indigo-500 to-blue-600",
   },
   {
     name: "Zora",
@@ -22,8 +29,6 @@ const protocols = [
     positive: true,
     spark: [12, 18, 15, 22, 28, 24, 32],
     accent: "#a855f7",
-    icon: "Z",
-    iconBg: "from-purple-500 to-violet-600",
   },
   {
     name: "Limitless",
@@ -32,8 +37,6 @@ const protocols = [
     positive: true,
     spark: [6, 8, 10, 9, 14, 13, 16],
     accent: "#22d3ee",
-    icon: "L",
-    iconBg: "from-cyan-500 to-teal-600",
   },
   {
     name: "Avantis",
@@ -42,8 +45,6 @@ const protocols = [
     positive: true,
     spark: [10, 11, 10, 12, 11, 13, 14],
     accent: "#3b82f6",
-    icon: "Av",
-    iconBg: "from-blue-500 to-indigo-600",
   },
 ];
 
@@ -64,11 +65,7 @@ export function ProtocolMatrix() {
           />
 
           <div className="relative flex items-center gap-2.5">
-            <div
-              className={`flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br ${p.iconBg} text-[11px] font-bold text-white`}
-            >
-              {p.icon}
-            </div>
+            <ProtocolIcon name={p.name} />
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-white">{p.name}</p>
               <p className="text-[10px] uppercase tracking-wider text-slate-500">TVL</p>
