@@ -9,7 +9,8 @@ import { simulateOrbitAction } from "@/app/actions/simulate-orbit-action";
 import { captureOrbitError } from "@/lib/monitoring";
 import type { AomiPendingTransaction } from "@/lib/aomi/aomi-runner";
 import type { PendingWriteAction } from "@/lib/aomi/detect-write-action";
-import type { OrbitActionResult } from "@/lib/aomi/orbit-action-types";
+import type { OrbitActionResult, ProtectedOrbitAction } from "@/lib/aomi/orbit-action-types";
+import { TRANSACTION_CONFIRMATION_COPY } from "@/lib/aomi/protected-transactions";
 import type { OrbitSimulationResult } from "@/lib/aomi/simulate-orbit-action";
 import type { AgentLogEntry, CreatorCoin } from "@/lib/zora/types";
 
@@ -27,7 +28,7 @@ type FlowCallbacks = {
   onUserMessage: (text: string) => void;
   onPhaseChange?: (phase: TransactionFlowPhase) => void;
   onTransactionComplete: (payload: {
-    action: "mint_coin" | "set_price_alert";
+    action: ProtectedOrbitAction;
     result: OrbitActionResult;
     log: AgentLogEntry;
     coin: CreatorCoin;
@@ -56,6 +57,15 @@ function buildActivityLog(
       ...base,
       kind: "launch",
       message: `${params.name} mint confirmed on Zora/Base · ${shortHash(txHash)}`,
+    };
+  }
+
+  if (action.action === "message_recent_buyer") {
+    const params = action.params as { message: string };
+    return {
+      ...base,
+      kind: "message",
+      message: `Buyer message confirmed on Base · ${shortHash(txHash)}`,
     };
   }
 
@@ -93,6 +103,23 @@ function formatSuccessMessage(result: OrbitActionResult, txHash: string): string
       "• Network: Base",
       "• Status: Monitoring enabled",
     ].join("\n");
+  }
+
+  if (
+    result.action === "message_recent_buyer" &&
+    result.data &&
+    "message" in result.data
+  ) {
+    return [
+      "Message sent to the most recent buyer on Zora.",
+      "",
+      `• Message: "${result.data.message}"`,
+      result.data.buyerAddress ? `• Buyer: ${result.data.buyerAddress}` : "",
+      `• Tx hash: ${txHash}`,
+      "• Network: Base",
+    ]
+      .filter(Boolean)
+      .join("\n");
   }
 
   return `${result.message}\n\n• Tx hash: ${txHash}`;
@@ -135,13 +162,7 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
       callbacks.onUserMessage(userLabel);
 
       try {
-        setFlowPhase("preparing");
-        callbacks.onAgentMessage("Preparing transaction…");
-
-        await new Promise((resolve) => setTimeout(resolve, 450));
-
         setFlowPhase("simulating");
-        callbacks.onAgentMessage("Running fork simulation on Base…");
 
         const sim = await simulateOrbitAction({
           action: writeAction.action,
@@ -155,7 +176,9 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
 
         callbacks.onAgentMessage(
           [
-            "Simulation passed.",
+            "Simulation passed — review before confirming.",
+            "",
+            TRANSACTION_CONFIRMATION_COPY.review,
             "",
             ...sim.steps.map(
               (step, index) =>
@@ -164,7 +187,7 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
             "",
             `• Total gas: ${sim.totalGas.toLocaleString()}`,
             "",
-            "Review the confirmation dialog to continue.",
+            TRANSACTION_CONFIRMATION_COPY.confirm,
           ].join("\n")
         );
 
@@ -207,16 +230,12 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
     try {
       if (!isConnected || !address) {
         setFlowPhase("wallet");
-        callbacks.onAgentMessage(
-          "Connect your wallet to sign this Zora transaction on Base."
-        );
         openConnectModal?.();
         setConfirmOpen(true);
         return;
       }
 
       setFlowPhase("wallet");
-      callbacks.onAgentMessage("Opening wallet for signature…");
 
       const stagedTx = pendingTxs.find((tx) => tx.to);
       let txHash: `0x${string}`;
@@ -241,7 +260,6 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
       }
 
       setFlowPhase("executing");
-      callbacks.onAgentMessage("Executing on Base via Aomi…");
 
       const result = await executeOrbitAction({
         action: pendingAction.action,
@@ -259,7 +277,7 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
       const log = buildActivityLog(pendingAction, txHash);
 
       callbacks.onTransactionComplete({
-        action: pendingAction.action as "mint_coin" | "set_price_alert",
+        action: pendingAction.action as ProtectedOrbitAction,
         result,
         log,
         coin: result.coin,
@@ -267,7 +285,7 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
       });
 
       callbacks.onAgentMessage(formatSuccessMessage(result, txHash));
-      setFlowPhase("complete");
+      setFlowPhase("idle");
     } catch (error) {
       captureOrbitError(error, {
         phase: "execute",

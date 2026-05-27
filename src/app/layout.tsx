@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import "@rainbow-me/rainbowkit/styles.css";
 import { Providers } from "@/components/providers";
 import { Web3Provider } from "@/components/providers/web3-provider";
@@ -69,6 +70,7 @@ export default function RootLayout({
         <Web3Provider>
           <Providers>{children}</Providers>
         </Web3Provider>
+        <Analytics />
       </body>
     </html>
   );

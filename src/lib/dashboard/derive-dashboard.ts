@@ -144,31 +144,33 @@ export function buildAssets(coin: CreatorCoin): AssetHolding[] {
 
 export function computePortfolio(coin: CreatorCoin, action: "mint_coin" | "set_price_alert") {
   const primaryAsset = buildPrimaryAsset(coin);
-  const primaryValue = parseFloat(primaryAsset.valueLabel.replace(/[$,]/g, "")) || 640;
+  const primaryValue = parseFloat(primaryAsset.valueLabel.replace(/[$,]/g, "")) || 0;
   const totalValueUsd = OTHER_HOLDINGS_USD + primaryValue;
-  const volume24hUsd = Math.max(coin.volume24hEth * ETH_USD, 7892.34);
+  const volume24hUsd = coin.volume24hEth * ETH_USD;
 
   const portfolioChangePct =
-    action === "mint_coin"
-      ? 16.2 + Math.min(coin.holderCount / 10, 8)
-      : 16.2;
+    coin.holderCount > 0
+      ? Math.min(Math.max((coin.holderCount / 42) * 8, 0), 32)
+      : 0;
 
   const volumeChangePct =
-    action === "mint_coin" ? 22.4 + 4.5 : 22.4 + 1.2;
+    coin.volume24hEth > 0
+      ? Math.min(Math.max(coin.volume24hEth * 2.5, 0), 48)
+      : 0;
 
   const history = SEED_PORTFOLIO.history.map((point, index, arr) =>
     index === arr.length - 1 ? { ...point, v: totalValueUsd } : point
   );
 
   const volumeHistory = SEED_PORTFOLIO.volumeHistory.map((point, index, arr) =>
-    index === arr.length - 1 ? { ...point, v: volume24hUsd } : point
+    index === arr.length - 1 ? { ...point, v: Math.max(volume24hUsd, 0) } : point
   );
 
   return {
     totalValueUsd,
     volume24hUsd,
-    portfolioChangePct,
-    volumeChangePct,
+    portfolioChangePct: action === "mint_coin" ? portfolioChangePct + 4 : portfolioChangePct,
+    volumeChangePct: action === "mint_coin" ? volumeChangePct + 2 : volumeChangePct,
     history,
     volumeHistory,
   } satisfies PortfolioState;

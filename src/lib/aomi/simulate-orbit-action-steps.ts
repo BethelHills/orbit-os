@@ -34,6 +34,16 @@ export function simulationStepsForAction(
         },
       ];
     }
+    case "message_recent_buyer": {
+      const input = params as ExecuteOrbitActionInput<"message_recent_buyer">["params"];
+      return [
+        {
+          name: `Message recent buyer: "${input.message.slice(0, 48)}${input.message.length > 48 ? "…" : ""}"`,
+          success: true,
+          gasUsed: 38_000,
+        },
+      ];
+    }
     default:
       return [{ name: `${action} read path`, success: true, gasUsed: 21_000 }];
   }

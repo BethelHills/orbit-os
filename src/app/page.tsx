@@ -1,4 +1,5 @@
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
+import { DashboardErrorBoundary } from "@/components/dashboard/dashboard-error-boundary";
 import { ProtocolMatrix } from "@/components/dashboard/protocol-matrix";
 import { OrbitGlobe } from "@/components/globe/orbit-globe";
 import { PortfolioOverview } from "@/components/dashboard/portfolio-overview";
@@ -8,19 +9,27 @@ import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 
 export default function Home() {
   return (
-    <DashboardShell
-      assistant={<AssistantPanel />}
-    >
-      <DashboardHeader />
+    <DashboardShell assistant={<AssistantPanel />}>
+      <DashboardErrorBoundary name="Dashboard header">
+        <DashboardHeader />
+      </DashboardErrorBoundary>
 
       <div className="space-y-6">
-        <ProtocolMatrix />
+        <DashboardErrorBoundary name="Protocol matrix">
+          <ProtocolMatrix />
+        </DashboardErrorBoundary>
 
-        <OrbitGlobe />
+        <DashboardErrorBoundary name="Network globe">
+          <OrbitGlobe />
+        </DashboardErrorBoundary>
 
-        <PortfolioOverview />
+        <DashboardErrorBoundary name="Portfolio overview">
+          <PortfolioOverview />
+        </DashboardErrorBoundary>
 
-        <AssetsTable />
+        <DashboardErrorBoundary name="Assets table">
+          <AssetsTable />
+        </DashboardErrorBoundary>
       </div>
     </DashboardShell>
   );

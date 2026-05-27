@@ -1,12 +1,14 @@
 import type {
   GetHolderCountInput,
   GetTopBuyersInput,
+  MessageRecentBuyerInput,
   MintCoinInput,
   SetPriceAlertInput,
   TopBuyer,
   CreatorCoin,
 } from "@/lib/zora/types";
 import { ZORA_CHAIN, ZORA_CHAIN_ID } from "@/lib/zora/types";
+import { PROTECTED_ORBIT_ACTIONS } from "./protected-transactions";
 
 export const ORBIT_PROTOCOL = "zora" as const;
 export const ORBIT_CHAIN = ZORA_CHAIN;
@@ -16,18 +18,19 @@ export type OrbitActionName =
   | "mint_coin"
   | "get_holder_count"
   | "get_top_buyers"
-  | "set_price_alert";
+  | "set_price_alert"
+  | "message_recent_buyer";
 
-export const WRITE_ORBIT_ACTIONS = new Set<OrbitActionName>([
-  "mint_coin",
-  "set_price_alert",
-]);
+export type ProtectedOrbitAction = (typeof PROTECTED_ORBIT_ACTIONS)[number];
+
+export const WRITE_ORBIT_ACTIONS = new Set<OrbitActionName>(PROTECTED_ORBIT_ACTIONS);
 
 export type OrbitActionParams = {
   mint_coin: MintCoinInput;
   get_holder_count: GetHolderCountInput;
   get_top_buyers: GetTopBuyersInput;
   set_price_alert: SetPriceAlertInput;
+  message_recent_buyer: MessageRecentBuyerInput;
 };
 
 export type ExecuteOrbitActionInput<A extends OrbitActionName = OrbitActionName> =
@@ -68,6 +71,7 @@ export type OrbitActionData = {
   get_holder_count: { holderCount: number; coinAddress?: string };
   get_top_buyers: { buyers: TopBuyer[]; limit: number };
   set_price_alert: { targetPriceEth: number; coinAddress?: string; txHash?: string };
+  message_recent_buyer: { message: string; buyerAddress?: string; txHash?: string };
 };
 
 export type OrbitActionPreview = {
@@ -82,6 +86,12 @@ export type OrbitActionPreview = {
   get_top_buyers: never;
   set_price_alert: {
     targetPriceEth: number;
+    coinAddress?: string;
+    network: "Base";
+    protocol: "Zora";
+  };
+  message_recent_buyer: {
+    message: string;
     coinAddress?: string;
     network: "Base";
     protocol: "Zora";

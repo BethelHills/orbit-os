@@ -2,46 +2,16 @@
 
 import { Activity, Bot, Fuel, ShieldCheck } from "lucide-react";
 import type { ViewportTier } from "@/hooks/use-viewport-tier";
+import { useLiveMetrics } from "@/hooks/use-live-metrics";
 import { cn } from "@/lib/utils";
-import { useCoin } from "@/store/orbit-store";
 import type { CoinStatus } from "@/lib/zora/types";
 
 const statusCopy: Record<CoinStatus, string> = {
-  idle: "All systems operational",
+  idle: "Awaiting Zora sync",
   draft: "Coin draft staged",
   launched: "Coin live on Base",
   monitoring: "Monitoring active",
 };
-
-const baseSegments = [
-  {
-    icon: ShieldCheck,
-    label: "Base Network",
-    value: "Healthy",
-    color: "text-blue-300",
-    dot: "bg-blue-400",
-  },
-  {
-    icon: Fuel,
-    label: "Gas Price",
-    value: "0.00021 ETH",
-    sub: "Low",
-    color: "text-purple-300",
-  },
-  {
-    icon: Activity,
-    label: "Aomi Status",
-    value: "All systems operational",
-    color: "text-green-300",
-    dot: "bg-green-400",
-  },
-  {
-    icon: Bot,
-    label: "Agent Mode",
-    value: "Autonomous",
-    color: "text-purple-300",
-  },
-];
 
 interface StatusBarProps {
   tier?: ViewportTier;
@@ -52,15 +22,39 @@ export function StatusBar({
   tier = "mobile",
   hasAssistantPanel = false,
 }: StatusBarProps) {
-  const coin = useCoin();
+  const live = useLiveMetrics();
 
-  const segments = baseSegments.map((seg) =>
-    seg.label === "Aomi Status"
-      ? { ...seg, value: statusCopy[coin.status] }
-      : seg.label === "Agent Mode" && coin.name
-        ? { ...seg, value: `${coin.name} · Autonomous` }
-        : seg
-  );
+  const segments = [
+    {
+      icon: ShieldCheck,
+      label: "Base Network",
+      value: live.base.healthy ? `${live.base.chainName} · Live` : "Wrong network",
+      color: live.base.healthy ? "text-blue-300" : "text-amber-300",
+      dot: live.base.healthy ? "bg-blue-400" : "bg-amber-400",
+    },
+    {
+      icon: Fuel,
+      label: "Gas Price",
+      value: live.base.gasPriceLabel,
+      sub: live.wallet.onBase ? "Base" : live.wallet.connected ? "Switch chain" : "—",
+      color: "text-purple-300",
+    },
+    {
+      icon: Activity,
+      label: "Aomi Status",
+      value: `${live.aomi.successful} actions · ${statusCopy[live.zora.status]}`,
+      color: "text-green-300",
+      dot: "bg-green-400",
+    },
+    {
+      icon: Bot,
+      label: "Wallet",
+      value: live.wallet.connected
+        ? `${live.wallet.addressShort} · ${live.zora.coinName}`
+        : "Not connected",
+      color: "text-purple-300",
+    },
+  ];
 
   return (
     <footer

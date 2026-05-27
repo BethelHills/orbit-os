@@ -10,6 +10,10 @@ import {
   type AomiPendingTransaction,
 } from "./aomi-runner";
 import {
+  isProtectedZoraTool,
+  TRANSACTION_CONFIRMATION_COPY,
+} from "./protected-transactions";
+import {
   buildZoraChatPrompt,
   buildZoraToolPrompt,
   buildZoraWritePrompt,
@@ -99,8 +103,19 @@ export async function runZoraToolViaAomi(
   tool: ZoraToolName,
   input: unknown,
   coin: CreatorCoin,
-  options?: { flowId?: string; walletAddress?: string }
+  options?: { flowId?: string; walletAddress?: string; confirmed?: boolean }
 ): Promise<{ result: ToolResult; coin: CreatorCoin }> {
+  if (isProtectedZoraTool(tool) && !options?.confirmed) {
+    return {
+      result: {
+        ok: false,
+        tool,
+        message: TRANSACTION_CONFIRMATION_COPY.blocked,
+      },
+      coin,
+    };
+  }
+
   if (shouldUseAomiMock()) {
     return runZoraToolMock(tool, input, coin);
   }

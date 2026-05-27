@@ -13,6 +13,7 @@ import {
   mergeCoinState,
   SEED_PORTFOLIO,
 } from "@/lib/dashboard/derive-dashboard";
+import type { ProtectedOrbitAction } from "@/lib/aomi/orbit-action-types";
 import type { AssetHolding, PortfolioState } from "@/lib/dashboard/types";
 import {
   SEED_ANALYTICS,
@@ -36,7 +37,7 @@ interface OrbitState {
   applyChatResponse: (data: ChatApiResponse) => void;
   appendActivityLog: (log: AgentLogEntry) => void;
   applyTransactionResult: (data: {
-    action: "mint_coin" | "set_price_alert";
+    action: ProtectedOrbitAction;
     coin: CreatorCoin;
     txHash: string;
     log: AgentLogEntry;
@@ -77,20 +78,28 @@ export const useOrbitStore = create<OrbitState>((set, get) => ({
   applyTransactionResult: ({ action, coin: incomingCoin, txHash, log }) => {
     const current = get();
     const coin = mergeCoinState(current.coin, incomingCoin);
-    const analytics = bumpAnalytics(current.analytics, coin, action);
-    const portfolio = computePortfolio(coin, action);
+    const portfolioAction = action === "mint_coin" ? "mint_coin" : "set_price_alert";
+    const analytics = bumpAnalytics(current.analytics, coin, portfolioAction);
+    const portfolio = computePortfolio(coin, portfolioAction);
     const assets = buildAssets(coin);
 
     const dashboardLog: AgentLogEntry = {
       id: crypto.randomUUID(),
-      kind: action === "mint_coin" ? "launch" : "alert",
+      kind:
+        action === "mint_coin"
+          ? "launch"
+          : action === "message_recent_buyer"
+            ? "message"
+            : "alert",
       tool: action,
       status: "success",
       timestamp: "Just now",
       message:
         action === "mint_coin"
           ? `Dashboard synced — ${coin.name ?? "Coin"} live on Zora/Base · ${txHash.slice(0, 10)}…`
-          : `Dashboard synced — price alert active at ${coin.priceAlertEth} ETH`,
+          : action === "message_recent_buyer"
+            ? `Dashboard synced — buyer message sent · ${txHash.slice(0, 10)}…`
+            : `Dashboard synced — price alert active at ${coin.priceAlertEth} ETH`,
     };
 
     set({

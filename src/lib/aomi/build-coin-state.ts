@@ -54,6 +54,16 @@ export async function buildCoinStateAfterAction(
     };
   }
 
+  if (action === "message_recent_buyer") {
+    const message = await runZoraToolMock("message_recent_buyer", params, state);
+    return {
+      ...message.coin,
+      name: "MOONJOY",
+      symbol: "MOONJO",
+      status: "monitoring",
+    };
+  }
+
   const { coin } = await runZoraToolMock(action, params, state);
   return coin;
 }

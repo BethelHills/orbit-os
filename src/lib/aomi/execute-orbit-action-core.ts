@@ -13,6 +13,7 @@ import {
   ORBIT_PROTOCOL,
   WRITE_ORBIT_ACTIONS,
 } from "./orbit-action-types";
+import { TRANSACTION_CONFIRMATION_COPY } from "./protected-transactions";
 import { chatWithAomiZora, runZoraToolViaAomi } from "./aomi-zora-service";
 import { createInitialCoin, aomiTransactHint } from "@/lib/zora/executor";
 
@@ -55,6 +56,16 @@ function buildPreview(
     };
   }
 
+  if (action === "message_recent_buyer") {
+    const input = params as ExecuteOrbitActionInput<"message_recent_buyer">["params"];
+    return {
+      message: input.message,
+      coinAddress: input.coinAddress,
+      network: "Base",
+      protocol: "Zora",
+    };
+  }
+
   return undefined;
 }
 
@@ -79,8 +90,7 @@ export async function executeOrbitActionCore<A extends OrbitActionName>(
     return baseResult(action, {
       ok: true,
       status: "confirmation_required",
-      message:
-        "Review this Zora action on Base. Re-submit with confirmed: true to stage execution.",
+      message: TRANSACTION_CONFIRMATION_COPY.blocked,
       preview: preview as OrbitActionResult<A>["preview"],
       requiresConfirmation: true,
       aomiHint,
@@ -91,6 +101,7 @@ export async function executeOrbitActionCore<A extends OrbitActionName>(
   const { result } = await runZoraToolViaAomi(action, params, coin, {
     flowId,
     walletAddress,
+    confirmed: WRITE_ORBIT_ACTIONS.has(action) ? confirmed : true,
   });
 
   if (!result.ok) {

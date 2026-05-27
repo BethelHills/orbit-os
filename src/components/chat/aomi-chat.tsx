@@ -1,10 +1,13 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { Send, Sparkles, Maximize2 } from "lucide-react";
+import { Loader2, Send, Sparkles, Maximize2 } from "lucide-react";
 import { useAccount } from "wagmi";
 import { OrbitActionConfirmDialog } from "@/components/chat/orbit-action-confirm-dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import { detectWriteAction } from "@/lib/aomi/detect-write-action";
+import type { ProtectedOrbitAction } from "@/lib/aomi/orbit-action-types";
 import {
   useOrbitTransactionFlow,
   type TransactionFlowPhase,
@@ -32,11 +35,63 @@ const QUICK_PROMPTS: Record<string, string> = {
 };
 
 const FLOW_STATUS: Partial<Record<TransactionFlowPhase, string>> = {
-  preparing: "Preparing transaction…",
-  simulating: "Running simulation…",
-  wallet: "Waiting for wallet signature…",
-  executing: "Executing on Base…",
+  preparing: "Simulating transaction...",
+  simulating: "Simulating transaction...",
+  wallet: "Waiting for wallet...",
+  executing: "Monitoring...",
 };
+
+function ChatLoadingBubble({
+  label,
+  compact,
+  mode,
+}: {
+  label: string;
+  compact: boolean;
+  mode: "skeleton" | "spinner";
+}) {
+  const shellClass = compact
+    ? "mr-2 rounded-2xl border border-white/10 bg-slate-950/70 px-3.5 py-3 text-xs"
+    : "max-w-[90%] rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm sm:rounded-[28px] sm:px-7 sm:py-5";
+
+  return (
+    <div className={shellClass}>
+      <div
+        className={`mb-2 flex items-center gap-2 text-purple-300 ${
+          compact ? "text-[10px]" : "mb-3"
+        }`}
+      >
+        <Sparkles size={compact ? 12 : 16} />
+        <span>Aomi</span>
+      </div>
+
+      {mode === "skeleton" ? (
+        <div className="space-y-2">
+          <Skeleton className={cn("h-3 bg-white/10", compact ? "w-full" : "h-3.5 w-full")} />
+          <Skeleton className={cn("h-3 bg-white/10", compact ? "w-[88%]" : "h-3.5 w-[88%]")} />
+          <Skeleton className={cn("h-3 bg-white/10", compact ? "w-[58%]" : "h-3.5 w-[58%]")} />
+          <div className="flex items-center gap-2 pt-1 text-purple-300">
+            <Loader2
+              className={cn("animate-spin shrink-0", compact ? "size-3.5" : "size-4")}
+            />
+            <span className={compact ? "leading-relaxed" : "leading-relaxed sm:leading-8"}>
+              {label}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="flex items-center gap-2.5 text-purple-300">
+          <Loader2
+            className={cn("animate-spin shrink-0", compact ? "size-3.5" : "size-4")}
+          />
+          <span className={compact ? "leading-relaxed" : "leading-relaxed sm:leading-8"}>
+            {label}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function logForMessage(text: string, coinName?: string): AgentLogEntry {
   const lower = text.toLowerCase();
@@ -107,7 +162,7 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
       coin,
       txHash,
     }: {
-      action: "mint_coin" | "set_price_alert";
+      action: ProtectedOrbitAction;
       log: AgentLogEntry;
       coin: Parameters<typeof applyTransactionResult>[0]["coin"];
       txHash: string;
@@ -193,6 +248,10 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
   }
 
   const flowStatus = FLOW_STATUS[flowPhase];
+  const loadingLabel = loading
+    ? "Aomi is analyzing..."
+    : flowStatus ?? null;
+  const loadingMode = loading ? "skeleton" : "spinner";
   const shellClass = compact
     ? "glass-strong neon-border flex h-full min-h-0 flex-col rounded-2xl p-4"
     : "flex h-full min-h-0 flex-col rounded-2xl border border-purple-500/25 bg-[#070711]/80 p-4 shadow-[0_0_80px_rgba(126,34,206,0.18)] sm:rounded-[32px] sm:p-6";
@@ -261,16 +320,12 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
             </div>
           ))}
 
-          {(loading || flowStatus) && (
-            <div
-              className={
-                compact
-                  ? "rounded-2xl border border-white/10 bg-slate-950/70 px-3.5 py-3 text-xs text-purple-300"
-                  : "max-w-[90%] rounded-[28px] border border-slate-700 bg-slate-950/70 px-7 py-5 text-purple-300"
-              }
-            >
-              {flowStatus ?? "Aomi is thinking…"}
-            </div>
+          {loadingLabel && (
+            <ChatLoadingBubble
+              label={loadingLabel}
+              compact={compact}
+              mode={loadingMode}
+            />
           )}
         </div>
 
@@ -321,7 +376,11 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
                 : "rounded-full bg-gradient-to-r from-purple-600 to-blue-600 p-3 text-white disabled:opacity-50"
             }
           >
-            <Send size={compact ? 14 : 18} />
+            {loading || flowBusy ? (
+              <Loader2 size={compact ? 14 : 18} className="animate-spin" />
+            ) : (
+              <Send size={compact ? 14 : 18} />
+            )}
           </button>
         </form>
       </aside>

@@ -1,4 +1,8 @@
 import { runZoraToolViaAomi } from "@/lib/aomi/aomi-zora-service";
+import {
+  isProtectedZoraTool,
+  TRANSACTION_CONFIRMATION_COPY,
+} from "@/lib/aomi/protected-transactions";
 import { runZoraToolMock } from "./mock-executor";
 import type { CreatorCoin, ToolResult, ZoraToolName } from "./types";
 
@@ -15,8 +19,19 @@ export async function runZoraTool(
   tool: ZoraToolName,
   input: unknown,
   coin: CreatorCoin,
-  options?: { flowId?: string; walletAddress?: string }
+  options?: { flowId?: string; walletAddress?: string; confirmed?: boolean }
 ): Promise<{ result: ToolResult; coin: CreatorCoin }> {
+  if (isProtectedZoraTool(tool) && !options?.confirmed) {
+    return {
+      result: {
+        ok: false,
+        tool,
+        message: TRANSACTION_CONFIRMATION_COPY.blocked,
+      },
+      coin,
+    };
+  }
+
   if (process.env.AOMI_USE_MOCK === "1") {
     return runZoraToolMock(tool, input, coin);
   }

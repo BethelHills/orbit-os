@@ -1,5 +1,6 @@
 import { detectWriteAction } from "./detect-write-action";
 import { processAomiMessage } from "./execute-orbit-action-core";
+import { TRANSACTION_CONFIRMATION_COPY } from "./protected-transactions";
 import { createInitialCoin } from "@/lib/zora/executor";
 import { processCreatorMessage } from "@/lib/zora/orchestrator";
 import type { CreatorCoin } from "@/lib/zora/types";
@@ -13,11 +14,16 @@ export async function processAomi(
   if (writeAction) {
     return {
       reply: [
-        "Preparing Zora transaction on Base…",
+        `${writeAction.action} is a protected transaction on Base.`,
         "",
-        "I'll run an Aomi fork simulation first, then ask you to confirm before opening your wallet.",
+        "Required flow: Review → Confirm → Execute.",
+        TRANSACTION_CONFIRMATION_COPY.review,
+        TRANSACTION_CONFIRMATION_COPY.confirm,
+        "",
+        "I'll simulate first, then open the confirmation dialog. Nothing runs until you approve.",
       ].join("\n"),
       requiresConfirmation: true,
+      pendingAction: writeAction,
     };
   }
 

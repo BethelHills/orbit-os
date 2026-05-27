@@ -2,6 +2,7 @@ import type { OrbitActionName } from "./orbit-action-types";
 import type {
   GetHolderCountInput,
   GetTopBuyersInput,
+  MessageRecentBuyerInput,
   MintCoinInput,
   SetPriceAlertInput,
   ZoraToolName,
@@ -55,6 +56,17 @@ export function buildZoraWritePrompt(
         "Queue wallet requests only. Do not sign or broadcast.",
       ].join(" ");
     }
+    case "message_recent_buyer": {
+      const input = params as MessageRecentBuyerInput;
+      return [
+        `Prepare a message to the most recent Zora coin buyer on Base:`,
+        `"${input.message}"`,
+        input.coinAddress ? `Coin: ${input.coinAddress}` : "",
+        "Queue wallet requests only. Do not sign or broadcast.",
+      ]
+        .filter(Boolean)
+        .join(" ");
+    }
     default:
       return "";
   }
@@ -91,7 +103,7 @@ export function buildZoraToolPrompt(
     case "fund_initial_pool":
       return `Prepare Zora initial pool funding on Base with ${(input as { amountEth: number }).amountEth} ETH.`;
     case "message_recent_buyer":
-      return `Prepare a message to the most recent Zora coin buyer on Base: "${(input as { message: string }).message}".`;
+      return buildZoraWritePrompt("message_recent_buyer", input);
     case "set_price_alert":
       return buildZoraWritePrompt("set_price_alert", input);
     case "mint_coin":

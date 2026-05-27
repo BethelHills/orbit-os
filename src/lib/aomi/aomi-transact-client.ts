@@ -15,6 +15,8 @@ function buildZoraPrompt(action: OrbitActionName, params: Record<string, unknown
       return `Prepare Zora creator coin mint on Base: name "${params.name}", symbol "${params.symbol}"${params.creatorAddress ? `, creator ${params.creatorAddress}` : ""}. Do not sign — queue wallet request only.`;
     case "set_price_alert":
       return `Set Zora price alert on Base at ${params.targetPriceEth} ETH${params.coinAddress ? ` for ${params.coinAddress}` : ""}. Do not sign — queue wallet request only.`;
+    case "message_recent_buyer":
+      return `Message the most recent Zora coin buyer on Base with: "${params.message}". Do not sign — queue wallet request only.`;
     default:
       return "";
   }

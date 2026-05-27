@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import { Group, Panel, Separator } from "react-resizable-panels";
 
 import { MobileNav } from "@/components/dashboard/mobile-nav";
+import { DashboardErrorBoundary } from "@/components/dashboard/dashboard-error-boundary";
 import { StatusBar } from "@/components/dashboard/status-bar";
 import { Sidebar } from "@/components/sidebar/sidebar";
 import {
@@ -43,7 +44,9 @@ function MainAssistantPanels({
         className="min-w-0"
       >
         <main className="h-full overflow-y-auto p-3 pb-24 sm:p-4 md:p-5 md:pb-28 lg:p-6">
-          {children}
+          <DashboardErrorBoundary name="Dashboard main">
+            {children}
+          </DashboardErrorBoundary>
         </main>
       </Panel>
 
@@ -57,7 +60,9 @@ function MainAssistantPanels({
         className="min-w-0"
       >
         <aside className="flex h-full min-h-0 flex-col border-l border-white/10 bg-black/25 p-3 md:p-4">
-          {assistant}
+          <DashboardErrorBoundary name="Aomi assistant" compact>
+            {assistant}
+          </DashboardErrorBoundary>
         </aside>
       </Panel>
     </Group>
@@ -89,7 +94,9 @@ export function DashboardShell({ children, assistant }: DashboardShellProps) {
           </MainAssistantPanels>
         ) : (
           <main className="min-h-0 flex-1 overflow-y-auto p-3 pb-24 sm:p-4 md:p-6 md:pb-28">
-            {children}
+            <DashboardErrorBoundary name="Dashboard main">
+              {children}
+            </DashboardErrorBoundary>
           </main>
         )}
 
@@ -105,7 +112,11 @@ export function DashboardShell({ children, assistant }: DashboardShellProps) {
               )}
             >
               <SheetTitle className="sr-only">Aomi Assistant</SheetTitle>
-              <div className="flex h-full min-h-0 flex-col p-4">{assistant}</div>
+              <div className="flex h-full min-h-0 flex-col p-4">
+                <DashboardErrorBoundary name="Aomi assistant" compact>
+                  {assistant}
+                </DashboardErrorBoundary>
+              </div>
             </SheetContent>
           </Sheet>
         )}

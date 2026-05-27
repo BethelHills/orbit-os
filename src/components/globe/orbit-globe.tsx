@@ -7,7 +7,7 @@ import { ArrowRight, Info } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useMounted } from "@/hooks/use-mounted";
 import { cn } from "@/lib/utils";
-import { useActivityLogs, useCoin } from "@/store/orbit-store";
+import { useLiveMetrics } from "@/hooks/use-live-metrics";
 
 const GlobeScene = dynamic(
   () => import("@/components/globe/globe-scene").then((m) => m.GlobeScene),
@@ -77,13 +77,41 @@ export function OrbitGlobe() {
   const isDesktopQuery = useMediaQuery("(min-width: 1024px)");
   const isDesktop = mounted && isDesktopQuery;
   const globeOffset: [number, number] = isDesktop ? [80, 0] : [20, 0];
-  const coin = useCoin();
+  const live = useLiveMetrics();
 
-  const liveNodes = nodes.map((node) =>
-    node.name === "ZORA" && coin.holderCount > 0
-      ? { ...node, count: `${coin.holderCount.toLocaleString()} holders` }
-      : node
-  );
+  const liveNodes = nodes.map((node) => {
+    switch (node.name) {
+      case "ZORA":
+        return {
+          ...node,
+          count: `${live.zora.holderCount.toLocaleString()} holders · ${live.zora.volumeLabel}`,
+        };
+      case "AERODROME":
+        return {
+          ...node,
+          count: `Base · ${live.base.gasPriceLabel}`,
+        };
+      case "LIMITLESS":
+        return {
+          ...node,
+          count: `${live.aomi.successful} Aomi actions`,
+        };
+      case "AVANTIS":
+        return {
+          ...node,
+          count: live.wallet.connected
+            ? `${live.wallet.balanceLabel} wallet`
+            : "Wallet disconnected",
+        };
+      case "MONAD":
+        return {
+          ...node,
+          count: live.wallet.lastTxShort ?? "No wallet txs yet",
+        };
+      default:
+        return node;
+    }
+  });
 
   useEffect(() => {
     const el = containerRef.current;
@@ -173,12 +201,23 @@ function StatsPanel({
   className?: string;
   compact?: boolean;
 }) {
-  const coin = useCoin();
-  const logs = useActivityLogs();
+  const live = useLiveMetrics();
 
-  const agents = (12000 + coin.holderCount * 285).toLocaleString();
-  const actions = (45000 + logs.length * 892).toLocaleString();
-  const dataVolume = `${(2.1 + coin.volume24hEth * 0.02).toFixed(2)}TB`;
+  const holderGrowth =
+    live.analyticsDeltaPct !== null
+      ? `${live.analyticsDeltaPct >= 0 ? "+" : ""}${live.analyticsDeltaPct.toFixed(1)}% activity`
+      : `${live.zora.volumeLabel} 24h vol`;
+
+  const aomiGrowth =
+    live.aomi.pending > 0
+      ? `${live.aomi.pending} pending`
+      : `${live.aomi.total} logged`;
+
+  const walletGrowth = live.wallet.connected
+    ? live.wallet.onBase
+      ? live.base.gasPriceLabel
+      : "Switch to Base"
+    : "Connect wallet";
 
   return (
     <div
@@ -187,11 +226,26 @@ function StatsPanel({
         className
       )}
     >
-      <Stat label="ACTIVE AGENTS" value={agents} growth="+ 24h +8.2%" compact={compact} />
+      <Stat
+        label="ZORA HOLDERS"
+        value={live.zora.holderCount.toLocaleString()}
+        growth={holderGrowth}
+        compact={compact}
+      />
       <Divider compact={compact} />
-      <Stat label="ACTIONS EXECUTED" value={actions} growth="+ 24h +18.6%" compact={compact} />
+      <Stat
+        label="AOMI ACTIONS"
+        value={live.aomi.successful.toLocaleString()}
+        growth={aomiGrowth}
+        compact={compact}
+      />
       <Divider compact={compact} />
-      <Stat label="DATA POINTS PROCESSED" value={dataVolume} growth="+ 24h +32.4%" compact={compact} />
+      <Stat
+        label="WALLET · BASE"
+        value={live.wallet.connected ? live.wallet.balanceLabel : "Offline"}
+        growth={walletGrowth}
+        compact={compact}
+      />
       <button
         type="button"
         className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-violet-500/50 bg-violet-600/15 px-3 py-2 text-[11px] font-semibold text-white shadow-[0_0_25px_rgba(168,85,247,0.28)] transition hover:bg-violet-600/25 sm:mt-4 sm:gap-3 sm:rounded-xl sm:px-4 sm:py-3 sm:text-sm lg:mt-6"

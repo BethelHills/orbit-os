@@ -4,15 +4,15 @@ import { motion } from "framer-motion";
 import { Bell, Sun } from "lucide-react";
 
 import { ConnectWalletButton } from "@/components/wallet/connect-wallet-button";
+import { useLiveMetrics } from "@/hooks/use-live-metrics";
 import { SSR_SAFE_INITIAL } from "@/lib/motion";
-import { useCoin } from "@/store/orbit-store";
 
 export function DashboardHeader() {
-  const coin = useCoin();
-  const tracking =
-    coin.name && (coin.status === "launched" || coin.status === "monitoring")
-      ? `Tracking ${coin.name} on Base — ${coin.holderCount.toLocaleString()} holders synced.`
-      : "Your Aomi command center is live and operational.";
+  const live = useLiveMetrics();
+
+  const tracking = live.wallet.connected
+    ? `Zora ${live.zora.coinName} · ${live.zora.holderCount.toLocaleString()} holders · ${live.aomi.successful} Aomi actions · ${live.wallet.addressShort} on Base.`
+    : `Zora ${live.zora.coinName} · ${live.zora.volumeLabel} vol · ${live.aomi.successful} Aomi actions · connect wallet for Base txs.`;
 
   return (
     <motion.header

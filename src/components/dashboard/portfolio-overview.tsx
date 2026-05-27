@@ -36,7 +36,9 @@ export function PortfolioOverview() {
               {formatUsd(portfolio.totalValueUsd)}
             </p>
             <p className="mt-1 text-sm font-medium text-green-400">
-              +{portfolio.portfolioChangePct.toFixed(1)}%
+              {portfolio.portfolioChangePct > 0
+                ? `+${portfolio.portfolioChangePct.toFixed(1)}%`
+                : "Live from Zora"}
             </p>
           </div>
         </div>
@@ -75,9 +77,11 @@ export function PortfolioOverview() {
           <p className="mt-1 text-3xl font-bold text-white">
             {formatUsd(portfolio.volume24hUsd)}
           </p>
-          <p className="mt-1 text-sm font-medium text-green-400">
-            +{portfolio.volumeChangePct.toFixed(1)}%
-          </p>
+            <p className="mt-1 text-sm font-medium text-green-400">
+              {portfolio.volumeChangePct > 0
+                ? `+${portfolio.volumeChangePct.toFixed(1)}%`
+                : "Live from Zora"}
+            </p>
         </div>
         <ClientChart className="mt-4 h-36 w-full min-h-36">
           <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={144}>

@@ -8,7 +8,7 @@ export type PendingWriteAction<A extends OrbitActionName = OrbitActionName> = {
   costEth: string;
 };
 
-function extractQuotedName(text: string): string | undefined {
+function extractQuotedText(text: string): string | undefined {
   const match = text.match(/"([^"]+)"/) ?? text.match(/'([^']+)'/);
   return match?.[1];
 }
@@ -32,7 +32,7 @@ export function detectWriteAction(message: string): PendingWriteAction | null {
     lower.includes("new zora")
   ) {
     const name =
-      extractQuotedName(message) ??
+      extractQuotedText(message) ??
       lower.match(/called\s+([a-z0-9]+)/i)?.[1] ??
       "MOONJOY";
 
@@ -51,6 +51,24 @@ export function detectWriteAction(message: string): PendingWriteAction | null {
     return {
       action,
       params: { targetPriceEth: extractEthAmount(message) ?? 0.5 },
+      costEth: getOrbitActionCost(action) ?? "0 ETH",
+    };
+  }
+
+  if (
+    lower.includes("message") ||
+    lower.includes("thank") ||
+    lower.includes("dm buyer") ||
+    lower.includes("notify buyer")
+  ) {
+    const action = "message_recent_buyer" as const;
+    const buyerMessage =
+      extractQuotedText(message) ??
+      "Thanks for supporting my creator coin! — Bethel";
+
+    return {
+      action,
+      params: { message: buyerMessage },
       costEth: getOrbitActionCost(action) ?? "0 ETH",
     };
   }

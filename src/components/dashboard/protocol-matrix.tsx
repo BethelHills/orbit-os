@@ -5,68 +5,76 @@ import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { SSR_SAFE_INITIAL } from "@/lib/motion";
 import { ClientChart } from "@/components/charts/client-chart";
 import { ProtocolIcon } from "@/components/dashboard/protocol-icon";
-import { useCoin } from "@/store/orbit-store";
+import { useLiveMetrics } from "@/hooks/use-live-metrics";
 import type { ProtocolName } from "@/lib/protocol-logos";
 
 const protocols: {
   name: ProtocolName;
-  tvl: string;
-  change: string;
-  positive: boolean;
-  spark: number[];
   accent: string;
 }[] = [
-  {
-    name: "Aerodrome",
-    tvl: "$1.23B",
-    change: "+34.6%",
-    positive: true,
-    spark: [8, 12, 10, 18, 22, 20, 28],
-    accent: "#6366f1",
-  },
-  {
-    name: "Zora",
-    tvl: "$892M",
-    change: "+28.7%",
-    positive: true,
-    spark: [12, 18, 15, 22, 28, 24, 32],
-    accent: "#a855f7",
-  },
-  {
-    name: "Limitless",
-    tvl: "$456M",
-    change: "+18.2%",
-    positive: true,
-    spark: [6, 8, 10, 9, 14, 13, 16],
-    accent: "#22d3ee",
-  },
-  {
-    name: "Avantis",
-    tvl: "$312M",
-    change: "+12.4%",
-    positive: true,
-    spark: [10, 11, 10, 12, 11, 13, 14],
-    accent: "#3b82f6",
-  },
+  { name: "Aerodrome", accent: "#6366f1" },
+  { name: "Zora", accent: "#a855f7" },
+  { name: "Limitless", accent: "#22d3ee" },
+  { name: "Avantis", accent: "#3b82f6" },
 ];
 
+function normalizeSpark(values: number[]) {
+  if (!values.length) return [0];
+  const max = Math.max(...values, 1);
+  return values.map((value) => Math.round((value / max) * 32));
+}
+
 export function ProtocolMatrix() {
-  const coin = useCoin();
+  const live = useLiveMetrics();
 
-  const zoraTvl =
-    coin.volume24hEth > 0
-      ? `$${((coin.volume24hEth * 3200) / 1_000_000).toFixed(1)}M`
-      : "$892M";
-  const zoraChange =
-    coin.holderCount > 0
-      ? `${coin.holderCount.toLocaleString()} holders`
-      : "+28.7%";
+  const cards = protocols.map((p) => {
+    if (p.name === "Zora") {
+      return {
+        ...p,
+        subtitle: "24H VOLUME",
+        tvl: live.zoraVolumeDisplay,
+        change: `${live.zora.holderCount.toLocaleString()} holders`,
+        positive: live.zora.holderCount > 0,
+        spark: normalizeSpark(live.zoraSpark),
+      };
+    }
 
-  const cards = protocols.map((p) =>
-    p.name === "Zora"
-      ? { ...p, tvl: zoraTvl, change: zoraChange, positive: true }
-      : p
-  );
+    if (p.name === "Aerodrome") {
+      return {
+        ...p,
+        subtitle: "BASE GAS",
+        tvl: live.base.gasPriceLabel,
+        change: live.base.healthy ? "Base live" : "Wrong network",
+        positive: live.base.healthy,
+        spark: normalizeSpark(live.zoraSpark.slice(-5)),
+      };
+    }
+
+    if (p.name === "Limitless") {
+      return {
+        ...p,
+        subtitle: "AOMI ACTIONS",
+        tvl: String(live.aomi.successful),
+        change:
+          live.aomi.pending > 0
+            ? `${live.aomi.pending} pending`
+            : `${live.aomi.total} logged`,
+        positive: live.aomi.successful > 0,
+        spark: normalizeSpark(
+          Array.from({ length: 7 }, (_, i) => Math.max(live.aomi.successful - (6 - i), 0))
+        ),
+      };
+    }
+
+    return {
+      ...p,
+      subtitle: "WALLET",
+      tvl: live.wallet.connected ? live.wallet.balanceLabel : "Offline",
+      change: live.wallet.lastTxShort ?? "No txs yet",
+      positive: live.wallet.connected,
+      spark: normalizeSpark(live.zoraSpark.slice(-5)),
+    };
+  });
 
   return (
     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -87,9 +95,17 @@ export function ProtocolMatrix() {
             <ProtocolIcon name={p.name} />
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-white">{p.name}</p>
-              <p className="text-[10px] uppercase tracking-wider text-slate-500">TVL</p>
+              <p className="text-[10px] uppercase tracking-wider text-slate-500">
+                {p.subtitle}
+              </p>
             </div>
-            <span className="rounded-full bg-green-500/15 px-2 py-0.5 text-[10px] font-medium text-green-300">
+            <span
+              className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                p.positive
+                  ? "bg-green-500/15 text-green-300"
+                  : "bg-white/10 text-slate-400"
+              }`}
+            >
               {p.change}
             </span>
           </div>
