@@ -1,13 +1,13 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { base } from "wagmi/chains";
 
-export const CHAIN_ID = Number(process.env.NEXT_PUBLIC_CHAIN_ID ?? base.id);
+import { CHAIN_ID, WALLETCONNECT_PROJECT_ID } from "@/lib/env";
+
+export { CHAIN_ID };
 
 export const config = getDefaultConfig({
   appName: "OrbitOS",
-  projectId:
-    process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ??
-    "b3fc880a46f7ab1208f5298a06b6c8f6",
+  projectId: WALLETCONNECT_PROJECT_ID,
   chains: [base],
   ssr: true,
 });

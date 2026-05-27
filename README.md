@@ -25,6 +25,24 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## Environment
+
+Copy `.env.example` to `.env.local` for local development:
+
+```bash
+cp .env.example .env.local
+```
+
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_WALLETCONNECT_ID` | WalletConnect Cloud project ID ([cloud.walletconnect.com](https://cloud.walletconnect.com)) |
+| `NEXT_PUBLIC_CHAIN` | EVM chain id — `8453` for Base |
+| `NODE_ENV` | Set to `production` automatically on Vercel / `next build` |
+
+Production defaults live in `.env.production`. Set `NEXT_PUBLIC_WALLETCONNECT_ID` in the Vercel project dashboard before deploying.
+
+Legacy names `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` and `NEXT_PUBLIC_CHAIN_ID` are still supported.
+
 ## Project structure
 
 ```
