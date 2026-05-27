@@ -4,9 +4,13 @@ import { Bell, Sun } from "lucide-react";
 
 import { ConnectWalletButton } from "@/components/wallet/connect-wallet-button";
 import { useLiveMetrics } from "@/hooks/use-live-metrics";
+import { useMounted } from "@/hooks/use-mounted";
+import { getTimeOfDayGreeting } from "@/lib/greeting";
 
 export function DashboardHeader() {
+  const mounted = useMounted();
   const live = useLiveMetrics();
+  const greeting = mounted ? getTimeOfDayGreeting() : "Hello";
 
   const tracking = !live.mounted
     ? `Zora ${live.zora.coinName} · ${live.zora.volumeLabel} vol · ${live.aomi.successful} Aomi actions · connect wallet for Base txs.`
@@ -17,8 +21,11 @@ export function DashboardHeader() {
   return (
     <header className="mb-4 flex flex-col gap-3 sm:mb-5 sm:gap-4 lg:flex-row lg:items-center lg:justify-between">
       <div className="min-w-0">
-        <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl md:text-[1.65rem]">
-          Good evening, Bethel{" "}
+        <h1
+          className="text-xl font-bold tracking-tight text-white sm:text-2xl md:text-[1.65rem]"
+          suppressHydrationWarning
+        >
+          {greeting}, Bethel{" "}
           <span className="inline-block animate-[wave_2s_ease-in-out_infinite]">👋</span>
         </h1>
         <p className="mt-1 text-xs text-slate-400 sm:text-sm" suppressHydrationWarning>
