@@ -7,6 +7,7 @@ import { useAccount, useSendTransaction } from "wagmi";
 import { executeOrbitAction } from "@/app/actions/execute-orbit-action";
 import { simulateOrbitAction } from "@/app/actions/simulate-orbit-action";
 import { captureOrbitError } from "@/lib/monitoring";
+import type { AomiPendingTransaction } from "@/lib/aomi/aomi-runner";
 import type { PendingWriteAction } from "@/lib/aomi/detect-write-action";
 import type { OrbitActionResult } from "@/lib/aomi/orbit-action-types";
 import type { OrbitSimulationResult } from "@/lib/aomi/simulate-orbit-action";
@@ -109,6 +110,8 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
   const [simulation, setSimulation] = useState<OrbitSimulationResult | null>(
     null
   );
+  const [flowId, setFlowId] = useState<string | null>(null);
+  const [pendingTxs, setPendingTxs] = useState<AomiPendingTransaction[]>([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -127,6 +130,8 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
       setBusy(true);
       setPendingAction(writeAction);
       setSimulation(null);
+      setFlowId(null);
+      setPendingTxs([]);
       callbacks.onUserMessage(userLabel);
 
       try {
@@ -141,9 +146,12 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
         const sim = await simulateOrbitAction({
           action: writeAction.action,
           params: writeAction.params,
+          walletAddress: address,
         });
 
         setSimulation(sim);
+        setFlowId(sim.flowId);
+        setPendingTxs(sim.pendingTxs);
 
         callbacks.onAgentMessage(
           [
@@ -173,7 +181,7 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
         setBusy(false);
       }
     },
-    [busy, callbacks, setFlowPhase]
+    [busy, callbacks, setFlowPhase, address]
   );
 
   const cancelFlow = useCallback(() => {
@@ -182,6 +190,8 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
     setConfirmOpen(false);
     setPendingAction(null);
     setSimulation(null);
+    setFlowId(null);
+    setPendingTxs([]);
     setFlowPhase("idle");
     callbacks.onAgentMessage(
       "Action cancelled. No transaction was submitted."
@@ -208,18 +218,30 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
       setFlowPhase("wallet");
       callbacks.onAgentMessage("Opening wallet for signature…");
 
-      const value =
-        pendingAction.action === "mint_coin"
-          ? parseEther("0.002")
-          : BigInt(0);
+      const stagedTx = pendingTxs.find((tx) => tx.to);
+      let txHash: `0x${string}`;
 
-      const txHash = await sendTransactionAsync({
-        to: address,
-        value,
-      });
+      if (stagedTx?.to) {
+        txHash = await sendTransactionAsync({
+          to: stagedTx.to,
+          data: stagedTx.data,
+          value: BigInt(stagedTx.value ?? "0"),
+          chainId: stagedTx.chainId,
+        });
+      } else {
+        const value =
+          pendingAction.action === "mint_coin"
+            ? parseEther("0.002")
+            : BigInt(0);
+
+        txHash = await sendTransactionAsync({
+          to: address,
+          value,
+        });
+      }
 
       setFlowPhase("executing");
-      callbacks.onAgentMessage("Executing on Base…");
+      callbacks.onAgentMessage("Executing on Base via Aomi…");
 
       const result = await executeOrbitAction({
         action: pendingAction.action,
@@ -227,6 +249,7 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
         confirmed: true,
         walletAddress: address,
         txHash,
+        flowId: flowId ?? undefined,
       });
 
       if (!result.ok || !result.coin) {
@@ -259,14 +282,18 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
       setBusy(false);
       setPendingAction(null);
       setSimulation(null);
+      setFlowId(null);
+      setPendingTxs([]);
     }
   }, [
     address,
     busy,
     callbacks,
+    flowId,
     isConnected,
     openConnectModal,
     pendingAction,
+    pendingTxs,
     sendTransactionAsync,
     setFlowPhase,
   ]);

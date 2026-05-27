@@ -7,7 +7,10 @@ import { simulateOrbitActionCore } from "@/lib/aomi/simulate-orbit-action";
 import type { ExecuteOrbitActionInput, OrbitActionName } from "@/lib/aomi/orbit-action-types";
 
 export async function simulateOrbitAction<A extends OrbitActionName>(
-  input: Pick<ExecuteOrbitActionInput<A>, "action" | "params">
+  input: Pick<ExecuteOrbitActionInput<A>, "action" | "params"> & {
+    flowId?: string;
+    walletAddress?: string;
+  }
 ) {
   return Sentry.withServerActionInstrumentation(
     "simulateOrbitAction",
@@ -15,6 +18,10 @@ export async function simulateOrbitAction<A extends OrbitActionName>(
       headers: await headers(),
       recordResponse: true,
     },
-    async () => simulateOrbitActionCore(input.action, input.params)
+    async () =>
+      simulateOrbitActionCore(input.action, input.params, {
+        flowId: input.flowId,
+        walletAddress: input.walletAddress,
+      })
   );
 }

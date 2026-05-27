@@ -1,7 +1,5 @@
 import {
   buildAomiTransactHint,
-  isAomiTransactEnabled,
-  stageAomiTransactRequest,
 } from "./aomi-transact-client";
 import { buildCoinStateAfterAction } from "./build-coin-state";
 import type {
@@ -15,8 +13,8 @@ import {
   ORBIT_PROTOCOL,
   WRITE_ORBIT_ACTIONS,
 } from "./orbit-action-types";
-import { createInitialCoin, runZoraTool } from "@/lib/zora/executor";
-import { aomiTransactHint } from "@/lib/zora/executor";
+import { chatWithAomiZora, runZoraToolViaAomi } from "./aomi-zora-service";
+import { createInitialCoin, aomiTransactHint } from "@/lib/zora/executor";
 
 function baseResult<A extends OrbitActionName>(
   action: A,
@@ -61,9 +59,16 @@ function buildPreview(
 }
 
 export async function executeOrbitActionCore<A extends OrbitActionName>(
-  input: ExecuteOrbitActionInput<A>
+  input: ExecuteOrbitActionInput<A> & { flowId?: string }
 ): Promise<OrbitActionResult<A>> {
-  const { action, params, confirmed = false, walletAddress, txHash } = input;
+  const {
+    action,
+    params,
+    confirmed = false,
+    walletAddress,
+    txHash,
+    flowId,
+  } = input;
 
   if (WRITE_ORBIT_ACTIONS.has(action) && !confirmed) {
     const preview = buildPreview(action, params);
@@ -83,11 +88,10 @@ export async function executeOrbitActionCore<A extends OrbitActionName>(
   }
 
   const coin = createInitialCoin();
-  const { result } = await runZoraTool(
-    action,
-    params,
-    coin
-  );
+  const { result } = await runZoraToolViaAomi(action, params, coin, {
+    flowId,
+    walletAddress,
+  });
 
   if (!result.ok) {
     return baseResult(action, {
@@ -104,38 +108,16 @@ export async function executeOrbitActionCore<A extends OrbitActionName>(
       ...(txHash ? { txHash } : {}),
     };
 
-    if (isAomiTransactEnabled()) {
-      const staged = await stageAomiTransactRequest(
-        action,
-        params as Record<string, unknown>,
-        walletAddress
-      );
-
-      return baseResult(action, {
-        ok: true,
-        status: staged.staged ? "staged" : "success",
-        message: txHash
-          ? `Transaction confirmed on Base.`
-          : staged.staged
-            ? "Wallet request staged via aomi-transact. Simulate and sign with aomi tx simulate / aomi tx sign."
-            : result.message,
-        data: enrichedData as OrbitActionResult<A>["data"],
-        txHash,
-        coin: coinState,
-        aomiHint: staged.hint ?? aomiTransactHint(action),
-      });
-    }
-
     return baseResult(action, {
       ok: true,
-      status: "success",
+      status: txHash ? "success" : "staged",
       message: txHash
-        ? `Transaction confirmed on Base.`
-        : `${result.message} Set AOMI_ENABLED=1 to stage wallet requests via aomi-transact.`,
+        ? "Transaction confirmed on Base via Aomi."
+        : result.message,
       data: enrichedData as OrbitActionResult<A>["data"],
       txHash,
       coin: coinState,
-      aomiHint: aomiTransactHint(action),
+      aomiHint: buildAomiTransactHint(action, params as Record<string, unknown>),
     });
   }
 
@@ -145,4 +127,12 @@ export async function executeOrbitActionCore<A extends OrbitActionName>(
     message: result.message,
     data: result.data as OrbitActionResult<A>["data"],
   });
+}
+
+export async function processAomiMessage(
+  message: string,
+  walletAddress?: string
+) {
+  const { reply } = await chatWithAomiZora(message, walletAddress);
+  return { reply };
 }

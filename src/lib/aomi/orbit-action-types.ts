@@ -37,6 +37,7 @@ export type ExecuteOrbitActionInput<A extends OrbitActionName = OrbitActionName>
     confirmed?: boolean;
     walletAddress?: string;
     txHash?: string;
+    flowId?: string;
   };
 
 export type OrbitActionStatus =

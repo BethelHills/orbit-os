@@ -17,7 +17,8 @@ export interface ChatResponse {
 export async function processCreatorMessage(
   message: string,
   coin: CreatorCoin = createInitialCoin(),
-  priorLogs: AgentLogEntry[] = []
+  priorLogs: AgentLogEntry[] = [],
+  options?: { walletAddress?: string; flowId?: string }
 ): Promise<ChatResponse> {
   const intent = parseCreatorIntent(message);
   const logs: AgentLogEntry[] = [...priorLogs];
@@ -44,7 +45,11 @@ export async function processCreatorMessage(
     const { result, coin: updated } = await runZoraTool(
       step.name,
       step.input,
-      state
+      state,
+      {
+        flowId: options?.flowId,
+        walletAddress: options?.walletAddress,
+      }
     );
     state = updated;
     toolMessages.push(result.message);

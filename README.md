@@ -47,6 +47,14 @@ Legacy names `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` and `NEXT_PUBLIC_CHAIN_ID` a
 
 Sentry is integrated via `@sentry/nextjs`. Set `NEXT_PUBLIC_SENTRY_DSN` in Vercel to enable error and performance monitoring. Optional CI vars: `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN` (source maps).
 
+## Aomi execution
+
+OrbitOS uses `@aomi-labs/client` (aomi-transact) for Zora actions on Base:
+
+- **Read chat** (holders, analytics, buyers) → Aomi CLI read prompts
+- **Write flow** (launch, alerts) → Aomi prepare → fork simulate → confirm → wallet signs staged calldata
+- **Mock fallback** → set `AOMI_USE_MOCK=1` only for local dev without the CLI
+
 ## Project structure
 
 ```

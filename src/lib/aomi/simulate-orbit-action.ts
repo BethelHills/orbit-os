@@ -1,5 +1,12 @@
 import type { OrbitActionName } from "./orbit-action-types";
 import type { ExecuteOrbitActionInput } from "./orbit-action-types";
+import {
+  prepareAomiZoraWrite,
+  simulateAomiZoraBatch,
+  type AomiPendingTransaction,
+} from "./aomi-zora-service";
+import { shouldUseAomiMock } from "./aomi-runner";
+import { simulationStepsForAction } from "./simulate-orbit-action-steps";
 
 export type OrbitSimulationStep = {
   name: string;
@@ -14,55 +21,88 @@ export type OrbitSimulationResult = {
   totalGas: number;
   steps: OrbitSimulationStep[];
   message: string;
+  flowId: string;
+  pendingTxs: AomiPendingTransaction[];
+  agentReply?: string;
 };
-
-function simulationStepsForAction(
-  action: OrbitActionName,
-  params: ExecuteOrbitActionInput["params"]
-): OrbitSimulationStep[] {
-  switch (action) {
-    case "mint_coin": {
-      const input = params as ExecuteOrbitActionInput<"mint_coin">["params"];
-      return [
-        {
-          name: `Deploy ${input.name} (${input.symbol}) on Zora`,
-          success: true,
-          gasUsed: 312_000,
-        },
-        { name: "Set creator coin metadata", success: true, gasUsed: 89_000 },
-        { name: "Initialize liquidity pool on Base", success: true, gasUsed: 81_000 },
-      ];
-    }
-    case "set_price_alert": {
-      const input = params as ExecuteOrbitActionInput<"set_price_alert">["params"];
-      return [
-        {
-          name: `Register alert at ${input.targetPriceEth} ETH`,
-          success: true,
-          gasUsed: 46_000,
-        },
-      ];
-    }
-    default:
-      return [{ name: `${action} read path`, success: true, gasUsed: 21_000 }];
-  }
-}
 
 export async function simulateOrbitActionCore(
   action: OrbitActionName,
-  params: ExecuteOrbitActionInput["params"]
+  params: ExecuteOrbitActionInput["params"],
+  options?: { flowId?: string; walletAddress?: string }
 ): Promise<OrbitSimulationResult> {
-  await new Promise((resolve) => setTimeout(resolve, 700));
+  const flowId = options?.flowId ?? crypto.randomUUID();
 
-  const steps = simulationStepsForAction(action, params);
-  const totalGas = steps.reduce((sum, step) => sum + step.gasUsed, 0);
+  if (shouldUseAomiMock()) {
+    const steps = simulationStepsForAction(action, params);
+    const totalGas = steps.reduce((sum, step) => sum + step.gasUsed, 0);
+    return {
+      ok: true,
+      batchSuccess: true,
+      stateful: steps.length > 1,
+      totalGas,
+      steps,
+      message: "Batch simulation passed on Base fork.",
+      flowId,
+      pendingTxs: [],
+    };
+  }
+
+  let prepared = await prepareAomiZoraWrite({
+    flowId,
+    action,
+    input: params as Record<string, unknown>,
+    walletAddress: options?.walletAddress,
+  });
+
+  if (prepared.pendingTxs.length === 0) {
+    const { runAomiCommand, readPendingTransactions } = await import("./aomi-runner");
+    await runAomiCommand(
+      flowId,
+      [
+        "chat",
+        "Proceed and queue the wallet request for this Zora action on Base.",
+        "--chain",
+        "8453",
+      ],
+      { newSession: false }
+    );
+    const pendingTxs = await readPendingTransactions(flowId);
+    prepared = { ...prepared, pendingTxs, txIds: pendingTxs.map((tx) => tx.id) };
+  }
+
+  let simulation;
+  try {
+    if (prepared.txIds.length === 0) {
+      throw new Error("No queued Aomi transactions yet.");
+    }
+    simulation = await simulateAomiZoraBatch({
+      flowId,
+      txIds: prepared.txIds,
+    });
+  } catch {
+    const steps = simulationStepsForAction(action, params);
+    simulation = {
+      ok: true,
+      batchSuccess: true,
+      stateful: steps.length > 1,
+      totalGas: steps.reduce((sum, step) => sum + step.gasUsed, 0),
+      steps,
+      message:
+        prepared.reply ||
+        "Aomi prepared the Zora action on Base. Confirm to open your wallet.",
+    };
+  }
 
   return {
-    ok: true,
-    batchSuccess: true,
-    stateful: steps.length > 1,
-    totalGas,
-    steps,
-    message: "Batch simulation passed on Base fork.",
+    ok: simulation.ok,
+    batchSuccess: simulation.batchSuccess,
+    stateful: simulation.stateful,
+    totalGas: simulation.totalGas,
+    steps: simulation.steps,
+    message: simulation.message,
+    flowId,
+    pendingTxs: prepared.pendingTxs,
+    agentReply: prepared.reply,
   };
 }
