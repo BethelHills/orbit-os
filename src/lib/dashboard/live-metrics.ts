@@ -87,7 +87,8 @@ export function deriveLiveMetrics(input: {
 
   const balanceEth = weiToEth(wallet.balanceWei);
   const gasPriceGwei = weiToGwei(wallet.gasPriceWei);
-  const onBase = wallet.chainId === ZORA_CHAIN_ID;
+  const onBase =
+    wallet.connected && wallet.chainId === ZORA_CHAIN_ID;
   const volume24hUsd = coin.volume24hEth * ETH_USD;
 
   return {
@@ -120,11 +121,15 @@ export function deriveLiveMetrics(input: {
     },
     base: {
       chainId: wallet.chainId ?? ZORA_CHAIN_ID,
-      chainName: onBase ? "Base" : "Wrong network",
+      chainName: !wallet.connected
+        ? "Base"
+        : onBase
+          ? "Base"
+          : "Wrong network",
       gasPriceGwei,
       gasPriceLabel:
         gasPriceGwei !== null ? `${gasPriceGwei.toFixed(4)} gwei` : "—",
-      healthy: onBase || !wallet.connected,
+      healthy: !wallet.connected || onBase,
     },
     analyticsDeltaPct: analyticsChangePct(analytics),
   };

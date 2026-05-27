@@ -25,6 +25,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useWalletDisplayName, useWalletInitials } from "@/hooks/use-wallet-display";
+import { useMounted } from "@/hooks/use-mounted";
 import { cn } from "@/lib/utils";
 import { useAccount } from "wagmi";
 
@@ -44,9 +45,12 @@ const links = [
 const EARLY_FORGE_END = new Date("2026-06-01T00:00:00Z");
 
 function useCountdown(target: Date) {
+  const mounted = useMounted();
   const [time, setTime] = useState({ d: 0, h: 0, m: 0, s: 0 });
 
   useEffect(() => {
+    if (!mounted) return;
+
     const tick = () => {
       const diff = Math.max(0, target.getTime() - Date.now());
       setTime({
@@ -59,7 +63,7 @@ function useCountdown(target: Date) {
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [target]);
+  }, [mounted, target]);
 
   return time;
 }
@@ -70,10 +74,12 @@ interface SidebarContentProps {
 }
 
 export function SidebarContent({ onNavigate, collapsed = false }: SidebarContentProps) {
+  const mounted = useMounted();
   const countdown = useCountdown(EARLY_FORGE_END);
   const { isConnected } = useAccount();
   const walletAddress = useWalletDisplayName();
   const walletInitials = useWalletInitials();
+  const connected = mounted && isConnected;
 
   const navItems = links.map((item, index) => {
     const Icon = item.icon;
@@ -212,7 +218,7 @@ export function SidebarContent({ onNavigate, collapsed = false }: SidebarContent
               </div>
             </TooltipTrigger>
             <TooltipContent side="right">
-              {walletAddress} · {isConnected ? "Connected" : "Not connected"}
+              {walletAddress} · {connected ? "Connected" : "Not connected"}
             </TooltipContent>
           </Tooltip>
         ) : (
@@ -226,10 +232,10 @@ export function SidebarContent({ onNavigate, collapsed = false }: SidebarContent
                 <span
                   className={cn(
                     "h-1.5 w-1.5 rounded-full shadow-[0_0_6px_rgba(74,222,128,0.8)]",
-                    isConnected ? "bg-green-400" : "bg-slate-500"
+                    connected ? "bg-green-400" : "bg-slate-500"
                   )}
                 />
-                {isConnected ? "Connected" : "Not connected"}
+                {connected ? "Connected" : "Not connected"}
               </p>
             </div>
           </div>

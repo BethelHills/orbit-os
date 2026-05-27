@@ -23,9 +23,16 @@ interface Web3ProviderProps {
 
 export function Web3Provider({ children }: Web3ProviderProps) {
   return (
-    <WagmiProvider config={config}>
+    <WagmiProvider config={config} reconnectOnMount>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider theme={orbitTheme} modalSize="compact">
+        <RainbowKitProvider
+          theme={orbitTheme}
+          modalSize="compact"
+          appInfo={{
+            appName: "OrbitOS",
+            learnMoreUrl: "https://orbit-os-rho.vercel.app",
+          }}
+        >
           {children}
         </RainbowKitProvider>
       </QueryClientProvider>

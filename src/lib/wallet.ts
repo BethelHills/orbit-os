@@ -1,3 +1,5 @@
+"use client";
+
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { base } from "wagmi/chains";
 
