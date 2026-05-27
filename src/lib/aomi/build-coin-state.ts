@@ -37,7 +37,10 @@ export async function buildCoinStateAfterAction(
     state = pool.coin;
 
     const holders = await runZoraTool("get_holder_count", {}, state);
-    return holders.coin;
+    state = holders.coin;
+
+    const volume = await runZoraTool("get_24h_volume", {}, state);
+    return volume.coin;
   }
 
   if (action === "set_price_alert") {

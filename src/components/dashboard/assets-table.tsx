@@ -13,61 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-const assets = [
-  {
-    name: "VITALIK",
-    network: "Base",
-    price: "$0.042",
-    change: "+12.4%",
-    positive: true,
-    holdings: "24,500",
-    value: "$1,029",
-    spark: [4, 6, 5, 8, 7, 9, 10],
-    accent: "#6366f1",
-    icon: "V",
-    iconBg: "from-indigo-500 to-purple-600",
-  },
-  {
-    name: "BASECAT",
-    network: "Base",
-    price: "$0.018",
-    change: "+8.7%",
-    positive: true,
-    holdings: "52,000",
-    value: "$936",
-    spark: [3, 4, 5, 4, 6, 5, 7],
-    accent: "#3b82f6",
-    icon: "B",
-    iconBg: "from-blue-500 to-cyan-600",
-  },
-  {
-    name: "MOONJOY",
-    network: "Zora",
-    price: "$0.2",
-    change: "+28.7%",
-    positive: true,
-    holdings: "1.00",
-    value: "$640",
-    spark: [6, 8, 10, 12, 14, 13, 16],
-    accent: "#a855f7",
-    icon: "M",
-    iconBg: "from-purple-500 to-violet-600",
-  },
-  {
-    name: "AVNT",
-    network: "Avantis",
-    price: "$1.24",
-    change: "-2.1%",
-    positive: false,
-    holdings: "320",
-    value: "$397",
-    spark: [8, 7, 6, 7, 5, 6, 5],
-    accent: "#22d3ee",
-    icon: "A",
-    iconBg: "from-cyan-500 to-teal-600",
-  },
-];
+import { useAssets } from "@/store/orbit-store";
 
 function MiniSparkline({ data, accent }: { data: number[]; accent: string }) {
   return (
@@ -89,6 +35,8 @@ function MiniSparkline({ data, accent }: { data: number[]; accent: string }) {
 }
 
 export function AssetsTable() {
+  const assets = useAssets();
+
   return (
     <motion.section
       initial={SSR_SAFE_INITIAL}
@@ -117,8 +65,10 @@ export function AssetsTable() {
         <TableBody>
           {assets.map((row) => (
             <TableRow
-              key={row.name}
-              className="border-white/5 hover:bg-white/[0.02]"
+              key={row.symbol}
+              className={`border-white/5 hover:bg-white/[0.02] ${
+                row.isPrimary ? "bg-purple-500/5" : ""
+              }`}
             >
               <TableCell>
                 <div className="flex items-center gap-2.5">
@@ -133,16 +83,16 @@ export function AssetsTable() {
                   </div>
                 </div>
               </TableCell>
-              <TableCell className="text-slate-300">{row.price}</TableCell>
+              <TableCell className="text-slate-300">{row.priceLabel}</TableCell>
               <TableCell
                 className={row.positive ? "text-green-300" : "text-red-300"}
               >
-                {row.change}
+                {row.changeLabel}
               </TableCell>
               <TableCell className="hidden text-slate-300 md:table-cell">
                 {row.holdings}
               </TableCell>
-              <TableCell className="font-medium text-white">{row.value}</TableCell>
+              <TableCell className="font-medium text-white">{row.valueLabel}</TableCell>
               <TableCell className="text-right">
                 <MiniSparkline data={row.spark} accent={row.accent} />
               </TableCell>

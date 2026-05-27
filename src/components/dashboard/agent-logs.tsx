@@ -1,9 +1,9 @@
 "use client";
 
-import { useOrbitStore } from "@/store/orbit-store";
+import { useActivityLogs } from "@/store/orbit-store";
 
 export function AgentLogs() {
-  const logs = useOrbitStore((s) => s.logs);
+  const logs = useActivityLogs();
 
   return (
     <section className="glass rounded-3xl p-6">
@@ -11,7 +11,7 @@ export function AgentLogs() {
       <h2 className="text-2xl font-bold mt-1">Live Execution Log</h2>
 
       <div className="mt-6 space-y-4 max-h-[360px] overflow-y-auto">
-        {logs.map((log, index) => (
+        {logs.slice(0, 8).map((log) => (
           <div key={log.id} className="flex gap-3">
             <div
               className={`h-7 w-7 shrink-0 rounded-full flex items-center justify-center text-xs ${
@@ -28,7 +28,8 @@ export function AgentLogs() {
             <div>
               <p className="text-sm text-slate-200">{log.message}</p>
               <p className="text-xs text-slate-500">
-                {log.tool ? `${log.tool} · ` : ""}Step {index + 1}
+                {log.tool ? `${log.tool} · ` : ""}
+                {log.timestamp || "Just now"}
               </p>
             </div>
           </div>

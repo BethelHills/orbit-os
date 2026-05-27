@@ -11,28 +11,15 @@ import {
 
 import { SSR_SAFE_INITIAL } from "@/lib/motion";
 import { ClientChart } from "@/components/charts/client-chart";
+import { usePortfolio } from "@/store/orbit-store";
 
-const portfolioData = [
-  { t: "Mon", v: 14200 },
-  { t: "Tue", v: 15100 },
-  { t: "Wed", v: 15800 },
-  { t: "Thu", v: 16200 },
-  { t: "Fri", v: 17100 },
-  { t: "Sat", v: 17800 },
-  { t: "Sun", v: 18450 },
-];
-
-const volumeData = [
-  { t: "Mon", v: 4200 },
-  { t: "Tue", v: 5100 },
-  { t: "Wed", v: 6800 },
-  { t: "Thu", v: 5900 },
-  { t: "Fri", v: 7200 },
-  { t: "Sat", v: 8100 },
-  { t: "Sun", v: 7892 },
-];
+function formatUsd(value: number) {
+  return `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
 
 export function PortfolioOverview() {
+  const portfolio = usePortfolio();
+
   return (
     <section className="grid grid-cols-1 gap-3 lg:grid-cols-2">
       <motion.div
@@ -45,13 +32,17 @@ export function PortfolioOverview() {
             <p className="text-[10px] uppercase tracking-[0.15em] text-slate-500">
               Total Portfolio Value
             </p>
-            <p className="mt-1 text-3xl font-bold text-white">$18,450.75</p>
-            <p className="mt-1 text-sm font-medium text-green-400">+16.2%</p>
+            <p className="mt-1 text-3xl font-bold text-white">
+              {formatUsd(portfolio.totalValueUsd)}
+            </p>
+            <p className="mt-1 text-sm font-medium text-green-400">
+              +{portfolio.portfolioChangePct.toFixed(1)}%
+            </p>
           </div>
         </div>
         <ClientChart className="mt-4 h-36 w-full min-h-36">
           <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={144}>
-            <AreaChart data={portfolioData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+            <AreaChart data={portfolio.history} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="portfolioGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#a855f7" stopOpacity={0.5} />
@@ -81,12 +72,16 @@ export function PortfolioOverview() {
           <p className="text-[10px] uppercase tracking-[0.15em] text-slate-500">
             24H Volume
           </p>
-          <p className="mt-1 text-3xl font-bold text-white">$7,892.34</p>
-          <p className="mt-1 text-sm font-medium text-green-400">+22.4%</p>
+          <p className="mt-1 text-3xl font-bold text-white">
+            {formatUsd(portfolio.volume24hUsd)}
+          </p>
+          <p className="mt-1 text-sm font-medium text-green-400">
+            +{portfolio.volumeChangePct.toFixed(1)}%
+          </p>
         </div>
         <ClientChart className="mt-4 h-36 w-full min-h-36">
           <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={144}>
-            <BarChart data={volumeData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+            <BarChart data={portfolio.volumeHistory} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
               <Bar dataKey="v" fill="#3b82f6" radius={[4, 4, 0, 0]} opacity={0.85} />
             </BarChart>
           </ResponsiveContainer>

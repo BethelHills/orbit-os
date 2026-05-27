@@ -10,7 +10,7 @@ import {
   Shield,
 } from "lucide-react";
 import { SSR_SAFE_INITIAL } from "@/lib/motion";
-import { useOrbitStore } from "@/store/orbit-store";
+import { useActivityLogs } from "@/store/orbit-store";
 
 const iconMap: Record<string, typeof Bell> = {
   holder: UserPlus,
@@ -27,7 +27,7 @@ function getIcon(kind?: string) {
 }
 
 export function ActivityFeed() {
-  const logs = useOrbitStore((s) => s.logs);
+  const logs = useActivityLogs();
 
   return (
     <section className="glass mt-3 flex min-h-0 flex-1 flex-col rounded-2xl p-4">
@@ -44,7 +44,7 @@ export function ActivityFeed() {
       </div>
 
       <div className="mt-3 min-h-0 flex-1 space-y-2 overflow-y-auto">
-        {[...logs].reverse().slice(0, 8).map((log, i) => {
+        {logs.slice(0, 8).map((log, i) => {
           const Icon = getIcon(log.kind);
           return (
             <motion.div

@@ -96,12 +96,18 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
   }, []);
 
   const onTransactionComplete = useCallback(
-    (payload: {
+    ({
+      action,
+      log,
+      coin,
+      txHash,
+    }: {
+      action: "mint_coin" | "set_price_alert";
       log: AgentLogEntry;
       coin: Parameters<typeof applyTransactionResult>[0]["coin"];
       txHash: string;
     }) => {
-      applyTransactionResult(payload);
+      applyTransactionResult({ action, log, coin, txHash });
     },
     [applyTransactionResult]
   );

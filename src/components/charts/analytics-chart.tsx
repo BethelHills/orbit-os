@@ -8,11 +8,11 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useOrbitStore } from "@/store/orbit-store";
+import { useAnalytics, useCoin } from "@/store/orbit-store";
 
 export function AnalyticsChart() {
-  const data = useOrbitStore((s) => s.analytics);
-  const coin = useOrbitStore((s) => s.coin);
+  const data = useAnalytics();
+  const coin = useCoin();
   const latest = data[data.length - 1]?.value ?? 0;
   const first = data[0]?.value ?? 1;
   const change = (((latest - first) / first) * 100).toFixed(1);

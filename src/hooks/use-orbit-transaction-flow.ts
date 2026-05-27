@@ -25,6 +25,7 @@ type FlowCallbacks = {
   onUserMessage: (text: string) => void;
   onPhaseChange?: (phase: TransactionFlowPhase) => void;
   onTransactionComplete: (payload: {
+    action: "mint_coin" | "set_price_alert";
     result: OrbitActionResult;
     log: AgentLogEntry;
     coin: CreatorCoin;
@@ -233,6 +234,7 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
       const log = buildActivityLog(pendingAction, txHash);
 
       callbacks.onTransactionComplete({
+        action: pendingAction.action as "mint_coin" | "set_price_alert",
         result,
         log,
         coin: result.coin,

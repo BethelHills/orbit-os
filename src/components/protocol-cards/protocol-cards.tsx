@@ -1,6 +1,10 @@
 "use client";
 
-import { useOrbitStore } from "@/store/orbit-store";
+import { useOrbitStore, useLastTxHash } from "@/store/orbit-store";
+
+function shortHash(hash: string) {
+  return `${hash.slice(0, 8)}…${hash.slice(-6)}`;
+}
 
 const protocols = [
   {
@@ -35,6 +39,7 @@ const protocols = [
 
 export function ProtocolCards() {
   const coin = useOrbitStore((s) => s.coin);
+  const lastTxHash = useLastTxHash();
 
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -75,6 +80,12 @@ export function ProtocolCards() {
                 <p className="text-slate-500">Price</p>
                 <p className="text-white font-medium">{coin.initialPriceEth ?? "—"} ETH</p>
               </div>
+              {lastTxHash && (
+                <div className="col-span-2 rounded-xl bg-black/30 p-2">
+                  <p className="text-slate-500">Latest tx</p>
+                  <p className="font-mono text-[11px] text-purple-200">{shortHash(lastTxHash)}</p>
+                </div>
+              )}
             </div>
           )}
         </div>
