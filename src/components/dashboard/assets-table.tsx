@@ -51,7 +51,8 @@ export function AssetsTable() {
         <h2 className="text-lg font-semibold text-white">Portfolio Holdings</h2>
       </div>
 
-      <Table>
+      <div className="overflow-x-auto">
+        <Table>
         <TableHeader>
           <TableRow className="border-white/5 hover:bg-transparent">
             <TableHead className="text-slate-500">Asset</TableHead>
@@ -99,7 +100,8 @@ export function AssetsTable() {
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+        </Table>
+      </div>
 
       <div className="border-t border-white/5 p-4">
         <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-purple-500/25 bg-purple-500/10 py-3 text-sm font-medium text-purple-200 transition hover:bg-purple-500/20">

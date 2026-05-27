@@ -7,6 +7,7 @@ import { ArrowRight, Info } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useMounted } from "@/hooks/use-mounted";
 import { cn } from "@/lib/utils";
+import { useActivityLogs, useCoin } from "@/store/orbit-store";
 
 const GlobeScene = dynamic(
   () => import("@/components/globe/globe-scene").then((m) => m.GlobeScene),
@@ -76,6 +77,13 @@ export function OrbitGlobe() {
   const isDesktopQuery = useMediaQuery("(min-width: 1024px)");
   const isDesktop = mounted && isDesktopQuery;
   const globeOffset: [number, number] = isDesktop ? [80, 0] : [20, 0];
+  const coin = useCoin();
+
+  const liveNodes = nodes.map((node) =>
+    node.name === "ZORA" && coin.holderCount > 0
+      ? { ...node, count: `${coin.holderCount.toLocaleString()} holders` }
+      : node
+  );
 
   useEffect(() => {
     const el = containerRef.current;
@@ -95,7 +103,7 @@ export function OrbitGlobe() {
   }, []);
 
   return (
-    <section className="relative min-h-[620px] overflow-hidden rounded-2xl border border-violet-500/20 bg-[#050510] shadow-[0_0_70px_rgba(124,58,237,0.18)] sm:min-h-[680px] sm:rounded-[28px] lg:min-h-[430px]">
+    <section className="relative min-h-[560px] overflow-hidden rounded-2xl border border-violet-500/20 bg-[#050510] shadow-[0_0_70px_rgba(124,58,237,0.18)] sm:min-h-[640px] sm:rounded-[28px] lg:min-h-[430px]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(124,58,237,0.22),transparent_35%),radial-gradient(circle_at_45%_70%,rgba(37,99,235,0.16),transparent_30%)] lg:bg-[radial-gradient(circle_at_60%_50%,rgba(124,58,237,0.22),transparent_35%),radial-gradient(circle_at_45%_70%,rgba(37,99,235,0.16),transparent_30%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(124,58,237,0.25),transparent_45%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(168,85,247,0.8)_1px,transparent_1px)] opacity-60 [background-size:34px_34px]" />
@@ -111,7 +119,7 @@ export function OrbitGlobe() {
 
       <div
         ref={containerRef}
-        className="relative z-10 mx-auto mt-2 h-[480px] w-full max-w-full touch-none sm:mt-3 sm:h-[540px] lg:mt-0 lg:h-[430px]"
+        className="relative z-10 mx-auto mt-2 h-[440px] w-full max-w-full touch-none sm:mt-3 sm:h-[500px] lg:mt-0 lg:h-[430px]"
       >
         {dims ? (
           <GlobeScene
@@ -150,7 +158,7 @@ export function OrbitGlobe() {
           className="pointer-events-none absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/20 blur-3xl sm:h-48 sm:w-48 lg:h-64 lg:w-64"
         />
 
-        {nodes.map((node) => (
+        {liveNodes.map((node) => (
           <Node key={node.name} {...node} isDesktop={isDesktop} />
         ))}
       </div>
@@ -165,6 +173,13 @@ function StatsPanel({
   className?: string;
   compact?: boolean;
 }) {
+  const coin = useCoin();
+  const logs = useActivityLogs();
+
+  const agents = (12000 + coin.holderCount * 285).toLocaleString();
+  const actions = (45000 + logs.length * 892).toLocaleString();
+  const dataVolume = `${(2.1 + coin.volume24hEth * 0.02).toFixed(2)}TB`;
+
   return (
     <div
       className={cn(
@@ -172,11 +187,11 @@ function StatsPanel({
         className
       )}
     >
-      <Stat label="ACTIVE AGENTS" value="12,458" growth="+ 24h +8.2%" compact={compact} />
+      <Stat label="ACTIVE AGENTS" value={agents} growth="+ 24h +8.2%" compact={compact} />
       <Divider compact={compact} />
-      <Stat label="ACTIONS EXECUTED" value="47,892" growth="+ 24h +18.6%" compact={compact} />
+      <Stat label="ACTIONS EXECUTED" value={actions} growth="+ 24h +18.6%" compact={compact} />
       <Divider compact={compact} />
-      <Stat label="DATA POINTS PROCESSED" value="2.14TB" growth="+ 24h +32.4%" compact={compact} />
+      <Stat label="DATA POINTS PROCESSED" value={dataVolume} growth="+ 24h +32.4%" compact={compact} />
       <button
         type="button"
         className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-violet-500/50 bg-violet-600/15 px-3 py-2 text-[11px] font-semibold text-white shadow-[0_0_25px_rgba(168,85,247,0.28)] transition hover:bg-violet-600/25 sm:mt-4 sm:gap-3 sm:rounded-xl sm:px-4 sm:py-3 sm:text-sm lg:mt-6"

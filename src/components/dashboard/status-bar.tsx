@@ -3,8 +3,17 @@
 import { Activity, Bot, Fuel, ShieldCheck } from "lucide-react";
 import type { ViewportTier } from "@/hooks/use-viewport-tier";
 import { cn } from "@/lib/utils";
+import { useCoin } from "@/store/orbit-store";
+import type { CoinStatus } from "@/lib/zora/types";
 
-const segments = [
+const statusCopy: Record<CoinStatus, string> = {
+  idle: "All systems operational",
+  draft: "Coin draft staged",
+  launched: "Coin live on Base",
+  monitoring: "Monitoring active",
+};
+
+const baseSegments = [
   {
     icon: ShieldCheck,
     label: "Base Network",
@@ -43,6 +52,16 @@ export function StatusBar({
   tier = "mobile",
   hasAssistantPanel = false,
 }: StatusBarProps) {
+  const coin = useCoin();
+
+  const segments = baseSegments.map((seg) =>
+    seg.label === "Aomi Status"
+      ? { ...seg, value: statusCopy[coin.status] }
+      : seg.label === "Agent Mode" && coin.name
+        ? { ...seg, value: `${coin.name} · Autonomous` }
+        : seg
+  );
+
   return (
     <footer
       className={cn(

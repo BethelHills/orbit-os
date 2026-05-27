@@ -52,12 +52,21 @@ export const useOrbitStore = create<OrbitState>((set, get) => ({
   lastTxHash: null,
 
   applyChatResponse: (data) => {
-    set({
-      logs: data.logs,
-      coin: data.coin,
-      analytics: data.analytics,
-      assets: buildAssets(data.coin),
-      portfolio: computePortfolio(data.coin, "mint_coin"),
+    set((s) => {
+      const coin = mergeCoinState(s.coin, data.coin);
+      const incomingIds = new Set(data.logs.map((log) => log.id));
+      const mergedLogs = [
+        ...data.logs,
+        ...s.logs.filter((log) => !incomingIds.has(log.id)),
+      ].slice(0, 12);
+
+      return {
+        coin,
+        analytics: data.analytics.length ? data.analytics : s.analytics,
+        portfolio: computePortfolio(coin, "mint_coin"),
+        assets: buildAssets(coin),
+        logs: mergedLogs,
+      };
     });
   },
 

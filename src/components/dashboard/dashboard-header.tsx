@@ -5,8 +5,15 @@ import { Bell, Sun } from "lucide-react";
 
 import { ConnectWalletButton } from "@/components/wallet/connect-wallet-button";
 import { SSR_SAFE_INITIAL } from "@/lib/motion";
+import { useCoin } from "@/store/orbit-store";
 
 export function DashboardHeader() {
+  const coin = useCoin();
+  const tracking =
+    coin.name && (coin.status === "launched" || coin.status === "monitoring")
+      ? `Tracking ${coin.name} on Base — ${coin.holderCount.toLocaleString()} holders synced.`
+      : "Your Aomi command center is live and operational.";
+
   return (
     <motion.header
       initial={SSR_SAFE_INITIAL}
@@ -18,9 +25,7 @@ export function DashboardHeader() {
           Good evening, Bethel{" "}
           <span className="inline-block animate-[wave_2s_ease-in-out_infinite]">👋</span>
         </h1>
-        <p className="mt-1 text-xs text-slate-400 sm:text-sm">
-          Your Aomi command center is live and operational.
-        </p>
+        <p className="mt-1 text-xs text-slate-400 sm:text-sm">{tracking}</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">

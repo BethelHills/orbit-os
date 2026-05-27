@@ -8,6 +8,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { ClientChart } from "@/components/charts/client-chart";
 import { useAnalytics, useCoin } from "@/store/orbit-store";
 
 export function AnalyticsChart() {
@@ -18,20 +19,20 @@ export function AnalyticsChart() {
   const change = (((latest - first) / first) * 100).toFixed(1);
 
   return (
-    <section className="glass rounded-3xl p-6">
-      <div className="flex items-center justify-between">
-        <div>
+    <section className="glass rounded-2xl p-4 sm:rounded-3xl sm:p-6">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
           <p className="text-sm text-purple-300">Analytics</p>
-          <h2 className="text-2xl font-bold mt-1">
+          <h2 className="mt-1 truncate text-xl font-bold sm:text-2xl">
             {coin.name ? `${coin.name} Growth` : "Creator Coin Growth"}
           </h2>
         </div>
 
-        <span className="text-green-300 text-sm">+{change}% today</span>
+        <span className="shrink-0 text-sm text-green-300">+{change}% today</span>
       </div>
 
-      <div className="h-72 mt-6 min-h-[288px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+      <ClientChart className="mt-4 h-56 min-h-[224px] w-full sm:mt-6 sm:h-72 sm:min-h-[288px]">
+        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
           <AreaChart data={data}>
             <XAxis dataKey="time" stroke="#64748b" />
             <YAxis stroke="#64748b" />
@@ -51,7 +52,7 @@ export function AnalyticsChart() {
             />
           </AreaChart>
         </ResponsiveContainer>
-      </div>
+      </ClientChart>
     </section>
   );
 }

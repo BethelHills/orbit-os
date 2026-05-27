@@ -5,6 +5,7 @@ import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { SSR_SAFE_INITIAL } from "@/lib/motion";
 import { ClientChart } from "@/components/charts/client-chart";
 import { ProtocolIcon } from "@/components/dashboard/protocol-icon";
+import { useCoin } from "@/store/orbit-store";
 import type { ProtocolName } from "@/lib/protocol-logos";
 
 const protocols: {
@@ -50,9 +51,26 @@ const protocols: {
 ];
 
 export function ProtocolMatrix() {
+  const coin = useCoin();
+
+  const zoraTvl =
+    coin.volume24hEth > 0
+      ? `$${((coin.volume24hEth * 3200) / 1_000_000).toFixed(1)}M`
+      : "$892M";
+  const zoraChange =
+    coin.holderCount > 0
+      ? `${coin.holderCount.toLocaleString()} holders`
+      : "+28.7%";
+
+  const cards = protocols.map((p) =>
+    p.name === "Zora"
+      ? { ...p, tvl: zoraTvl, change: zoraChange, positive: true }
+      : p
+  );
+
   return (
     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-      {protocols.map((p, i) => (
+      {cards.map((p, i) => (
         <motion.div
           key={p.name}
           initial={SSR_SAFE_INITIAL}

@@ -2,13 +2,14 @@
 
 import { useCallback, useState } from "react";
 import { Send, Sparkles, Maximize2 } from "lucide-react";
+import { useAccount } from "wagmi";
 import { OrbitActionConfirmDialog } from "@/components/chat/orbit-action-confirm-dialog";
 import { detectWriteAction } from "@/lib/aomi/detect-write-action";
 import {
   useOrbitTransactionFlow,
   type TransactionFlowPhase,
 } from "@/hooks/use-orbit-transaction-flow";
-import { useOrbitStore } from "@/store/orbit-store";
+import { useCoin, useOrbitStore } from "@/store/orbit-store";
 import type { AgentLogEntry } from "@/lib/zora/types";
 
 type Message = {
@@ -37,8 +38,9 @@ const FLOW_STATUS: Partial<Record<TransactionFlowPhase, string>> = {
   executing: "Executing on Base…",
 };
 
-function logForMessage(text: string): AgentLogEntry {
+function logForMessage(text: string, coinName?: string): AgentLogEntry {
   const lower = text.toLowerCase();
+  const label = coinName ?? "MOONJOY";
   const base = {
     id: crypto.randomUUID(),
     status: "success" as const,
@@ -49,21 +51,21 @@ function logForMessage(text: string): AgentLogEntry {
     return {
       ...base,
       kind: "holder",
-      message: "Holder query completed — 42 active holders on MOONJOY",
+      message: `Holder query completed for ${label} on Base`,
     };
   }
   if (lower.includes("alert")) {
     return {
       ...base,
       kind: "alert",
-      message: "Price alert configured for MOONJOY on Base",
+      message: `Price alert configured for ${label} on Base`,
     };
   }
   if (lower.includes("analytics") || lower.includes("volume")) {
     return {
       ...base,
       kind: "volume",
-      message: "Analytics summary generated for MOONJOY",
+      message: `Analytics summary generated for ${label}`,
     };
   }
   return {
@@ -84,7 +86,10 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
     },
   ]);
 
+  const { address } = useAccount();
+  const coin = useCoin();
   const appendActivityLog = useOrbitStore((s) => s.appendActivityLog);
+  const applyChatResponse = useOrbitStore((s) => s.applyChatResponse);
   const applyTransactionResult = useOrbitStore((s) => s.applyTransactionResult);
 
   const onAgentMessage = useCallback((text: string) => {
@@ -149,7 +154,11 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
       const response = await fetch("/api/aomi-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({
+          message: text,
+          coin,
+          walletAddress: address,
+        }),
       });
 
       if (!response.ok) throw new Error("Chat request failed");
@@ -161,7 +170,15 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
         { role: "agent", text: data.reply },
       ]);
 
-      appendActivityLog(logForMessage(text));
+      if (data.coin && data.logs && data.analytics) {
+        applyChatResponse({
+          coin: data.coin,
+          logs: data.logs,
+          analytics: data.analytics,
+        });
+      } else {
+        appendActivityLog(logForMessage(text, coin.name));
+      }
     } catch {
       setMessages((prev) => [
         ...prev,
