@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { SSR_SAFE_INITIAL } from "@/lib/motion";
+import { ClientChart } from "@/components/charts/client-chart";
 import {
   Table,
   TableBody,
@@ -70,7 +71,7 @@ const assets = [
 
 function MiniSparkline({ data, accent }: { data: number[]; accent: string }) {
   return (
-    <div className="h-8 w-20 min-w-20">
+    <ClientChart className="h-8 w-20 min-w-20">
       <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={32}>
         <AreaChart data={data.map((v, idx) => ({ v, idx }))}>
           <Area
@@ -83,7 +84,7 @@ function MiniSparkline({ data, accent }: { data: number[]; accent: string }) {
           />
         </AreaChart>
       </ResponsiveContainer>
-    </div>
+    </ClientChart>
   );
 }
 

@@ -10,6 +10,7 @@ import {
 } from "recharts";
 
 import { SSR_SAFE_INITIAL } from "@/lib/motion";
+import { ClientChart } from "@/components/charts/client-chart";
 
 const portfolioData = [
   { t: "Mon", v: 14200 },
@@ -48,7 +49,7 @@ export function PortfolioOverview() {
             <p className="mt-1 text-sm font-medium text-green-400">+16.2%</p>
           </div>
         </div>
-        <div className="mt-4 h-36 w-full min-h-36">
+        <ClientChart className="mt-4 h-36 w-full min-h-36">
           <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={144}>
             <AreaChart data={portfolioData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
               <defs>
@@ -67,7 +68,7 @@ export function PortfolioOverview() {
               />
             </AreaChart>
           </ResponsiveContainer>
-        </div>
+        </ClientChart>
       </motion.div>
 
       <motion.div
@@ -83,13 +84,13 @@ export function PortfolioOverview() {
           <p className="mt-1 text-3xl font-bold text-white">$7,892.34</p>
           <p className="mt-1 text-sm font-medium text-green-400">+22.4%</p>
         </div>
-        <div className="mt-4 h-36 w-full min-h-36">
+        <ClientChart className="mt-4 h-36 w-full min-h-36">
           <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={144}>
             <BarChart data={volumeData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
               <Bar dataKey="v" fill="#3b82f6" radius={[4, 4, 0, 0]} opacity={0.85} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </ClientChart>
       </motion.div>
     </section>
   );

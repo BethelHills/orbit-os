@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { ArrowRight, Info } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useMounted } from "@/hooks/use-mounted";
 import { cn } from "@/lib/utils";
 
 const GlobeScene = dynamic(
@@ -71,7 +72,9 @@ const pulseDots = [
 export function OrbitGlobe() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
-  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const mounted = useMounted();
+  const isDesktopQuery = useMediaQuery("(min-width: 1024px)");
+  const isDesktop = mounted && isDesktopQuery;
   const globeOffset: [number, number] = isDesktop ? [80, 0] : [20, 0];
 
   useEffect(() => {
@@ -133,6 +136,7 @@ export function OrbitGlobe() {
         {pulseDots.map((pos) => (
           <motion.span
             key={pos}
+            initial={false}
             animate={{ scale: [1, 1.8, 1], opacity: [0.7, 1, 0.7] }}
             transition={{ duration: 2, repeat: Infinity }}
             className={`pointer-events-none absolute ${pos} z-20 h-2 w-2 rounded-full bg-fuchsia-400 shadow-[0_0_20px_rgba(217,70,239,1)] sm:h-3 sm:w-3`}
@@ -140,6 +144,7 @@ export function OrbitGlobe() {
         ))}
 
         <motion.div
+          initial={false}
           animate={{ opacity: [0.35, 0.65, 0.35], scale: [0.95, 1.05, 0.95] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           className="pointer-events-none absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/20 blur-3xl sm:h-48 sm:w-48 lg:h-64 lg:w-64"
@@ -261,6 +266,7 @@ function Node({
     <div className="absolute z-30" style={style}>
       <div className="relative">
         <motion.div
+          initial={false}
           animate={{ opacity: [0.35, 1, 0.35] }}
           transition={{ duration: 2.4, repeat: Infinity }}
           className={cn(
@@ -292,6 +298,7 @@ function Node({
 function Lightning({ className }: { className?: string }) {
   return (
     <motion.div
+      initial={false}
       animate={{
         opacity: [0, 1, 0.2, 1, 0],
         scaleX: [0.4, 1.15, 0.8, 1, 0.5],

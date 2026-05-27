@@ -118,7 +118,9 @@ export function SidebarContent({ onNavigate }: SidebarContentProps) {
             { label: "Secs", val: countdown.s },
           ].map((u) => (
             <div key={u.label} className="rounded-lg bg-black/30 px-1 py-1.5">
-              <p className="text-sm font-bold text-white">{String(u.val).padStart(2, "0")}</p>
+              <p suppressHydrationWarning className="text-sm font-bold text-white">
+                {String(u.val).padStart(2, "0")}
+              </p>
               <p className="text-[9px] text-slate-500">{u.label}</p>
             </div>
           ))}

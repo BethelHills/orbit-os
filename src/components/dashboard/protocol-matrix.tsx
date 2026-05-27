@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { SSR_SAFE_INITIAL } from "@/lib/motion";
+import { ClientChart } from "@/components/charts/client-chart";
 import { ProtocolIcon } from "@/components/dashboard/protocol-icon";
 import type { ProtocolName } from "@/lib/protocol-logos";
 
@@ -79,7 +80,7 @@ export function ProtocolMatrix() {
             {p.tvl}
           </p>
 
-          <div className="relative mt-2 h-10 w-full min-h-10">
+          <ClientChart className="relative mt-2 h-10 w-full min-h-10">
             <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={40}>
               <AreaChart
                 data={p.spark.map((v, idx) => ({ v, idx }))}
@@ -101,7 +102,7 @@ export function ProtocolMatrix() {
                 />
               </AreaChart>
             </ResponsiveContainer>
-          </div>
+          </ClientChart>
         </motion.div>
       ))}
     </section>
