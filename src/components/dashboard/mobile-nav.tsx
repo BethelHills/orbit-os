@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Bell, Menu, MessageCircle } from "lucide-react";
 import { OrbitBrand } from "@/components/brand/orbit-brand";
 import {
@@ -18,6 +19,11 @@ interface MobileNavProps {
 
 export function MobileNav({ onOpenAssistant }: MobileNavProps) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <header className="glass-strong sticky top-0 z-40 flex shrink-0 items-center justify-between border-b border-purple-500/10 px-4 py-3 md:hidden">
@@ -62,10 +68,12 @@ export function MobileNav({ onOpenAssistant }: MobileNavProps) {
           </SheetTrigger>
           <SheetContent
             side="left"
+            showCloseButton={false}
+            onOpenAutoFocus={(event) => event.preventDefault()}
             className="flex w-[min(100vw,17.5rem)] flex-col border-r border-purple-500/10 bg-[#0a0a14]/95 p-0 text-white backdrop-blur-xl"
           >
             <SheetTitle className="sr-only">Navigation menu</SheetTitle>
-            <SidebarContent onNavigate={() => setOpen(false)} />
+            <SidebarContent />
           </SheetContent>
         </Sheet>
       </div>

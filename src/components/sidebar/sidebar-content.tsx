@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { OrbitBrand } from "@/components/brand/orbit-brand";
 import {
   LayoutDashboard,
@@ -15,6 +17,7 @@ import {
   Plug,
   Settings,
   Gem,
+  type LucideIcon,
 } from "lucide-react";
 import {
   Tooltip,
@@ -27,13 +30,19 @@ import { useMounted } from "@/hooks/use-mounted";
 import { cn } from "@/lib/utils";
 import { useAccount } from "wagmi";
 
-const links = [
-  { name: "Overview", icon: LayoutDashboard },
-  { name: "Agent Chat", icon: MessageCircle },
-  { name: "Trade / Actions", icon: ArrowLeftRight },
+type NavItem = {
+  name: string;
+  icon: LucideIcon;
+  href?: string;
+};
+
+const links: NavItem[] = [
+  { name: "Overview", icon: LayoutDashboard, href: "/" },
+  { name: "Agent Chat", icon: MessageCircle, href: "/chat" },
+  { name: "Trade / Actions", icon: ArrowLeftRight, href: "/actions" },
   { name: "Portfolio", icon: Wallet },
-  { name: "Analytics", icon: BarChart3 },
-  { name: "Protocols", icon: Layers },
+  { name: "Analytics", icon: BarChart3, href: "/analytics" },
+  { name: "Protocols", icon: Layers, href: "/protocols" },
   { name: "Alerts", icon: Bell },
   { name: "Transactions", icon: Receipt },
   { name: "Integrations", icon: Plug },
@@ -41,6 +50,11 @@ const links = [
 ];
 
 const EARLY_FORGE_END = new Date("2026-06-01T00:00:00Z");
+
+function isNavActive(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 function useCountdown(target: Date) {
   const mounted = useMounted();
@@ -67,11 +81,12 @@ function useCountdown(target: Date) {
 }
 
 interface SidebarContentProps {
-  onNavigate?: () => void;
   collapsed?: boolean;
 }
 
-export function SidebarContent({ onNavigate, collapsed = false }: SidebarContentProps) {
+export function SidebarContent({ collapsed = false }: SidebarContentProps) {
+  const pathname = usePathname();
+  const router = useRouter();
   const mounted = useMounted();
   const countdown = useCountdown(EARLY_FORGE_END);
   const { isConnected } = useAccount();
@@ -79,35 +94,49 @@ export function SidebarContent({ onNavigate, collapsed = false }: SidebarContent
   const walletInitials = useWalletInitials();
   const connected = mounted && isConnected;
 
-  const navItems = links.map((item, index) => {
+  const navItems = links.map((item) => {
     const Icon = item.icon;
-    const active = index === 0;
+    const href = item.href;
+    const active = href ? isNavActive(pathname, href) : false;
+    const itemClassName = cn(
+      "flex w-full items-center rounded-xl transition",
+      collapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2 text-[13px]",
+      active
+        ? "bg-gradient-to-r from-purple-600/40 to-blue-600/20 font-medium text-white shadow-[0_0_24px_rgba(139,92,246,0.25)]"
+        : "text-slate-400 hover:bg-white/5 hover:text-white",
+      !href && "cursor-default opacity-60"
+    );
 
-    const button = (
-      <button
-        key={item.name}
-        type="button"
-        onClick={onNavigate}
-        className={cn(
-          "flex w-full items-center rounded-xl transition",
-          collapsed
-            ? "justify-center px-2 py-2.5"
-            : "gap-3 px-3 py-2 text-[13px]",
-          active
-            ? "bg-gradient-to-r from-purple-600/40 to-blue-600/20 font-medium text-white shadow-[0_0_24px_rgba(139,92,246,0.25)]"
-            : "text-slate-400 hover:bg-white/5 hover:text-white"
-        )}
-      >
+    const content = (
+      <>
         <Icon size={collapsed ? 18 : 16} className={active ? "text-purple-300" : ""} />
         {!collapsed && item.name}
+      </>
+    );
+
+    const navNode = href ? (
+      <Link
+        key={item.name}
+        href={href}
+        onClick={(event) => {
+          event.preventDefault();
+          router.push(href);
+        }}
+        className={itemClassName}
+      >
+        {content}
+      </Link>
+    ) : (
+      <button key={item.name} type="button" disabled className={itemClassName}>
+        {content}
       </button>
     );
 
-    if (!collapsed) return button;
+    if (!collapsed) return navNode;
 
     return (
       <Tooltip key={item.name}>
-        <TooltipTrigger asChild>{button}</TooltipTrigger>
+        <TooltipTrigger asChild>{navNode}</TooltipTrigger>
         <TooltipContent side="right">{item.name}</TooltipContent>
       </Tooltip>
     );
