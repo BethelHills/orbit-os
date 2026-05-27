@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import "@rainbow-me/rainbowkit/styles.css";
 import { Providers } from "@/components/providers";
 import { GlobePrefetch } from "@/components/globe/globe-prefetch";
 import "./globals.css";

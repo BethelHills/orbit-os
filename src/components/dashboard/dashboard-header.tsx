@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Bell, Sun, ChevronDown } from "lucide-react";
+import { Bell, Sun } from "lucide-react";
 
+import { ConnectWalletButton } from "@/components/wallet/connect-wallet-button";
 import { SSR_SAFE_INITIAL } from "@/lib/motion";
 
 export function DashboardHeader() {
@@ -23,17 +24,6 @@ export function DashboardHeader() {
       </div>
 
       <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-        <button
-          type="button"
-          className="glass flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-xs text-white sm:gap-2 sm:px-3"
-        >
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold">
-            B
-          </span>
-          <span className="hidden sm:inline">Base</span>
-          <ChevronDown size={12} className="text-slate-500" />
-        </button>
-
         <span className="glass hidden items-center gap-2 rounded-xl px-3 py-2 text-xs text-green-300 sm:flex">
           <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.8)]" />
           Online
@@ -56,12 +46,7 @@ export function DashboardHeader() {
           <Sun size={16} />
         </button>
 
-        <button
-          type="button"
-          className="rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 px-3 py-2 text-[11px] font-semibold shadow-[0_0_24px_rgba(139,92,246,0.45)] transition hover:brightness-110 sm:px-4 sm:py-2.5 sm:text-xs"
-        >
-          Connect
-        </button>
+        <ConnectWalletButton />
       </div>
     </motion.header>
   );

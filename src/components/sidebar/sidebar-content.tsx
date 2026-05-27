@@ -24,7 +24,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useWalletDisplayName, useWalletInitials } from "@/hooks/use-wallet-display";
 import { cn } from "@/lib/utils";
+import { useAccount } from "wagmi";
 
 const links = [
   { name: "Overview", icon: LayoutDashboard },
@@ -69,6 +71,9 @@ interface SidebarContentProps {
 
 export function SidebarContent({ onNavigate, collapsed = false }: SidebarContentProps) {
   const countdown = useCountdown(EARLY_FORGE_END);
+  const { isConnected } = useAccount();
+  const walletAddress = useWalletDisplayName();
+  const walletInitials = useWalletInitials();
 
   const navItems = links.map((item, index) => {
     const Icon = item.icon;
@@ -203,21 +208,28 @@ export function SidebarContent({ onNavigate, collapsed = false }: SidebarContent
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="flex h-9 w-9 cursor-default items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-blue-500 text-xs font-bold">
-                BH
+                {walletInitials}
               </div>
             </TooltipTrigger>
-            <TooltipContent side="right">0xBethel…A7f3 · Connected</TooltipContent>
+            <TooltipContent side="right">
+              {walletAddress} · {isConnected ? "Connected" : "Not connected"}
+            </TooltipContent>
           </Tooltip>
         ) : (
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-blue-500 text-xs font-bold">
-              BH
+              {walletInitials}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-white">0xBethel…A7f3</p>
+              <p className="truncate text-sm font-medium text-white">{walletAddress}</p>
               <p className="flex items-center gap-1.5 text-[11px] text-green-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.8)]" />
-                Connected
+                <span
+                  className={cn(
+                    "h-1.5 w-1.5 rounded-full shadow-[0_0_6px_rgba(74,222,128,0.8)]",
+                    isConnected ? "bg-green-400" : "bg-slate-500"
+                  )}
+                />
+                {isConnected ? "Connected" : "Not connected"}
               </p>
             </div>
           </div>

@@ -10,6 +10,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { SidebarContent } from "@/components/sidebar/sidebar-content";
+import { ConnectWalletButton } from "@/components/wallet/connect-wallet-button";
 
 interface MobileNavProps {
   onOpenAssistant?: () => void;
@@ -25,6 +26,8 @@ export function MobileNav({ onOpenAssistant }: MobileNavProps) {
       </div>
 
       <div className="flex shrink-0 items-center gap-1.5">
+        <ConnectWalletButton compact />
+
         {onOpenAssistant && (
           <button
             type="button"
