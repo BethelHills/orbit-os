@@ -4,6 +4,7 @@ import type {
   MintCoinInput,
   SetPriceAlertInput,
   TopBuyer,
+  CreatorCoin,
 } from "@/lib/zora/types";
 import { ZORA_CHAIN, ZORA_CHAIN_ID } from "@/lib/zora/types";
 
@@ -35,12 +36,14 @@ export type ExecuteOrbitActionInput<A extends OrbitActionName = OrbitActionName>
     params: OrbitActionParams[A];
     confirmed?: boolean;
     walletAddress?: string;
+    txHash?: string;
   };
 
 export type OrbitActionStatus =
   | "success"
   | "confirmation_required"
   | "staged"
+  | "simulated"
   | "error";
 
 export type OrbitActionResult<A extends OrbitActionName = OrbitActionName> = {
@@ -55,13 +58,15 @@ export type OrbitActionResult<A extends OrbitActionName = OrbitActionName> = {
   preview?: OrbitActionPreview[A];
   requiresConfirmation?: boolean;
   aomiHint?: string | null;
+  txHash?: string;
+  coin?: CreatorCoin;
 };
 
 export type OrbitActionData = {
-  mint_coin: { address?: string; name: string; symbol: string };
+  mint_coin: { address?: string; name: string; symbol: string; txHash?: string };
   get_holder_count: { holderCount: number; coinAddress?: string };
   get_top_buyers: { buyers: TopBuyer[]; limit: number };
-  set_price_alert: { targetPriceEth: number; coinAddress?: string };
+  set_price_alert: { targetPriceEth: number; coinAddress?: string; txHash?: string };
 };
 
 export type OrbitActionPreview = {

@@ -24,6 +24,11 @@ interface OrbitState {
   analytics: AnalyticsPoint[];
   applyChatResponse: (data: ChatApiResponse) => void;
   appendActivityLog: (log: AgentLogEntry) => void;
+  applyTransactionResult: (data: {
+    coin: CreatorCoin;
+    txHash: string;
+    log: AgentLogEntry;
+  }) => void;
 }
 
 export const useOrbitStore = create<OrbitState>((set) => ({
@@ -40,6 +45,21 @@ export const useOrbitStore = create<OrbitState>((set) => ({
   },
 
   appendActivityLog: (log) => {
-    set((s) => ({ logs: [...s.logs, log] }));
+    set((s) => ({ logs: [log, ...s.logs] }));
+  },
+
+  applyTransactionResult: ({ coin, txHash, log }) => {
+    set((s) => ({
+      coin,
+      logs: [log, ...s.logs],
+      analytics: s.analytics.map((point, index, arr) =>
+        index === arr.length - 1
+          ? {
+              ...point,
+              value: Math.max(point.value, Math.round(coin.volume24hEth * 1000)),
+            }
+          : point
+      ),
+    }));
   },
 }));

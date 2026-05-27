@@ -7,12 +7,9 @@ export async function processAomi(message: string) {
   if (writeAction) {
     return {
       reply: [
-        `Prepared ${writeAction.action} on Zora/Base.`,
+        "Preparing Zora transaction on Base…",
         "",
-        `• Estimated cost: ${writeAction.costEth}`,
-        "• Status: Awaiting your approval",
-        "",
-        "Open the confirmation dialog and tap Approve to execute. Nothing runs until you confirm.",
+        "I'll run a fork simulation first, then ask you to confirm before opening your wallet.",
       ].join("\n"),
       requiresConfirmation: true,
     };

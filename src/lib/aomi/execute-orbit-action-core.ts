@@ -3,6 +3,7 @@ import {
   isAomiTransactEnabled,
   stageAomiTransactRequest,
 } from "./aomi-transact-client";
+import { buildCoinStateAfterAction } from "./build-coin-state";
 import type {
   ExecuteOrbitActionInput,
   OrbitActionName,
@@ -62,7 +63,7 @@ function buildPreview(
 export async function executeOrbitActionCore<A extends OrbitActionName>(
   input: ExecuteOrbitActionInput<A>
 ): Promise<OrbitActionResult<A>> {
-  const { action, params, confirmed = false, walletAddress } = input;
+  const { action, params, confirmed = false, walletAddress, txHash } = input;
 
   if (WRITE_ORBIT_ACTIONS.has(action) && !confirmed) {
     const preview = buildPreview(action, params);
@@ -97,6 +98,12 @@ export async function executeOrbitActionCore<A extends OrbitActionName>(
   }
 
   if (WRITE_ORBIT_ACTIONS.has(action) && confirmed) {
+    const coinState = await buildCoinStateAfterAction(action, params);
+    const enrichedData = {
+      ...(result.data as Record<string, unknown>),
+      ...(txHash ? { txHash } : {}),
+    };
+
     if (isAomiTransactEnabled()) {
       const staged = await stageAomiTransactRequest(
         action,
@@ -107,10 +114,14 @@ export async function executeOrbitActionCore<A extends OrbitActionName>(
       return baseResult(action, {
         ok: true,
         status: staged.staged ? "staged" : "success",
-        message: staged.staged
-          ? "Wallet request staged via aomi-transact. Simulate and sign with aomi tx simulate / aomi tx sign."
-          : result.message,
-        data: result.data as OrbitActionResult<A>["data"],
+        message: txHash
+          ? `Transaction confirmed on Base.`
+          : staged.staged
+            ? "Wallet request staged via aomi-transact. Simulate and sign with aomi tx simulate / aomi tx sign."
+            : result.message,
+        data: enrichedData as OrbitActionResult<A>["data"],
+        txHash,
+        coin: coinState,
         aomiHint: staged.hint ?? aomiTransactHint(action),
       });
     }
@@ -118,8 +129,12 @@ export async function executeOrbitActionCore<A extends OrbitActionName>(
     return baseResult(action, {
       ok: true,
       status: "success",
-      message: `${result.message} Set AOMI_ENABLED=1 to stage wallet requests via aomi-transact.`,
-      data: result.data as OrbitActionResult<A>["data"],
+      message: txHash
+        ? `Transaction confirmed on Base.`
+        : `${result.message} Set AOMI_ENABLED=1 to stage wallet requests via aomi-transact.`,
+      data: enrichedData as OrbitActionResult<A>["data"],
+      txHash,
+      coin: coinState,
       aomiHint: aomiTransactHint(action),
     });
   }

@@ -1,15 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Send, Sparkles, Maximize2 } from "lucide-react";
-import { useAccount } from "wagmi";
-import { executeOrbitAction } from "@/app/actions/execute-orbit-action";
 import { OrbitActionConfirmDialog } from "@/components/chat/orbit-action-confirm-dialog";
+import { detectWriteAction } from "@/lib/aomi/detect-write-action";
 import {
-  detectWriteAction,
-  type PendingWriteAction,
-} from "@/lib/aomi/detect-write-action";
-import type { OrbitActionResult } from "@/lib/aomi/orbit-action-types";
+  useOrbitTransactionFlow,
+  type TransactionFlowPhase,
+} from "@/hooks/use-orbit-transaction-flow";
 import { useOrbitStore } from "@/store/orbit-store";
 import type { AgentLogEntry } from "@/lib/zora/types";
 
@@ -32,121 +30,107 @@ const QUICK_PROMPTS: Record<string, string> = {
   "View analytics": "Show 24h volume and analytics",
 };
 
-function formatActionResult(result: OrbitActionResult): string {
-  if (!result.ok) return result.message;
+const FLOW_STATUS: Partial<Record<TransactionFlowPhase, string>> = {
+  preparing: "Preparing transaction…",
+  simulating: "Running simulation…",
+  wallet: "Waiting for wallet signature…",
+  executing: "Executing on Base…",
+};
 
-  if (result.action === "mint_coin" && result.data && "address" in result.data) {
-    const data = result.data;
-    return [
-      `Coin '${data.name}' (${data.symbol}) staged on Zora/Base.`,
-      "",
-      data.address ? `• Contract: ${data.address}` : "• Contract: pending wallet sign",
-      "• Network: Base",
-      "• Status: Approved — awaiting wallet signature if required",
-    ].join("\n");
+function logForMessage(text: string): AgentLogEntry {
+  const lower = text.toLowerCase();
+  const base = {
+    id: crypto.randomUUID(),
+    status: "success" as const,
+    timestamp: "Just now",
+  };
+
+  if (lower.includes("holder")) {
+    return {
+      ...base,
+      kind: "holder",
+      message: "Holder query completed — 42 active holders on MOONJOY",
+    };
   }
-
-  if (result.action === "set_price_alert" && result.data && "targetPriceEth" in result.data) {
-    return `Price alert set at ${result.data.targetPriceEth} ETH for MOONJOY on Base.`;
+  if (lower.includes("alert")) {
+    return {
+      ...base,
+      kind: "alert",
+      message: "Price alert configured for MOONJOY on Base",
+    };
   }
-
-  return result.message;
+  if (lower.includes("analytics") || lower.includes("volume")) {
+    return {
+      ...base,
+      kind: "volume",
+      message: "Analytics summary generated for MOONJOY",
+    };
+  }
+  return {
+    ...base,
+    kind: "message",
+    message: `Aomi processed: "${text.slice(0, 48)}${text.length > 48 ? "…" : ""}"`,
+  };
 }
 
 export function AomiChat({ compact = false }: { compact?: boolean }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [approving, setApproving] = useState(false);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [pendingAction, setPendingAction] = useState<PendingWriteAction | null>(null);
+  const [flowPhase, setFlowPhase] = useState<TransactionFlowPhase>("idle");
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "agent",
-      text: "Welcome to OrbitOS. I can launch Zora coins, monitor holders, set alerts, and pull analytics on Base.\n\nWrite actions always require your approval before execution.",
+      text: "Welcome to OrbitOS. I can launch Zora coins, monitor holders, set alerts, and pull analytics on Base.\n\nWrite actions run through simulation, confirmation, and wallet signature before execution.",
     },
   ]);
 
-  const { address } = useAccount();
   const appendActivityLog = useOrbitStore((s) => s.appendActivityLog);
+  const applyTransactionResult = useOrbitStore((s) => s.applyTransactionResult);
 
-  function logForMessage(text: string): AgentLogEntry {
-    const lower = text.toLowerCase();
-    const base = {
-      id: crypto.randomUUID(),
-      status: "success" as const,
-      timestamp: "Just now",
-    };
+  const onAgentMessage = useCallback((text: string) => {
+    setMessages((prev) => [...prev, { role: "agent", text }]);
+  }, []);
 
-    if (lower.includes("holder")) {
-      return {
-        ...base,
-        kind: "holder",
-        message: "Holder query completed — 42 active holders on MOONJOY",
-      };
-    }
-    if (lower.includes("alert")) {
-      return {
-        ...base,
-        kind: "alert",
-        message: "Price alert configured for MOONJOY on Base",
-      };
-    }
-    if (lower.includes("analytics") || lower.includes("volume")) {
-      return {
-        ...base,
-        kind: "volume",
-        message: "Analytics summary generated for MOONJOY",
-      };
-    }
-    if (lower.includes("launch") || lower.includes("coin")) {
-      return {
-        ...base,
-        kind: "launch",
-        message: "Zora coin launch approved via confirmation dialog",
-      };
-    }
-    return {
-      ...base,
-      kind: "message",
-      message: `Aomi processed: "${text.slice(0, 48)}${text.length > 48 ? "…" : ""}"`,
-    };
-  }
+  const onUserMessage = useCallback((text: string) => {
+    setMessages((prev) => [...prev, { role: "user", text }]);
+  }, []);
 
-  function queueWriteAction(userLabel: string, resolvedText: string) {
-    const writeAction = detectWriteAction(resolvedText);
-    if (!writeAction) return false;
+  const onTransactionComplete = useCallback(
+    (payload: {
+      log: AgentLogEntry;
+      coin: Parameters<typeof applyTransactionResult>[0]["coin"];
+      txHash: string;
+    }) => {
+      applyTransactionResult(payload);
+    },
+    [applyTransactionResult]
+  );
 
-    setMessages((prev) => [
-      ...prev,
-      { role: "user", text: userLabel },
-      {
-        role: "agent",
-        text: [
-          `Prepared ${writeAction.action} on Zora/Base.`,
-          "",
-          `• Estimated cost: ${writeAction.costEth}`,
-          "• Status: Awaiting your approval",
-          "",
-          "Review the confirmation dialog and tap Approve to execute.",
-        ].join("\n"),
-      },
-    ]);
-
-    setPendingAction(writeAction);
-    setConfirmOpen(true);
-    return true;
-  }
+  const {
+    pendingAction,
+    simulation,
+    confirmOpen,
+    busy: flowBusy,
+    startWriteFlow,
+    cancelFlow,
+    approveFlow,
+  } = useOrbitTransactionFlow({
+    onAgentMessage,
+    onUserMessage,
+    onPhaseChange: setFlowPhase,
+    onTransactionComplete,
+  });
 
   async function sendMessage(messageText?: string) {
     const raw = messageText ?? input.trim();
     const text = QUICK_PROMPTS[raw] ?? raw;
-    if (!text || loading || approving) return;
+    if (!text || loading || flowBusy) return;
 
     setInput("");
 
     const writeAction = detectWriteAction(text);
     if (writeAction) {
-      queueWriteAction(raw === text ? text : raw, text);
+      await startWriteFlow(raw === text ? text : raw, writeAction);
       return;
     }
 
@@ -185,54 +169,7 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
     }
   }
 
-  async function handleApprove() {
-    if (!pendingAction) return;
-
-    setApproving(true);
-
-    try {
-      const result = await executeOrbitAction({
-        action: pendingAction.action,
-        params: pendingAction.params,
-        confirmed: true,
-        walletAddress: address,
-      });
-
-      setMessages((prev) => [
-        ...prev,
-        { role: "agent", text: formatActionResult(result) },
-      ]);
-
-      appendActivityLog(logForMessage(pendingAction.action));
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "agent",
-          text: "Execution failed. No transaction was submitted.",
-        },
-      ]);
-    } finally {
-      setApproving(false);
-      setConfirmOpen(false);
-      setPendingAction(null);
-    }
-  }
-
-  function handleCancel() {
-    if (approving) return;
-
-    setConfirmOpen(false);
-    setPendingAction(null);
-    setMessages((prev) => [
-      ...prev,
-      {
-        role: "agent",
-        text: "Action cancelled. No transaction was submitted.",
-      },
-    ]);
-  }
-
+  const flowStatus = FLOW_STATUS[flowPhase];
   const shellClass = compact
     ? "glass-strong neon-border flex h-full min-h-0 flex-col rounded-2xl p-4"
     : "flex h-full min-h-0 flex-col rounded-2xl border border-purple-500/25 bg-[#070711]/80 p-4 shadow-[0_0_80px_rgba(126,34,206,0.18)] sm:rounded-[32px] sm:p-6";
@@ -301,7 +238,7 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
             </div>
           ))}
 
-          {loading && (
+          {(loading || flowStatus) && (
             <div
               className={
                 compact
@@ -309,7 +246,7 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
                   : "max-w-[90%] rounded-[28px] border border-slate-700 bg-slate-950/70 px-7 py-5 text-purple-300"
               }
             >
-              Aomi is thinking…
+              {flowStatus ?? "Aomi is thinking…"}
             </div>
           )}
         </div>
@@ -319,7 +256,7 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
             <button
               key={item}
               type="button"
-              disabled={loading || approving}
+              disabled={loading || flowBusy}
               onClick={() => sendMessage(item)}
               className={
                 compact
@@ -347,14 +284,14 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
             value={input}
             onChange={(event) => setInput(event.target.value)}
             placeholder="Ask Aomi anything…"
-            disabled={loading || approving}
+            disabled={loading || flowBusy}
             className={`flex-1 bg-transparent text-white outline-none placeholder:text-slate-500 disabled:opacity-50 ${
               compact ? "text-xs" : ""
             }`}
           />
           <button
             type="submit"
-            disabled={loading || approving || !input.trim()}
+            disabled={loading || flowBusy || !input.trim()}
             className={
               compact
                 ? "rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 p-2 text-white disabled:opacity-50"
@@ -369,9 +306,10 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
       <OrbitActionConfirmDialog
         open={confirmOpen}
         pendingAction={pendingAction}
-        approving={approving}
-        onApprove={handleApprove}
-        onCancel={handleCancel}
+        simulation={simulation}
+        approving={flowBusy}
+        onApprove={approveFlow}
+        onCancel={cancelFlow}
       />
     </>
   );

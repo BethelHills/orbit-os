@@ -10,11 +10,13 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import type { PendingWriteAction } from "@/lib/aomi/detect-write-action";
+import type { OrbitSimulationResult } from "@/lib/aomi/simulate-orbit-action";
 import { ORBIT_CHAIN, ORBIT_PROTOCOL } from "@/lib/aomi/orbit-action-types";
 
 interface OrbitActionConfirmDialogProps {
   open: boolean;
   pendingAction: PendingWriteAction | null;
+  simulation?: OrbitSimulationResult | null;
   approving?: boolean;
   onApprove: () => void;
   onCancel: () => void;
@@ -32,6 +34,7 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 export function OrbitActionConfirmDialog({
   open,
   pendingAction,
+  simulation,
   approving = false,
   onApprove,
   onCancel,
@@ -68,6 +71,16 @@ export function OrbitActionConfirmDialog({
           />
           <DetailRow label="Cost" value={pendingAction.costEth} />
         </div>
+
+        {simulation?.batchSuccess && (
+          <div className="rounded-xl border border-green-500/20 bg-green-500/5 px-4 py-3 text-xs text-green-200">
+            <p className="font-medium">Simulation passed</p>
+            <p className="mt-1 text-green-300/80">
+              {simulation.steps.length} step{simulation.steps.length === 1 ? "" : "s"} ·{" "}
+              {simulation.totalGas.toLocaleString()} gas on Base fork
+            </p>
+          </div>
+        )}
 
         <p className="text-center text-sm text-purple-200">Confirm?</p>
 
