@@ -1,6 +1,8 @@
 "use client";
 
 import { Activity, Bot, Fuel, ShieldCheck } from "lucide-react";
+import type { ViewportTier } from "@/hooks/use-viewport-tier";
+import { cn } from "@/lib/utils";
 
 const segments = [
   {
@@ -33,15 +35,22 @@ const segments = [
 ];
 
 interface StatusBarProps {
+  tier?: ViewportTier;
   hasAssistantPanel?: boolean;
 }
 
-export function StatusBar({ hasAssistantPanel = false }: StatusBarProps) {
+export function StatusBar({
+  tier = "mobile",
+  hasAssistantPanel = false,
+}: StatusBarProps) {
   return (
     <footer
-      className={`pointer-events-none fixed inset-x-0 bottom-2 z-50 flex justify-center px-3 sm:bottom-3 sm:px-4 lg:pl-[calc(17.5rem+1rem)] ${
-        hasAssistantPanel ? "xl:pr-8" : ""
-      }`}
+      className={cn(
+        "pointer-events-none fixed inset-x-0 bottom-2 z-50 flex justify-center px-3 sm:bottom-3 sm:px-4",
+        tier === "tablet" && "md:pl-[calc(4rem+0.75rem)]",
+        tier === "desktop" && "lg:pl-[calc(17.5rem+1rem)]",
+        hasAssistantPanel && "md:pr-6"
+      )}
     >
       <div className="glass-strong pointer-events-auto flex w-full max-w-4xl items-center justify-between gap-1 overflow-x-auto rounded-xl px-3 py-2 text-[10px] neon-border sm:gap-2 sm:rounded-2xl sm:px-4 sm:py-2.5 sm:text-[11px]">
         {segments.map((seg) => {

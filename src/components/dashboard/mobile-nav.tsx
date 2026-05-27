@@ -19,7 +19,7 @@ export function MobileNav({ onOpenAssistant }: MobileNavProps) {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="glass-strong sticky top-0 z-40 flex shrink-0 items-center justify-between border-b border-purple-500/10 px-4 py-3 lg:hidden">
+    <header className="glass-strong sticky top-0 z-40 flex shrink-0 items-center justify-between border-b border-purple-500/10 px-4 py-3 md:hidden">
       <div className="flex min-w-0 items-center gap-2.5">
         <OrbitBrand compact showTagline={false} />
       </div>
