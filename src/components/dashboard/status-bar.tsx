@@ -32,9 +32,17 @@ const segments = [
   },
 ];
 
-export function StatusBar() {
+interface StatusBarProps {
+  hasAssistantPanel?: boolean;
+}
+
+export function StatusBar({ hasAssistantPanel = false }: StatusBarProps) {
   return (
-    <footer className="pointer-events-none fixed inset-x-0 bottom-2 z-50 flex justify-center px-3 sm:bottom-3 sm:px-4 lg:pl-[calc(17.5rem+1rem)] xl:pr-[calc(380px+1rem)]">
+    <footer
+      className={`pointer-events-none fixed inset-x-0 bottom-2 z-50 flex justify-center px-3 sm:bottom-3 sm:px-4 lg:pl-[calc(17.5rem+1rem)] ${
+        hasAssistantPanel ? "xl:pr-8" : ""
+      }`}
+    >
       <div className="glass-strong pointer-events-auto flex w-full max-w-4xl items-center justify-between gap-1 overflow-x-auto rounded-xl px-3 py-2 text-[10px] neon-border sm:gap-2 sm:rounded-2xl sm:px-4 sm:py-2.5 sm:text-[11px]">
         {segments.map((seg) => {
           const Icon = seg.icon;

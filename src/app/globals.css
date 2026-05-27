@@ -139,3 +139,24 @@ body {
     @apply font-sans;
   }
 }
+
+[data-separator] {
+  touch-action: none;
+}
+
+[data-separator]::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: 50%;
+  width: 3px;
+  transform: translateX(-50%);
+  border-radius: 9999px;
+  background: transparent;
+  transition: background 150ms ease;
+}
+
+[data-separator]:hover::after,
+[data-separator][data-separator="active"]::after {
+  background: rgba(168, 85, 247, 0.45);
+}

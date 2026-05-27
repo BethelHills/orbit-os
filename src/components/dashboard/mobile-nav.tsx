@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Bell, Menu } from "lucide-react";
+import { Bell, Menu, MessageCircle } from "lucide-react";
 import { OrbitBrand } from "@/components/brand/orbit-brand";
 import {
   Sheet,
@@ -11,7 +11,11 @@ import {
 } from "@/components/ui/sheet";
 import { SidebarContent } from "@/components/sidebar/sidebar-content";
 
-export function MobileNav() {
+interface MobileNavProps {
+  onOpenAssistant?: () => void;
+}
+
+export function MobileNav({ onOpenAssistant }: MobileNavProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -21,6 +25,17 @@ export function MobileNav() {
       </div>
 
       <div className="flex shrink-0 items-center gap-1.5">
+        {onOpenAssistant && (
+          <button
+            type="button"
+            onClick={onOpenAssistant}
+            className="rounded-lg border border-purple-500/20 bg-purple-500/10 p-2 text-purple-200 transition hover:bg-purple-500/20"
+            aria-label="Open Aomi assistant"
+          >
+            <MessageCircle size={18} />
+          </button>
+        )}
+
         <button
           type="button"
           className="relative rounded-lg p-2 text-slate-300 transition hover:text-white"
