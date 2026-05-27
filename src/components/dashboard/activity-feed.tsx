@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import {
   Bell,
   Rocket,
@@ -9,7 +8,6 @@ import {
   MessageSquare,
   Shield,
 } from "lucide-react";
-import { SSR_SAFE_INITIAL } from "@/lib/motion";
 import { useActivityLogs } from "@/store/orbit-store";
 
 const iconMap: Record<string, typeof Bell> = {
@@ -44,14 +42,11 @@ export function ActivityFeed() {
       </div>
 
       <div className="mt-3 min-h-0 flex-1 space-y-2 overflow-y-auto">
-        {logs.slice(0, 8).map((log, i) => {
+        {logs.slice(0, 8).map((log) => {
           const Icon = getIcon(log.kind);
           return (
-            <motion.div
+            <div
               key={log.id}
-              initial={SSR_SAFE_INITIAL}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.04 }}
               className="flex items-start gap-3 rounded-xl border border-white/5 bg-black/30 p-3"
             >
               <div
@@ -71,7 +66,7 @@ export function ActivityFeed() {
                   {log.timestamp || "Just now"}
                 </p>
               </div>
-            </motion.div>
+            </div>
           );
         })}
       </div>

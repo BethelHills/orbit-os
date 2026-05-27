@@ -1,8 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
-import { SSR_SAFE_INITIAL } from "@/lib/motion";
 import { ClientChart } from "@/components/charts/client-chart";
 import { ProtocolIcon } from "@/components/dashboard/protocol-icon";
 import { useLiveMetrics } from "@/hooks/use-live-metrics";
@@ -24,10 +22,78 @@ function normalizeSpark(values: number[]) {
   return values.map((value) => Math.round((value / max) * 32));
 }
 
+interface ProtocolCardData {
+  name: ProtocolName;
+  accent: string;
+  subtitle: string;
+  tvl: string;
+  change: string;
+  positive: boolean;
+  spark: number[];
+}
+
+function ProtocolMatrixCard({ card }: { card: ProtocolCardData }) {
+  return (
+    <div className="glass-strong relative overflow-hidden rounded-2xl p-4">
+      <div
+        className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full blur-2xl"
+        style={{ background: `${card.accent}33` }}
+      />
+
+      <div className="relative flex items-center gap-2.5">
+        <ProtocolIcon name={card.name} />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-white">{card.name}</p>
+          <p className="text-[10px] uppercase tracking-wider text-slate-500">
+            {card.subtitle}
+          </p>
+        </div>
+        <span
+          className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+            card.positive
+              ? "bg-green-500/15 text-green-300"
+              : "bg-white/10 text-slate-400"
+          }`}
+        >
+          {card.change}
+        </span>
+      </div>
+
+      <p className="relative mt-3 text-2xl font-bold tracking-tight text-white">
+        {card.tvl}
+      </p>
+
+      <ClientChart className="relative mt-2 h-10 w-full min-h-10">
+        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={40}>
+          <AreaChart
+            data={card.spark.map((v, idx) => ({ v, idx }))}
+            margin={{ top: 2, right: 0, left: 0, bottom: 0 }}
+          >
+            <defs>
+              <linearGradient id={`grad-${card.name}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={card.accent} stopOpacity={0.45} />
+                <stop offset="100%" stopColor={card.accent} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <Area
+              type="monotone"
+              dataKey="v"
+              stroke={card.accent}
+              fill={`url(#grad-${card.name})`}
+              strokeWidth={2}
+              dot={false}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </ClientChart>
+    </div>
+  );
+}
+
 export function ProtocolMatrix() {
   const live = useLiveMetrics();
 
-  const cards = protocols.map((p) => {
+  const cards: ProtocolCardData[] = protocols.map((p) => {
     if (p.name === "Zora") {
       return {
         ...p,
@@ -78,66 +144,8 @@ export function ProtocolMatrix() {
 
   return (
     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-      {cards.map((p, i) => (
-        <motion.div
-          key={p.name}
-          initial={SSR_SAFE_INITIAL}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.07, duration: 0.4 }}
-          className="glass-strong relative overflow-hidden rounded-2xl p-4"
-        >
-          <div
-            className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full blur-2xl"
-            style={{ background: `${p.accent}33` }}
-          />
-
-          <div className="relative flex items-center gap-2.5">
-            <ProtocolIcon name={p.name} />
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-white">{p.name}</p>
-              <p className="text-[10px] uppercase tracking-wider text-slate-500">
-                {p.subtitle}
-              </p>
-            </div>
-            <span
-              className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                p.positive
-                  ? "bg-green-500/15 text-green-300"
-                  : "bg-white/10 text-slate-400"
-              }`}
-            >
-              {p.change}
-            </span>
-          </div>
-
-          <p className="relative mt-3 text-2xl font-bold tracking-tight text-white">
-            {p.tvl}
-          </p>
-
-          <ClientChart className="relative mt-2 h-10 w-full min-h-10">
-            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={40}>
-              <AreaChart
-                data={p.spark.map((v, idx) => ({ v, idx }))}
-                margin={{ top: 2, right: 0, left: 0, bottom: 0 }}
-              >
-                <defs>
-                  <linearGradient id={`grad-${p.name}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={p.accent} stopOpacity={0.45} />
-                    <stop offset="100%" stopColor={p.accent} stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <Area
-                  type="monotone"
-                  dataKey="v"
-                  stroke={p.accent}
-                  fill={`url(#grad-${p.name})`}
-                  strokeWidth={2}
-                  dot={false}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </ClientChart>
-        </motion.div>
+      {cards.map((card) => (
+        <ProtocolMatrixCard key={card.name} card={card} />
       ))}
     </section>
   );

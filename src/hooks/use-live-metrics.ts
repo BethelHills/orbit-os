@@ -47,10 +47,38 @@ export function useLiveMetrics() {
         },
   });
 
+  const zoraSpark = zoraSparkline(analytics);
+  const zoraVolumeDisplay = formatVolumeUsd(metrics.zora.volume24hUsd);
+
+  if (!mounted) {
+    return {
+      ...metrics,
+      mounted: false,
+      zoraSpark,
+      zoraVolumeDisplay,
+      wallet: {
+        ...metrics.wallet,
+        connected: false,
+        onBase: false,
+        addressShort: null,
+        balanceEth: null,
+        balanceLabel: "—",
+        lastTxHash: null,
+        lastTxShort: null,
+      },
+      base: {
+        ...metrics.base,
+        gasPriceGwei: null,
+        gasPriceLabel: "—",
+        healthy: true,
+      },
+    };
+  }
+
   return {
     ...metrics,
-    mounted,
-    zoraSpark: zoraSparkline(analytics),
-    zoraVolumeDisplay: formatVolumeUsd(metrics.zora.volume24hUsd),
+    mounted: true,
+    zoraSpark,
+    zoraVolumeDisplay,
   };
 }

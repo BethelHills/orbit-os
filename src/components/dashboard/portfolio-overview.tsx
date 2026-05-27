@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import {
   Area,
   AreaChart,
@@ -9,7 +8,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import { SSR_SAFE_INITIAL } from "@/lib/motion";
 import { ClientChart } from "@/components/charts/client-chart";
 import { usePortfolio } from "@/store/orbit-store";
 
@@ -22,11 +20,7 @@ export function PortfolioOverview() {
 
   return (
     <section className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-      <motion.div
-        initial={SSR_SAFE_INITIAL}
-        animate={{ opacity: 1, y: 0 }}
-        className="glass-strong overflow-hidden rounded-2xl p-5"
-      >
+      <div className="glass-strong overflow-hidden rounded-2xl p-5">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-[0.15em] text-slate-500">
@@ -62,14 +56,9 @@ export function PortfolioOverview() {
             </AreaChart>
           </ResponsiveContainer>
         </ClientChart>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={SSR_SAFE_INITIAL}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.08 }}
-        className="glass-strong overflow-hidden rounded-2xl p-5"
-      >
+      <div className="glass-strong overflow-hidden rounded-2xl p-5">
         <div>
           <p className="text-[10px] uppercase tracking-[0.15em] text-slate-500">
             24H Volume
@@ -90,7 +79,7 @@ export function PortfolioOverview() {
             </BarChart>
           </ResponsiveContainer>
         </ClientChart>
-      </motion.div>
+      </div>
     </section>
   );
 }

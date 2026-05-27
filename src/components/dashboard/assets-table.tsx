@@ -1,9 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
-import { SSR_SAFE_INITIAL } from "@/lib/motion";
 import { ClientChart } from "@/components/charts/client-chart";
 import {
   Table,
@@ -38,12 +36,7 @@ export function AssetsTable() {
   const assets = useAssets();
 
   return (
-    <motion.section
-      initial={SSR_SAFE_INITIAL}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.15 }}
-      className="glass-strong overflow-hidden rounded-2xl"
-    >
+    <section className="glass-strong overflow-hidden rounded-2xl">
       <div className="border-b border-white/5 px-5 py-4">
         <p className="text-[10px] uppercase tracking-[0.15em] text-slate-500">
           Top Assets
@@ -109,6 +102,6 @@ export function AssetsTable() {
           <ArrowRight size={16} />
         </button>
       </div>
-    </motion.section>
+    </section>
   );
 }

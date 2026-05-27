@@ -1,6 +1,7 @@
 "use client";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useMounted } from "@/hooks/use-mounted";
 import { cn } from "@/lib/utils";
 
 interface ConnectWalletButtonProps {
@@ -8,10 +9,31 @@ interface ConnectWalletButtonProps {
   compact?: boolean;
 }
 
+function ConnectWalletPlaceholder({
+  className,
+  compact = false,
+}: ConnectWalletButtonProps) {
+  return (
+    <div
+      className={cn(
+        "h-9 w-24 animate-pulse rounded-xl bg-white/10",
+        compact && "h-8 w-20",
+        className
+      )}
+    />
+  );
+}
+
 export function ConnectWalletButton({
   className,
   compact = false,
 }: ConnectWalletButtonProps) {
+  const mounted = useMounted();
+
+  if (!mounted) {
+    return <ConnectWalletPlaceholder className={className} compact={compact} />;
+  }
+
   return (
     <ConnectButton.Custom>
       {({
@@ -20,21 +42,12 @@ export function ConnectWalletButton({
         openAccountModal,
         openChainModal,
         openConnectModal,
-        mounted,
+        mounted: walletReady,
       }) => {
-        const ready = mounted;
-        const connected = ready && account && chain;
+        const connected = walletReady && account && chain;
 
-        if (!ready) {
-          return (
-            <div
-              className={cn(
-                "h-9 w-24 animate-pulse rounded-xl bg-white/10",
-                compact && "h-8 w-20",
-                className
-              )}
-            />
-          );
+        if (!walletReady) {
+          return <ConnectWalletPlaceholder className={className} compact={compact} />;
         }
 
         if (!connected) {

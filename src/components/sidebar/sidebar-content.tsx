@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { SSR_SAFE_INITIAL } from "@/lib/motion";
 import { OrbitBrand } from "@/components/brand/orbit-brand";
 import {
   LayoutDashboard,
@@ -86,13 +84,10 @@ export function SidebarContent({ onNavigate, collapsed = false }: SidebarContent
     const active = index === 0;
 
     const button = (
-      <motion.button
+      <button
         key={item.name}
         type="button"
         onClick={onNavigate}
-        initial={SSR_SAFE_INITIAL}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: index * 0.03 }}
         className={cn(
           "flex w-full items-center rounded-xl transition",
           collapsed
@@ -105,7 +100,7 @@ export function SidebarContent({ onNavigate, collapsed = false }: SidebarContent
       >
         <Icon size={collapsed ? 18 : 16} className={active ? "text-purple-300" : ""} />
         {!collapsed && item.name}
-      </motion.button>
+      </button>
     );
 
     if (!collapsed) return button;
@@ -120,9 +115,7 @@ export function SidebarContent({ onNavigate, collapsed = false }: SidebarContent
 
   const content = (
     <div className="flex h-full min-h-0 flex-col">
-      <motion.div
-        initial={SSR_SAFE_INITIAL}
-        animate={{ opacity: 1, x: 0 }}
+      <div
         className={cn(
           "border-b border-white/5",
           collapsed ? "flex justify-center px-2 py-4" : "px-5 py-5"
@@ -140,7 +133,7 @@ export function SidebarContent({ onNavigate, collapsed = false }: SidebarContent
         ) : (
           <OrbitBrand />
         )}
-      </motion.div>
+      </div>
 
       <nav
         className={cn(
