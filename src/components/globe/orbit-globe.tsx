@@ -17,44 +17,46 @@ const nodes = [
     name: "AERODROME",
     count: "2,341 agents",
     side: "left" as const,
-    top: "18%",
-    left: "34%",
-    mobileDock: true,
+    top: "12%",
+    left: "30%",
+    mobileTop: "10%",
+    mobileLeft: "0%",
   },
   {
     name: "ZORA",
     count: "3,214 agents",
     side: "left" as const,
-    top: "42%",
-    left: "31%",
-    mobileDock: true,
+    top: "38%",
+    left: "28%",
+    mobileTop: "32%",
+    mobileLeft: "0%",
   },
   {
     name: "LIMITLESS",
     count: "2,018 agents",
     side: "left" as const,
-    top: "70%",
-    left: "36%",
-    mobileTop: "68%",
-    mobileLeft: "2%",
+    top: "68%",
+    left: "32%",
+    mobileTop: "66%",
+    mobileLeft: "0%",
   },
   {
     name: "AVANTIS",
     count: "2,945 agents",
     side: "right" as const,
-    top: "18%",
-    right: "7%",
-    mobileTop: "20%",
-    mobileRight: "1%",
+    top: "12%",
+    right: "4%",
+    mobileTop: "14%",
+    mobileRight: "0%",
   },
   {
     name: "MONAD",
     count: "1,940 agents",
     side: "right" as const,
-    top: "60%",
-    right: "7%",
-    mobileTop: "58%",
-    mobileRight: "1%",
+    top: "58%",
+    right: "4%",
+    mobileTop: "52%",
+    mobileRight: "0%",
   },
 ];
 
@@ -66,13 +68,11 @@ const pulseDots = [
   "left-[61%] top-[69%]",
 ];
 
-const mobileDockNodes = nodes.filter((node) => node.mobileDock);
-
 export function OrbitGlobe() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
-  const globeOffset: [number, number] = isDesktop ? [80, 0] : [0, 0];
+  const globeOffset: [number, number] = isDesktop ? [80, 0] : [20, 0];
 
   useEffect(() => {
     const el = containerRef.current;
@@ -104,24 +104,11 @@ export function OrbitGlobe() {
         <Info size={14} className="shrink-0 text-blue-400 sm:size-4" />
       </div>
 
-      <div className="relative z-20 flex items-start gap-2 px-4 pt-3 sm:gap-3 sm:px-6 lg:hidden">
-        <StatsPanel className="min-w-0 flex-1" compact />
-
-        <div className="flex w-[44%] max-w-[168px] shrink-0 flex-col gap-2 sm:max-w-[180px]">
-          {mobileDockNodes.map((node) => (
-            <MobileDockNode key={node.name} name={node.name} count={node.count} />
-          ))}
-        </div>
-      </div>
-
-      <StatsPanel
-        className="absolute left-6 top-20 z-20 hidden w-[250px] lg:block"
-        compact
-      />
+      <StatsPanel className="relative z-20 mx-4 mt-3 sm:mx-6 lg:absolute lg:left-6 lg:top-20 lg:mx-0 lg:mt-0 lg:w-[250px]" compact />
 
       <div
         ref={containerRef}
-        className="relative z-10 mx-auto mt-2 h-[460px] w-full max-w-full touch-none sm:mt-3 sm:h-[520px] lg:mt-0 lg:h-[430px]"
+        className="relative z-10 mx-auto mt-2 h-[480px] w-full max-w-full touch-none sm:mt-3 sm:h-[540px] lg:mt-0 lg:h-[430px]"
       >
         {dims ? (
           <GlobeScene
@@ -138,9 +125,9 @@ export function OrbitGlobe() {
         </div>
 
         <div className="lg:hidden">
-          <Lightning className="left-[48%] top-[30%] w-24 rotate-[18deg]" />
-          <Lightning className="left-[58%] top-[43%] w-24 rotate-[-35deg]" />
-          <Lightning className="left-[52%] top-[61%] w-24 rotate-[55deg]" />
+          <Lightning className="left-[50%] top-[30%] w-20 rotate-[18deg]" />
+          <Lightning className="left-[58%] top-[43%] w-20 rotate-[-35deg]" />
+          <Lightning className="left-[54%] top-[61%] w-20 rotate-[55deg]" />
         </div>
 
         {pulseDots.map((pos) => (
@@ -157,13 +144,11 @@ export function OrbitGlobe() {
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           className="pointer-events-none absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/20 blur-3xl sm:h-48 sm:w-48 lg:h-64 lg:w-64"
         />
-      </div>
 
-      {nodes
-        .filter((node) => isDesktop || !node.mobileDock)
-        .map((node) => (
+        {nodes.map((node) => (
           <Node key={node.name} {...node} isDesktop={isDesktop} />
         ))}
+      </div>
     </section>
   );
 }
@@ -263,10 +248,9 @@ function Node({
   top: string;
   left?: string;
   right?: string;
-  mobileTop?: string;
+  mobileTop: string;
   mobileLeft?: string;
   mobileRight?: string;
-  mobileDock?: boolean;
   isDesktop: boolean;
 }) {
   const style = isDesktop
@@ -284,7 +268,7 @@ function Node({
             side === "left"
               ? "right-full from-transparent to-fuchsia-500"
               : "left-full from-fuchsia-500 to-transparent",
-            isDesktop ? "w-28" : "w-10 sm:w-16 lg:w-28"
+            isDesktop ? "w-28" : "w-8 sm:w-12"
           )}
         />
         <span
@@ -294,25 +278,11 @@ function Node({
             side === "left" ? "-right-0.5 sm:-right-1" : "-left-0.5 sm:-left-1"
           )}
         />
-        <div className="rounded-lg border border-violet-500/25 bg-black/50 px-2.5 py-2 backdrop-blur-xl shadow-[0_0_35px_rgba(124,58,237,0.18)] sm:rounded-xl sm:px-3.5 sm:py-3 lg:rounded-2xl lg:px-5 lg:py-4">
-          <h4 className="text-[10px] font-bold text-white sm:text-xs lg:text-sm">{name}</h4>
-          <p className="mt-0.5 text-[9px] text-violet-300 sm:mt-1 sm:text-[11px] lg:mt-2 lg:text-sm">
+        <div className="rounded-lg border border-violet-500/25 bg-black/50 px-2 py-1.5 backdrop-blur-xl shadow-[0_0_35px_rgba(124,58,237,0.18)] sm:rounded-xl sm:px-3 sm:py-2 lg:rounded-2xl lg:px-5 lg:py-4">
+          <h4 className="text-[9px] font-bold text-white sm:text-[10px] lg:text-sm">{name}</h4>
+          <p className="mt-0.5 text-[8px] text-violet-300 sm:text-[9px] lg:mt-2 lg:text-sm">
             {count}
           </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MobileDockNode({ name, count }: { name: string; count: string }) {
-  return (
-    <div className="rounded-xl border border-violet-500/25 bg-black/50 px-2.5 py-2 backdrop-blur-xl shadow-[0_0_35px_rgba(124,58,237,0.18)] sm:px-3 sm:py-2.5">
-      <div className="flex items-center gap-2">
-        <span className="h-2 w-2 shrink-0 rounded-full bg-fuchsia-400 shadow-[0_0_12px_rgba(217,70,239,1)]" />
-        <div className="min-w-0">
-          <h4 className="truncate text-[10px] font-bold text-white sm:text-[11px]">{name}</h4>
-          <p className="truncate text-[9px] text-violet-300 sm:text-[10px]">{count}</p>
         </div>
       </div>
     </div>
