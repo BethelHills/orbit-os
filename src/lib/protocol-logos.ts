@@ -1,7 +1,7 @@
 export const PROTOCOL_LOGOS = {
   Aerodrome: "/images/protocols/aerodrome.png",
   Zora: "/images/protocols/zora.jpg",
-  Limitless: "/images/protocols/limitless.png",
+  Limitless: "/images/Limitless.icon.jpg",
   Avantis: "/images/protocols/avantis.png",
 } as const;
 

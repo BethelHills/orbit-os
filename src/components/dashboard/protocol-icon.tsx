@@ -29,7 +29,7 @@ export function ProtocolIcon({ name, size = "md", className }: ProtocolIconProps
         alt={`${name} logo`}
         width={dimensions.image}
         height={dimensions.image}
-        className="h-full w-full object-cover"
+        className="h-full w-full object-contain p-0.5"
       />
     </div>
   );
