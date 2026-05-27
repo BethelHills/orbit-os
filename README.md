@@ -43,6 +43,10 @@ Production defaults live in `.env.production`. Set `NEXT_PUBLIC_WALLETCONNECT_ID
 
 Legacy names `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` and `NEXT_PUBLIC_CHAIN_ID` are still supported.
 
+## Monitoring
+
+Sentry is integrated via `@sentry/nextjs`. Set `NEXT_PUBLIC_SENTRY_DSN` in Vercel to enable error and performance monitoring. Optional CI vars: `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN` (source maps).
+
 ## Project structure
 
 ```

@@ -6,6 +6,7 @@ import { parseEther } from "viem";
 import { useAccount, useSendTransaction } from "wagmi";
 import { executeOrbitAction } from "@/app/actions/execute-orbit-action";
 import { simulateOrbitAction } from "@/app/actions/simulate-orbit-action";
+import { captureOrbitError } from "@/lib/monitoring";
 import type { PendingWriteAction } from "@/lib/aomi/detect-write-action";
 import type { OrbitActionResult } from "@/lib/aomi/orbit-action-types";
 import type { OrbitSimulationResult } from "@/lib/aomi/simulate-orbit-action";
@@ -161,7 +162,8 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
 
         setFlowPhase("confirm");
         setConfirmOpen(true);
-      } catch {
+      } catch (error) {
+        captureOrbitError(error, { phase: "prepare", action: writeAction.action });
         callbacks.onAgentMessage(
           "Simulation failed. No transaction was prepared."
         );
@@ -243,7 +245,12 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
 
       callbacks.onAgentMessage(formatSuccessMessage(result, txHash));
       setFlowPhase("complete");
-    } catch {
+    } catch (error) {
+      captureOrbitError(error, {
+        phase: "execute",
+        action: pendingAction.action,
+        walletAddress: address,
+      });
       callbacks.onAgentMessage(
         "Transaction failed or was rejected. No changes were applied."
       );
