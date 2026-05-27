@@ -21,7 +21,9 @@ export function DashboardHeader() {
           Good evening, Bethel{" "}
           <span className="inline-block animate-[wave_2s_ease-in-out_infinite]">👋</span>
         </h1>
-        <p className="mt-1 text-xs text-slate-400 sm:text-sm">{tracking}</p>
+        <p className="mt-1 text-xs text-slate-400 sm:text-sm" suppressHydrationWarning>
+          {tracking}
+        </p>
       </div>
 
       <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">

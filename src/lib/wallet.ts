@@ -22,7 +22,7 @@ export const config = getDefaultConfig({
   appUrl: siteUrl,
   projectId: WALLETCONNECT_PROJECT_ID,
   chains: [base],
-  ssr: true,
+  ssr: false,
   multiInjectedProviderDiscovery: true,
   wallets: [
     {

@@ -23,12 +23,17 @@ export function StatusBar({
   hasAssistantPanel = false,
 }: StatusBarProps) {
   const live = useLiveMetrics();
+  const ready = live.mounted;
 
   const segments = [
     {
       icon: ShieldCheck,
       label: "Base Network",
-      value: live.base.healthy ? `${live.base.chainName} · Live` : "Wrong network",
+      value: ready
+        ? live.base.healthy
+          ? `${live.base.chainName} · Live`
+          : "Wrong network"
+        : `${live.base.chainName} · Live`,
       color: live.base.healthy ? "text-blue-300" : "text-amber-300",
       dot: live.base.healthy ? "bg-blue-400" : "bg-amber-400",
     },
@@ -36,7 +41,13 @@ export function StatusBar({
       icon: Fuel,
       label: "Gas Price",
       value: live.base.gasPriceLabel,
-      sub: live.wallet.onBase ? "Base" : live.wallet.connected ? "Switch chain" : "—",
+      sub: ready
+        ? live.wallet.onBase
+          ? "Base"
+          : live.wallet.connected
+            ? "Switch chain"
+            : "—"
+        : "—",
       color: "text-purple-300",
     },
     {
@@ -49,8 +60,10 @@ export function StatusBar({
     {
       icon: Bot,
       label: "Wallet",
-      value: live.wallet.connected
-        ? `${live.wallet.addressShort} · ${live.zora.coinName}`
+      value: ready
+        ? live.wallet.connected
+          ? `${live.wallet.addressShort} · ${live.zora.coinName}`
+          : "Not connected"
         : "Not connected",
       color: "text-purple-300",
     },

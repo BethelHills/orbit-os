@@ -90,10 +90,8 @@ function ProtocolMatrixCard({ card }: { card: ProtocolCardData }) {
   );
 }
 
-export function ProtocolMatrix() {
-  const live = useLiveMetrics();
-
-  const cards: ProtocolCardData[] = protocols.map((p) => {
+function buildLiveCards(live: ReturnType<typeof useLiveMetrics>): ProtocolCardData[] {
+  return protocols.map((p) => {
     if (p.name === "Zora") {
       return {
         ...p,
@@ -141,6 +139,29 @@ export function ProtocolMatrix() {
       spark: normalizeSpark(live.zoraSpark.slice(-5)),
     };
   });
+}
+
+export function ProtocolMatrix() {
+  const live = useLiveMetrics();
+
+  if (!live.mounted) {
+    return (
+      <section
+        className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4"
+        aria-busy="true"
+        aria-label="Loading protocol metrics"
+      >
+        {protocols.map((p) => (
+          <div
+            key={p.name}
+            className="glass-strong h-[11.25rem] animate-pulse rounded-2xl"
+          />
+        ))}
+      </section>
+    );
+  }
+
+  const cards = buildLiveCards(live);
 
   return (
     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">

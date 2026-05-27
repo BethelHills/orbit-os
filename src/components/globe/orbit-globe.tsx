@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { motion } from "framer-motion";
 import { ArrowRight, Info } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useMounted } from "@/hooks/use-mounted";
 import { cn } from "@/lib/utils";
 import { useLiveMetrics } from "@/hooks/use-live-metrics";
+import { SSR_METRIC_PLACEHOLDER } from "@/lib/ssr-safe";
 
 const GlobeScene = dynamic(
   () => import("@/components/globe/globe-scene").then((m) => m.GlobeScene),
@@ -80,6 +80,26 @@ export function OrbitGlobe() {
   const live = useLiveMetrics();
 
   const liveNodes = nodes.map((node) => {
+    if (!live.mounted) {
+      switch (node.name) {
+        case "ZORA":
+          return {
+            ...node,
+            count: `${live.zora.holderCount} holders · ${live.zora.volumeLabel}`,
+          };
+        case "AERODROME":
+          return { ...node, count: `Base · ${SSR_METRIC_PLACEHOLDER}` };
+        case "LIMITLESS":
+          return { ...node, count: `${live.aomi.successful} Aomi actions` };
+        case "AVANTIS":
+          return { ...node, count: "Wallet disconnected" };
+        case "MONAD":
+          return { ...node, count: "No wallet txs yet" };
+        default:
+          return node;
+      }
+    }
+
     switch (node.name) {
       case "ZORA":
         return {
@@ -170,21 +190,13 @@ export function OrbitGlobe() {
         </div>
 
         {pulseDots.map((pos) => (
-          <motion.span
+          <span
             key={pos}
-            initial={false}
-            animate={{ scale: [1, 1.8, 1], opacity: [0.7, 1, 0.7] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className={`pointer-events-none absolute ${pos} z-20 h-2 w-2 rounded-full bg-fuchsia-400 shadow-[0_0_20px_rgba(217,70,239,1)] sm:h-3 sm:w-3`}
+            className={`pointer-events-none absolute ${pos} z-20 h-2 w-2 animate-[orbit-pulse-dot_2s_ease-in-out_infinite] rounded-full bg-fuchsia-400 shadow-[0_0_20px_rgba(217,70,239,1)] sm:h-3 sm:w-3`}
           />
         ))}
 
-        <motion.div
-          initial={false}
-          animate={{ opacity: [0.35, 0.65, 0.35], scale: [0.95, 1.05, 0.95] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          className="pointer-events-none absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/20 blur-3xl sm:h-48 sm:w-48 lg:h-64 lg:w-64"
-        />
+        <div className="pointer-events-none absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 animate-[orbit-glow-orb_4s_ease-in-out_infinite] rounded-full bg-violet-600/20 blur-3xl sm:h-48 sm:w-48 lg:h-64 lg:w-64" />
 
         {liveNodes.map((node) => (
           <Node key={node.name} {...node} isDesktop={isDesktop} />
@@ -213,11 +225,27 @@ function StatsPanel({
       ? `${live.aomi.pending} pending`
       : `${live.aomi.total} logged`;
 
-  const walletGrowth = live.wallet.connected
-    ? live.wallet.onBase
-      ? live.base.gasPriceLabel
-      : "Switch to Base"
+  const walletGrowth = live.mounted
+    ? live.wallet.connected
+      ? live.wallet.onBase
+        ? live.base.gasPriceLabel
+        : "Switch to Base"
+      : "Connect wallet"
     : "Connect wallet";
+
+  const holderValue = live.mounted
+    ? live.zora.holderCount.toLocaleString()
+    : String(live.zora.holderCount);
+
+  const aomiValue = live.mounted
+    ? live.aomi.successful.toLocaleString()
+    : String(live.aomi.successful);
+
+  const walletValue = live.mounted
+    ? live.wallet.connected
+      ? live.wallet.balanceLabel
+      : "Offline"
+    : "Offline";
 
   return (
     <div
@@ -228,21 +256,21 @@ function StatsPanel({
     >
       <Stat
         label="ZORA HOLDERS"
-        value={live.zora.holderCount.toLocaleString()}
+        value={holderValue}
         growth={holderGrowth}
         compact={compact}
       />
       <Divider compact={compact} />
       <Stat
         label="AOMI ACTIONS"
-        value={live.aomi.successful.toLocaleString()}
+        value={aomiValue}
         growth={aomiGrowth}
         compact={compact}
       />
       <Divider compact={compact} />
       <Stat
         label="WALLET · BASE"
-        value={live.wallet.connected ? live.wallet.balanceLabel : "Offline"}
+        value={walletValue}
         growth={walletGrowth}
         compact={compact}
       />
@@ -334,12 +362,9 @@ function Node({
   return (
     <div className="absolute z-30" style={style}>
       <div className="relative">
-        <motion.div
-          initial={false}
-          animate={{ opacity: [0.35, 1, 0.35] }}
-          transition={{ duration: 2.4, repeat: Infinity }}
+        <div
           className={cn(
-            "absolute top-1/2 h-px bg-gradient-to-r",
+            "absolute top-1/2 h-px animate-[orbit-node-line_2.4s_ease-in-out_infinite] bg-gradient-to-r",
             side === "left"
               ? "right-full from-transparent to-fuchsia-500"
               : "left-full from-fuchsia-500 to-transparent",
@@ -366,14 +391,8 @@ function Node({
 
 function Lightning({ className }: { className?: string }) {
   return (
-    <motion.div
-      initial={false}
-      animate={{
-        opacity: [0, 1, 0.2, 1, 0],
-        scaleX: [0.4, 1.15, 0.8, 1, 0.5],
-      }}
-      transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 1.1 }}
-      className={`pointer-events-none absolute z-10 h-px w-40 bg-gradient-to-r from-transparent via-cyan-400 to-fuchsia-500 shadow-[0_0_18px_rgba(34,211,238,0.9)] ${className}`}
+    <div
+      className={`pointer-events-none absolute z-10 h-px w-40 animate-[orbit-lightning_2.9s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-cyan-400 to-fuchsia-500 shadow-[0_0_18px_rgba(34,211,238,0.9)] ${className}`}
     />
   );
 }
