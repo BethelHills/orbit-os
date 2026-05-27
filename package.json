@@ -47,6 +47,9 @@
     "wagmi": "^2.19.5",
     "zustand": "^5.0.13"
   },
+  "overrides": {
+    "qr": "0.5.5"
+  },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

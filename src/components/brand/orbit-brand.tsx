@@ -29,6 +29,7 @@ export function OrbitBrand({
       />
       {showTagline && (
         <p
+          suppressHydrationWarning
           className={cn(
             "mt-2 leading-snug text-purple-300/90",
             compact ? "truncate text-[10px] sm:text-[11px]" : "text-[11px] sm:text-xs"

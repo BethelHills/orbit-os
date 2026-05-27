@@ -94,8 +94,8 @@ body {
   overflow-x: hidden;
 }
 
-/* RainbowKit connect modal above dashboard chrome */
-[data-rk] {
+/* RainbowKit modal portal above dashboard chrome (avoid breaking nested wallet UI) */
+body > [data-rk] {
   z-index: 2147483646;
 }
 
