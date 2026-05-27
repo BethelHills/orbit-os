@@ -2,6 +2,14 @@
 
 import { useState } from "react";
 import { Send, Sparkles, Maximize2 } from "lucide-react";
+import { useAccount } from "wagmi";
+import { executeOrbitAction } from "@/app/actions/execute-orbit-action";
+import { OrbitActionConfirmDialog } from "@/components/chat/orbit-action-confirm-dialog";
+import {
+  detectWriteAction,
+  type PendingWriteAction,
+} from "@/lib/aomi/detect-write-action";
+import type { OrbitActionResult } from "@/lib/aomi/orbit-action-types";
 import { useOrbitStore } from "@/store/orbit-store";
 import type { AgentLogEntry } from "@/lib/zora/types";
 
@@ -10,24 +18,55 @@ type Message = {
   text: string;
 };
 
-const QUICK_ACTIONS = ["Show holders", "Set price alert", "View analytics"];
+const QUICK_ACTIONS = [
+  "Launch coin",
+  "Show holders",
+  "Set price alert",
+  "View analytics",
+];
 
 const QUICK_PROMPTS: Record<string, string> = {
+  "Launch coin": "Launch a new coin called MOONJOY on Zora",
   "Show holders": "How many holders does my coin have?",
   "Set price alert": "Set a price alert at 0.5 ETH",
   "View analytics": "Show 24h volume and analytics",
 };
 
+function formatActionResult(result: OrbitActionResult): string {
+  if (!result.ok) return result.message;
+
+  if (result.action === "mint_coin" && result.data && "address" in result.data) {
+    const data = result.data;
+    return [
+      `Coin '${data.name}' (${data.symbol}) staged on Zora/Base.`,
+      "",
+      data.address ? `• Contract: ${data.address}` : "• Contract: pending wallet sign",
+      "• Network: Base",
+      "• Status: Approved — awaiting wallet signature if required",
+    ].join("\n");
+  }
+
+  if (result.action === "set_price_alert" && result.data && "targetPriceEth" in result.data) {
+    return `Price alert set at ${result.data.targetPriceEth} ETH for MOONJOY on Base.`;
+  }
+
+  return result.message;
+}
+
 export function AomiChat({ compact = false }: { compact?: boolean }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [approving, setApproving] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<PendingWriteAction | null>(null);
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "agent",
-      text: "🚀 Coin 'MOONJOY' has been successfully launched on Zora!\n\n• Initial Price: 0.2 ETH\n• Network: Base\n• Contract: 0x7ora…0001\n• Status: Live & monitoring",
+      text: "Welcome to OrbitOS. I can launch Zora coins, monitor holders, set alerts, and pull analytics on Base.\n\nWrite actions always require your approval before execution.",
     },
   ]);
 
+  const { address } = useAccount();
   const appendActivityLog = useOrbitStore((s) => s.appendActivityLog);
 
   function logForMessage(text: string): AgentLogEntry {
@@ -63,7 +102,7 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
       return {
         ...base,
         kind: "launch",
-        message: "Zora coin launch workflow prepared via Aomi",
+        message: "Zora coin launch approved via confirmation dialog",
       };
     }
     return {
@@ -73,15 +112,47 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
     };
   }
 
+  function queueWriteAction(userLabel: string, resolvedText: string) {
+    const writeAction = detectWriteAction(resolvedText);
+    if (!writeAction) return false;
+
+    setMessages((prev) => [
+      ...prev,
+      { role: "user", text: userLabel },
+      {
+        role: "agent",
+        text: [
+          `Prepared ${writeAction.action} on Zora/Base.`,
+          "",
+          `• Estimated cost: ${writeAction.costEth}`,
+          "• Status: Awaiting your approval",
+          "",
+          "Review the confirmation dialog and tap Approve to execute.",
+        ].join("\n"),
+      },
+    ]);
+
+    setPendingAction(writeAction);
+    setConfirmOpen(true);
+    return true;
+  }
+
   async function sendMessage(messageText?: string) {
     const raw = messageText ?? input.trim();
     const text = QUICK_PROMPTS[raw] ?? raw;
-    if (!text || loading) return;
+    if (!text || loading || approving) return;
+
+    setInput("");
+
+    const writeAction = detectWriteAction(text);
+    if (writeAction) {
+      queueWriteAction(raw === text ? text : raw, text);
+      return;
+    }
 
     const userMessage: Message = { role: "user", text: raw === text ? text : raw };
 
     setMessages((prev) => [...prev, userMessage]);
-    setInput("");
     setLoading(true);
 
     try {
@@ -114,136 +185,194 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
     }
   }
 
+  async function handleApprove() {
+    if (!pendingAction) return;
+
+    setApproving(true);
+
+    try {
+      const result = await executeOrbitAction({
+        action: pendingAction.action,
+        params: pendingAction.params,
+        confirmed: true,
+        walletAddress: address,
+      });
+
+      setMessages((prev) => [
+        ...prev,
+        { role: "agent", text: formatActionResult(result) },
+      ]);
+
+      appendActivityLog(logForMessage(pendingAction.action));
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "agent",
+          text: "Execution failed. No transaction was submitted.",
+        },
+      ]);
+    } finally {
+      setApproving(false);
+      setConfirmOpen(false);
+      setPendingAction(null);
+    }
+  }
+
+  function handleCancel() {
+    if (approving) return;
+
+    setConfirmOpen(false);
+    setPendingAction(null);
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "agent",
+        text: "Action cancelled. No transaction was submitted.",
+      },
+    ]);
+  }
+
   const shellClass = compact
     ? "glass-strong neon-border flex h-full min-h-0 flex-col rounded-2xl p-4"
     : "flex h-full min-h-0 flex-col rounded-2xl border border-purple-500/25 bg-[#070711]/80 p-4 shadow-[0_0_80px_rgba(126,34,206,0.18)] sm:rounded-[32px] sm:p-6";
 
   return (
-    <aside className={shellClass}>
-      <div className="flex shrink-0 items-start justify-between">
-        <div className="flex items-center gap-3">
-          <Sparkles className={compact ? "size-4 text-purple-300" : "text-purple-300"} />
-          <div>
-            <h2
-              className={
-                compact
-                  ? "text-sm font-bold tracking-wide text-white"
-                  : "font-serif text-lg font-bold text-white sm:text-2xl"
-              }
-            >
-              AOMI ASSISTANT
-            </h2>
-            <p
-              className={
-                compact
-                  ? "text-[9px] uppercase tracking-wider text-purple-400/80"
-                  : "mt-0.5 text-[10px] uppercase tracking-widest text-purple-300 sm:mt-1 sm:text-sm"
-              }
-            >
-              Beta
-            </p>
-          </div>
-        </div>
-        <Maximize2 className="text-slate-500" size={compact ? 14 : 18} />
-      </div>
-
-      <div
-        className={`min-h-0 flex-1 space-y-3 overflow-y-auto pr-1 ${
-          compact ? "mt-3" : "mt-4 space-y-4 pr-2 sm:mt-6 sm:space-y-5"
-        }`}
-      >
-        {messages.slice(compact ? -4 : undefined).map((message, index) => (
-          <div
-            key={index}
-            className={
-              message.role === "user"
-                ? compact
-                  ? "ml-6 rounded-2xl bg-gradient-to-r from-purple-600 to-violet-700 px-3.5 py-3 text-xs text-white"
-                  : "ml-auto max-w-[85%] rounded-2xl bg-gradient-to-r from-purple-600 to-violet-700 px-4 py-3 text-sm text-white sm:rounded-[28px] sm:px-7 sm:py-5"
-                : compact
-                  ? "mr-2 rounded-2xl border border-white/10 bg-slate-950/70 px-3.5 py-3 text-xs text-slate-100"
-                  : "max-w-[90%] rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm text-slate-100 sm:rounded-[28px] sm:px-7 sm:py-5"
-            }
-          >
-            {message.role === "agent" && (
-              <div
-                className={`mb-2 flex items-center gap-2 text-purple-300 ${
-                  compact ? "text-[10px]" : "mb-3"
-                }`}
+    <>
+      <aside className={shellClass}>
+        <div className="flex shrink-0 items-start justify-between">
+          <div className="flex items-center gap-3">
+            <Sparkles className={compact ? "size-4 text-purple-300" : "text-purple-300"} />
+            <div>
+              <h2
+                className={
+                  compact
+                    ? "text-sm font-bold tracking-wide text-white"
+                    : "font-serif text-lg font-bold text-white sm:text-2xl"
+                }
               >
-                <Sparkles size={compact ? 12 : 16} />
-                <span>Aomi</span>
-              </div>
-            )}
-            <p className={`whitespace-pre-line ${compact ? "leading-relaxed" : "leading-relaxed sm:leading-8"}`}>
-              {message.text}
-            </p>
+                AOMI ASSISTANT
+              </h2>
+              <p
+                className={
+                  compact
+                    ? "text-[9px] uppercase tracking-wider text-purple-400/80"
+                    : "mt-0.5 text-[10px] uppercase tracking-widest text-purple-300 sm:mt-1 sm:text-sm"
+                }
+              >
+                Beta
+              </p>
+            </div>
           </div>
-        ))}
+          <Maximize2 className="text-slate-500" size={compact ? 14 : 18} />
+        </div>
 
-        {loading && (
-          <div
-            className={
-              compact
-                ? "rounded-2xl border border-white/10 bg-slate-950/70 px-3.5 py-3 text-xs text-purple-300"
-                : "max-w-[90%] rounded-[28px] border border-slate-700 bg-slate-950/70 px-7 py-5 text-purple-300"
-            }
-          >
-            Aomi is thinking…
-          </div>
-        )}
-      </div>
-
-      <div className={`grid shrink-0 grid-cols-3 gap-1.5 ${compact ? "mt-2" : "mt-4 gap-2 sm:mt-6 sm:gap-3"}`}>
-        {QUICK_ACTIONS.map((item) => (
-          <button
-            key={item}
-            type="button"
-            disabled={loading}
-            onClick={() => sendMessage(item)}
-            className={
-              compact
-                ? "rounded-lg border border-white/10 px-2 py-1.5 text-[10px] text-slate-400 transition hover:border-purple-500/30 hover:text-white disabled:opacity-50"
-                : "rounded-xl border border-white/10 px-2 py-2 text-[11px] text-slate-300 transition hover:border-purple-500/40 hover:text-white disabled:opacity-50 sm:rounded-2xl sm:px-4 sm:py-3 sm:text-sm"
-            }
-          >
-            {item}
-          </button>
-        ))}
-      </div>
-
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          sendMessage();
-        }}
-        className={`flex shrink-0 items-center gap-2 ${
-          compact
-            ? "mt-3 rounded-xl border border-purple-500/20 bg-black/40 px-3 py-2.5"
-            : "mt-4 gap-2 rounded-xl border border-purple-500/30 bg-black/40 px-3 py-3 sm:mt-6 sm:gap-3 sm:rounded-[24px] sm:px-5 sm:py-4"
-        }`}
-      >
-        <input
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          placeholder="Ask Aomi anything…"
-          disabled={loading}
-          className={`flex-1 bg-transparent text-white outline-none placeholder:text-slate-500 disabled:opacity-50 ${
-            compact ? "text-xs" : ""
+        <div
+          className={`min-h-0 flex-1 space-y-3 overflow-y-auto pr-1 ${
+            compact ? "mt-3" : "mt-4 space-y-4 pr-2 sm:mt-6 sm:space-y-5"
           }`}
-        />
-        <button
-          type="submit"
-          disabled={loading || !input.trim()}
-          className={
-            compact
-              ? "rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 p-2 text-white disabled:opacity-50"
-              : "rounded-full bg-gradient-to-r from-purple-600 to-blue-600 p-3 text-white disabled:opacity-50"
-          }
         >
-          <Send size={compact ? 14 : 18} />
-        </button>
-      </form>
-    </aside>
+          {messages.slice(compact ? -4 : undefined).map((message, index) => (
+            <div
+              key={index}
+              className={
+                message.role === "user"
+                  ? compact
+                    ? "ml-6 rounded-2xl bg-gradient-to-r from-purple-600 to-violet-700 px-3.5 py-3 text-xs text-white"
+                    : "ml-auto max-w-[85%] rounded-2xl bg-gradient-to-r from-purple-600 to-violet-700 px-4 py-3 text-sm text-white sm:rounded-[28px] sm:px-7 sm:py-5"
+                  : compact
+                    ? "mr-2 rounded-2xl border border-white/10 bg-slate-950/70 px-3.5 py-3 text-xs text-slate-100"
+                    : "max-w-[90%] rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm text-slate-100 sm:rounded-[28px] sm:px-7 sm:py-5"
+              }
+            >
+              {message.role === "agent" && (
+                <div
+                  className={`mb-2 flex items-center gap-2 text-purple-300 ${
+                    compact ? "text-[10px]" : "mb-3"
+                  }`}
+                >
+                  <Sparkles size={compact ? 12 : 16} />
+                  <span>Aomi</span>
+                </div>
+              )}
+              <p className={`whitespace-pre-line ${compact ? "leading-relaxed" : "leading-relaxed sm:leading-8"}`}>
+                {message.text}
+              </p>
+            </div>
+          ))}
+
+          {loading && (
+            <div
+              className={
+                compact
+                  ? "rounded-2xl border border-white/10 bg-slate-950/70 px-3.5 py-3 text-xs text-purple-300"
+                  : "max-w-[90%] rounded-[28px] border border-slate-700 bg-slate-950/70 px-7 py-5 text-purple-300"
+              }
+            >
+              Aomi is thinking…
+            </div>
+          )}
+        </div>
+
+        <div className={`grid shrink-0 grid-cols-2 gap-1.5 sm:grid-cols-4 ${compact ? "mt-2" : "mt-4 gap-2 sm:mt-6 sm:gap-3"}`}>
+          {QUICK_ACTIONS.map((item) => (
+            <button
+              key={item}
+              type="button"
+              disabled={loading || approving}
+              onClick={() => sendMessage(item)}
+              className={
+                compact
+                  ? "rounded-lg border border-white/10 px-2 py-1.5 text-[10px] text-slate-400 transition hover:border-purple-500/30 hover:text-white disabled:opacity-50"
+                  : "rounded-xl border border-white/10 px-2 py-2 text-[11px] text-slate-300 transition hover:border-purple-500/40 hover:text-white disabled:opacity-50 sm:rounded-2xl sm:px-4 sm:py-3 sm:text-sm"
+              }
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            sendMessage();
+          }}
+          className={`flex shrink-0 items-center gap-2 ${
+            compact
+              ? "mt-3 rounded-xl border border-purple-500/20 bg-black/40 px-3 py-2.5"
+              : "mt-4 gap-2 rounded-xl border border-purple-500/30 bg-black/40 px-3 py-3 sm:mt-6 sm:gap-3 sm:rounded-[24px] sm:px-5 sm:py-4"
+          }`}
+        >
+          <input
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            placeholder="Ask Aomi anything…"
+            disabled={loading || approving}
+            className={`flex-1 bg-transparent text-white outline-none placeholder:text-slate-500 disabled:opacity-50 ${
+              compact ? "text-xs" : ""
+            }`}
+          />
+          <button
+            type="submit"
+            disabled={loading || approving || !input.trim()}
+            className={
+              compact
+                ? "rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 p-2 text-white disabled:opacity-50"
+                : "rounded-full bg-gradient-to-r from-purple-600 to-blue-600 p-3 text-white disabled:opacity-50"
+            }
+          >
+            <Send size={compact ? 14 : 18} />
+          </button>
+        </form>
+      </aside>
+
+      <OrbitActionConfirmDialog
+        open={confirmOpen}
+        pendingAction={pendingAction}
+        approving={approving}
+        onApprove={handleApprove}
+        onCancel={handleCancel}
+      />
+    </>
   );
 }
