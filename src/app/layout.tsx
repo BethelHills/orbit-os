@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@rainbow-me/rainbowkit/styles.css";
 import { Providers } from "@/components/providers";
+import { Web3Provider } from "@/components/providers/web3-provider";
 import { GlobePrefetch } from "@/components/globe/globe-prefetch";
 import "./globals.css";
 
@@ -65,7 +66,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col">
         <GlobePrefetch />
-        <Providers>{children}</Providers>
+        <Web3Provider>
+          <Providers>{children}</Providers>
+        </Web3Provider>
       </body>
     </html>
   );

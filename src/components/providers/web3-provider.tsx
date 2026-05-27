@@ -17,11 +17,11 @@ const orbitTheme = darkTheme({
   overlayBlur: "small",
 });
 
-interface WalletProviderProps {
+interface Web3ProviderProps {
   children: ReactNode;
 }
 
-export function WalletProvider({ children }: WalletProviderProps) {
+export function Web3Provider({ children }: Web3ProviderProps) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
