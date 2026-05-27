@@ -20,6 +20,17 @@ function readChainId() {
   return Number.isFinite(parsed) ? parsed : base.id;
 }
 
+const DEFAULT_SITE_URL = "https://orbit-os-rho.vercel.app";
+
+function readSiteUrl() {
+  const vercelUrl = readNonEmpty(process.env.VERCEL_URL);
+  return (
+    readNonEmpty(process.env.NEXT_PUBLIC_SITE_URL) ??
+    (vercelUrl ? `https://${vercelUrl}` : undefined) ??
+    DEFAULT_SITE_URL
+  );
+}
+
 function readWalletConnectProjectId() {
   return (
     readNonEmpty(
@@ -30,6 +41,7 @@ function readWalletConnectProjectId() {
 }
 
 export const publicEnv = {
+  siteUrl: readSiteUrl(),
   walletConnectProjectId: readWalletConnectProjectId(),
   chainId: readChainId(),
   nodeEnv: process.env.NODE_ENV ?? "development",
@@ -37,4 +49,5 @@ export const publicEnv = {
 } as const;
 
 export const CHAIN_ID = publicEnv.chainId;
+export const SITE_URL = publicEnv.siteUrl;
 export const WALLETCONNECT_PROJECT_ID = publicEnv.walletConnectProjectId;

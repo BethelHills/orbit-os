@@ -36,10 +36,16 @@ cp .env.example .env.local
 | Variable | Description |
 |----------|-------------|
 | `NEXT_PUBLIC_WALLETCONNECT_ID` | WalletConnect Cloud project ID ([cloud.walletconnect.com](https://cloud.walletconnect.com)) |
+| `NEXT_PUBLIC_SITE_URL` | Public app URL for WalletConnect metadata and Open Graph — production: `https://orbit-os-rho.vercel.app` |
 | `NEXT_PUBLIC_CHAIN` | EVM chain id — `8453` for Base |
 | `NODE_ENV` | Set to `production` automatically on Vercel / `next build` |
 
 Production defaults live in `.env.production`. Set `NEXT_PUBLIC_WALLETCONNECT_ID` in the Vercel project dashboard before deploying.
+
+Add these **allowed domains** in [WalletConnect Cloud](https://cloud.walletconnect.com) for your project:
+
+- `https://orbit-os-rho.vercel.app` (production)
+- `http://localhost:3000` (local dev)
 
 Legacy names `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` and `NEXT_PUBLIC_CHAIN_ID` are still supported.
 

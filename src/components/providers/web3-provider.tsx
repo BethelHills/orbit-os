@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { WagmiProvider } from "wagmi";
 
 import { config } from "@/lib/wallet";
+import { SITE_URL } from "@/lib/env";
 
 const queryClient = new QueryClient();
 
@@ -30,7 +31,7 @@ export function Web3Provider({ children }: Web3ProviderProps) {
           modalSize="compact"
           appInfo={{
             appName: "OrbitOS",
-            learnMoreUrl: "https://orbit-os-rho.vercel.app",
+            learnMoreUrl: SITE_URL,
           }}
         >
           {children}

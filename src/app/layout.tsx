@@ -5,6 +5,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { Providers } from "@/components/providers";
 import { Web3Provider } from "@/components/providers/web3-provider";
 import { GlobePrefetch } from "@/components/globe/globe-prefetch";
+import { SITE_URL } from "@/lib/env";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,18 +18,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://orbit-os-rho.vercel.app";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: "OrbitOS — AI Operating System for On-chain Actions",
   description:
     "AI Operating System for On-chain Actions. Launch, monitor, and manage on-chain activity from one command center.",
   applicationName: "OrbitOS",
   openGraph: {
     type: "website",
-    url: siteUrl,
+    url: SITE_URL,
     siteName: "OrbitOS",
     title: "OrbitOS — AI Operating System for On-chain Actions",
     description:
