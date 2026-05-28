@@ -1,5 +1,5 @@
-import { AgentLogs } from "@/components/dashboard/agent-logs";
+import { redirect } from "next/navigation";
 
 export default function ActionsPage() {
-  return <AgentLogs />;
+  redirect("/trade-actions");
 }
