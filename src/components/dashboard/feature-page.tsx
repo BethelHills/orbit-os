@@ -1,4 +1,5 @@
 import type { OrbitFeatureItem } from "@/lib/orbitos-data";
+import { PageBackButton } from "@/components/navigation/page-back-button";
 
 interface FeaturePageProps {
   title: string;
@@ -9,6 +10,7 @@ interface FeaturePageProps {
 export function FeaturePage({ title, subtitle, items }: FeaturePageProps) {
   return (
     <main className="min-h-screen bg-[#050510] p-4 text-white md:p-8">
+      <PageBackButton />
       <section className="mx-auto max-w-7xl">
         <div className="mb-10">
           <p className="text-sm uppercase tracking-[0.3em] text-purple-300">OrbitOS</p>

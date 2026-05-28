@@ -1,8 +1,10 @@
 import { AomiChat } from "@/components/chat/aomi-chat";
+import { PageBackButton } from "@/components/navigation/page-back-button";
 
 export default function AgentChatPage() {
   return (
     <main className="min-h-screen bg-[#050510] p-4 text-white md:p-8">
+      <PageBackButton />
       <section className="mx-auto max-w-7xl">
         <div className="mb-10">
           <p className="text-sm uppercase tracking-[0.3em] text-purple-300">OrbitOS</p>

@@ -1,9 +1,11 @@
 import { AnalyticsChart } from "@/components/charts/analytics-chart";
+import { PageBackButton } from "@/components/navigation/page-back-button";
 import { analyticsSignals } from "@/lib/orbitos-data";
 
 export default function AnalyticsPage() {
   return (
     <main className="min-h-screen bg-[#050510] text-white p-4 md:p-6 lg:p-8">
+      <PageBackButton />
       <section className="max-w-7xl mx-auto">
         <p className="text-sm text-purple-300 tracking-[0.25em] uppercase">
           OrbitOS

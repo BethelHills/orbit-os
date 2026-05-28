@@ -1,8 +1,10 @@
+import { PageBackButton } from "@/components/navigation/page-back-button";
 import { portfolioAssets } from "@/lib/orbitos-data";
 
 export default function PortfolioPage() {
   return (
     <main className="min-h-screen bg-[#050510] text-white p-4 md:p-6 lg:p-8">
+      <PageBackButton />
       <section className="max-w-7xl mx-auto">
         <p className="text-sm text-purple-300 tracking-[0.25em] uppercase">
           OrbitOS
