@@ -5,6 +5,45 @@ export type OrbitFeatureItem = {
   network: string;
 };
 
+export type PortfolioAssetRow = {
+  asset: string;
+  protocol: string;
+  price: string;
+  change: string;
+  value: string;
+};
+
+export const portfolioAssets: PortfolioAssetRow[] = [
+  {
+    asset: "MOONJOY",
+    protocol: "Zora",
+    price: "$640",
+    change: "+28.7%",
+    value: "$2,100",
+  },
+  {
+    asset: "VITALIK",
+    protocol: "Base",
+    price: "$0.042",
+    change: "+12.4%",
+    value: "$1,029",
+  },
+  {
+    asset: "BASECAT",
+    protocol: "Base",
+    price: "$0.018",
+    change: "+8.7%",
+    value: "$936",
+  },
+  {
+    asset: "AVNT",
+    protocol: "Avantis",
+    price: "$1.24",
+    change: "-2.1%",
+    value: "$397",
+  },
+];
+
 export const actions: OrbitFeatureItem[] = [
   {
     title: "Launch Coin",

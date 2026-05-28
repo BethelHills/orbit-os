@@ -40,7 +40,7 @@ const links: NavItem[] = [
   { name: "Overview", icon: LayoutDashboard, href: "/" },
   { name: "Agent Chat", icon: MessageCircle, href: "/agent-chat" },
   { name: "Trade / Actions", icon: ArrowLeftRight, href: "/trade-actions" },
-  { name: "Portfolio", icon: Wallet },
+  { name: "Portfolio", icon: Wallet, href: "/portfolio" },
   { name: "Analytics", icon: BarChart3, href: "/analytics" },
   { name: "Protocols", icon: Layers, href: "/protocols" },
   { name: "Alerts", icon: Bell },
