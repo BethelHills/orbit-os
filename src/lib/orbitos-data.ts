@@ -44,6 +44,13 @@ export const portfolioAssets: PortfolioAssetRow[] = [
   },
 ];
 
+export const analyticsSignals = [
+  "MOONJOY holder growth accelerated 17.3% in the last 24 hours on Base.",
+  "Aomi detected increased buy pressure from repeat wallets after the latest launch.",
+  "24h volume is trending above the 7-day average with stronger late-session activity.",
+  "Top buyers are concentrating around sub-0.01 ETH entries — watch for breakout volume.",
+];
+
 export const actions: OrbitFeatureItem[] = [
   {
     title: "Launch Coin",
