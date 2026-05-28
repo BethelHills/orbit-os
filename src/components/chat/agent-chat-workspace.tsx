@@ -75,8 +75,8 @@ function SidebarPanel({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-[28px] border border-purple-500/20 bg-white/[0.03] p-5 sm:p-6">
-      <p className="text-sm font-medium text-purple-300">{title}</p>
+    <div className="rounded-[28px] border border-orbit-border bg-orbit-surface p-5 sm:p-6">
+      <p className="text-sm font-medium text-orbit-accent">{title}</p>
       <div className="mt-4 space-y-4 sm:mt-5">{children}</div>
     </div>
   );
@@ -85,7 +85,7 @@ function SidebarPanel({
 function Memory({ title, value }: { title: string; value: string }) {
   return (
     <div className="min-w-0">
-      <p className="text-sm text-slate-400">{title}</p>
+      <p className="text-sm text-orbit-muted">{title}</p>
       <p className="mt-1 break-words">{value}</p>
     </div>
   );

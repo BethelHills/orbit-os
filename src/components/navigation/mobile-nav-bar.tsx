@@ -4,6 +4,7 @@ import { Menu, MessageCircle } from "lucide-react";
 import { OrbitBrand } from "@/components/brand/orbit-brand";
 import { useMobileSidebar } from "@/components/navigation/mobile-sidebar-context";
 import { NotificationsBell } from "@/components/navigation/notifications-bell";
+import { ThemeToggle } from "@/components/navigation/theme-toggle";
 import { ConnectWalletButton } from "@/components/wallet/connect-wallet-button";
 
 interface MobileNavBarProps {
@@ -34,6 +35,8 @@ export function MobileNavBar({ onOpenAssistant }: MobileNavBarProps) {
         )}
 
         <NotificationsBell compact />
+
+        <ThemeToggle compact />
 
         <button
           type="button"

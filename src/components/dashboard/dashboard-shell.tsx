@@ -80,7 +80,7 @@ export function DashboardShell({ children, assistant }: DashboardShellProps) {
 
   return (
     <MobileSidebarProvider>
-      <div className="flex h-[100dvh] overflow-hidden text-white">
+      <div className="flex h-[100dvh] overflow-hidden text-orbit-foreground">
         <Sidebar />
 
         <div className="relative flex min-w-0 flex-1 flex-col">
@@ -111,7 +111,7 @@ export function DashboardShell({ children, assistant }: DashboardShellProps) {
                 side="right"
                 className={cn(
                   "flex w-[min(100vw,24rem)] flex-col border-l border-purple-500/10",
-                  "bg-[#0a0a14]/95 p-0 text-white backdrop-blur-xl sm:max-w-md"
+                  "bg-orbit-shell/95 p-0 text-orbit-foreground backdrop-blur-xl sm:max-w-md"
                 )}
               >
                 <SheetTitle className="sr-only">Aomi Assistant</SheetTitle>

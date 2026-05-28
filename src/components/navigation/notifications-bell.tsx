@@ -102,7 +102,7 @@ export function NotificationsBell({ compact = false, className }: NotificationsB
         <SheetContent
           side={sheetSide}
           className={cn(
-            "flex flex-col gap-0 border-purple-500/10 bg-[#0a0a14]/95 p-0 text-white backdrop-blur-xl",
+            "flex flex-col gap-0 border-orbit-border bg-orbit-shell p-0 text-orbit-foreground backdrop-blur-xl",
             sheetSide === "bottom"
               ? "max-h-[min(85dvh,640px)] rounded-t-[28px]"
               : "w-[min(100vw,24rem)] sm:max-w-md"

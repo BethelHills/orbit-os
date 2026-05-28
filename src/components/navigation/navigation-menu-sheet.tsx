@@ -22,7 +22,7 @@ export function NavigationMenuSheet({
         side="left"
         showCloseButton={false}
         onOpenAutoFocus={(event) => event.preventDefault()}
-        className="flex w-[min(100vw,17.5rem)] flex-col border-r border-purple-500/10 bg-[#0a0a14]/95 p-0 text-white backdrop-blur-xl md:hidden"
+        className="flex w-[min(100vw,17.5rem)] flex-col border-r border-orbit-border bg-orbit-shell/95 p-0 text-orbit-foreground backdrop-blur-xl md:hidden"
       >
         <SheetTitle className="sr-only">Navigation menu</SheetTitle>
         <SidebarContent />

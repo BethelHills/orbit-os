@@ -49,6 +49,12 @@
 }
 
 :root {
+  --neon-purple: #a855f7;
+  --neon-blue: #3b82f6;
+  --neon-cyan: #22d3ee;
+}
+
+.dark {
   --background: #02030a;
   --foreground: #ffffff;
   --card: rgba(255, 255, 255, 0.03);
@@ -81,16 +87,97 @@
   --sidebar-accent-foreground: #e9d5ff;
   --sidebar-border: rgba(255, 255, 255, 0.08);
   --sidebar-ring: rgba(139, 92, 246, 0.4);
-  --neon-purple: #a855f7;
-  --neon-blue: #3b82f6;
-  --neon-cyan: #22d3ee;
+  --orbit-page-bg: #050510;
+  --orbit-body-bg:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.15), transparent),
+    radial-gradient(circle at top, #0a0614 0%, #050510 40%, #050505 100%);
+  --orbit-text: #ffffff;
+  --orbit-muted: #94a3b8;
+  --orbit-accent-label: #c4b5fd;
+  --orbit-shell-bg: rgba(10, 10, 20, 0.95);
+  --orbit-surface: rgba(255, 255, 255, 0.03);
+  --orbit-surface-strong: rgba(255, 255, 255, 0.035);
+  --orbit-border: rgba(139, 92, 246, 0.2);
+  --orbit-border-subtle: rgba(255, 255, 255, 0.08);
+  --orbit-glass-bg: rgba(255, 255, 255, 0.03);
+  --orbit-glass-border: rgba(255, 255, 255, 0.08);
+  --orbit-glass-shadow: 0 0 50px rgba(139, 92, 246, 0.12);
+  --orbit-glass-strong-bg: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.08) 0%,
+    rgba(59, 130, 246, 0.04) 50%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  --orbit-glass-strong-border: rgba(139, 92, 246, 0.2);
+  --orbit-glass-strong-shadow:
+    0 0 60px rgba(139, 92, 246, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --orbit-sticky-bg: rgba(5, 5, 16, 0.95);
+}
+
+.light {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: rgba(255, 255, 255, 0.92);
+  --card-foreground: #0f172a;
+  --popover: rgba(255, 255, 255, 0.98);
+  --popover-foreground: #0f172a;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(124, 58, 237, 0.1);
+  --secondary-foreground: #5b21b6;
+  --muted: rgba(15, 23, 42, 0.05);
+  --muted-foreground: #64748b;
+  --accent: rgba(124, 58, 237, 0.12);
+  --accent-foreground: #4c1d95;
+  --destructive: #dc2626;
+  --border: rgba(15, 23, 42, 0.1);
+  --input: rgba(15, 23, 42, 0.08);
+  --ring: rgba(124, 58, 237, 0.35);
+  --chart-1: #7c3aed;
+  --chart-2: #4f46e5;
+  --chart-3: #0891b2;
+  --chart-4: #059669;
+  --chart-5: #db2777;
+  --sidebar: rgba(255, 255, 255, 0.92);
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #7c3aed;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(124, 58, 237, 0.08);
+  --sidebar-accent-foreground: #5b21b6;
+  --sidebar-border: rgba(15, 23, 42, 0.08);
+  --sidebar-ring: rgba(124, 58, 237, 0.25);
+  --orbit-page-bg: #f1f5f9;
+  --orbit-body-bg:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124, 58, 237, 0.1), transparent),
+    linear-gradient(to bottom, #f8fafc 0%, #eef2ff 45%, #f1f5f9 100%);
+  --orbit-text: #0f172a;
+  --orbit-muted: #64748b;
+  --orbit-accent-label: #7c3aed;
+  --orbit-shell-bg: rgba(255, 255, 255, 0.98);
+  --orbit-surface: rgba(255, 255, 255, 0.88);
+  --orbit-surface-strong: rgba(255, 255, 255, 0.96);
+  --orbit-border: rgba(124, 58, 237, 0.18);
+  --orbit-border-subtle: rgba(15, 23, 42, 0.08);
+  --orbit-glass-bg: rgba(255, 255, 255, 0.78);
+  --orbit-glass-border: rgba(15, 23, 42, 0.08);
+  --orbit-glass-shadow: 0 8px 32px rgba(15, 23, 42, 0.08);
+  --orbit-glass-strong-bg: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.96) 0%,
+    rgba(238, 242, 255, 0.92) 50%,
+    rgba(241, 245, 249, 0.94) 100%
+  );
+  --orbit-glass-strong-border: rgba(124, 58, 237, 0.14);
+  --orbit-glass-strong-shadow:
+    0 12px 40px rgba(124, 58, 237, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  --orbit-sticky-bg: rgba(248, 250, 252, 0.95);
 }
 
 body {
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.15), transparent),
-    radial-gradient(circle at top, #0a0614 0%, #050510 40%, #050505 100%);
-  color: white;
+  background: var(--orbit-body-bg);
+  color: var(--orbit-text);
   overflow-x: hidden;
 }
 
@@ -124,24 +211,17 @@ body {
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--orbit-glass-bg);
   backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 50px rgba(139, 92, 246, 0.12);
+  border: 1px solid var(--orbit-glass-border);
+  box-shadow: var(--orbit-glass-shadow);
 }
 
 .glass-strong {
-  background: linear-gradient(
-    135deg,
-    rgba(139, 92, 246, 0.08) 0%,
-    rgba(59, 130, 246, 0.04) 50%,
-    rgba(255, 255, 255, 0.02) 100%
-  );
+  background: var(--orbit-glass-strong-bg);
   backdrop-filter: blur(40px);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  box-shadow:
-    0 0 60px rgba(139, 92, 246, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--orbit-glass-strong-border);
+  box-shadow: var(--orbit-glass-strong-shadow);
 }
 
 .neon-text {
@@ -160,6 +240,39 @@ body {
   }
   html {
     @apply font-sans;
+  }
+}
+
+@layer utilities {
+  .bg-orbit-page {
+    background-color: var(--orbit-page-bg);
+  }
+  .bg-orbit-shell {
+    background-color: var(--orbit-shell-bg);
+  }
+  .bg-orbit-surface {
+    background-color: var(--orbit-surface);
+  }
+  .bg-orbit-surface-strong {
+    background-color: var(--orbit-surface-strong);
+  }
+  .text-orbit-foreground {
+    color: var(--orbit-text);
+  }
+  .text-orbit-muted {
+    color: var(--orbit-muted);
+  }
+  .text-orbit-accent {
+    color: var(--orbit-accent-label);
+  }
+  .border-orbit-border {
+    border-color: var(--orbit-border);
+  }
+  .border-orbit-subtle {
+    border-color: var(--orbit-border-subtle);
+  }
+  .bg-orbit-sticky {
+    background-color: var(--orbit-sticky-bg);
   }
 }
 

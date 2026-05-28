@@ -1,9 +1,8 @@
 "use client";
 
-import { Sun } from "lucide-react";
-
 import { ConnectWalletButton } from "@/components/wallet/connect-wallet-button";
 import { NotificationsBell } from "@/components/navigation/notifications-bell";
+import { ThemeToggle } from "@/components/navigation/theme-toggle";
 import { useLiveMetrics } from "@/hooks/use-live-metrics";
 import { useMounted } from "@/hooks/use-mounted";
 import { getTimeOfDayGreeting } from "@/lib/greeting";
@@ -23,13 +22,13 @@ export function DashboardHeader() {
     <header className="mb-4 flex flex-col gap-3 sm:mb-5 sm:gap-4 lg:flex-row lg:items-center lg:justify-between">
       <div className="min-w-0">
         <h1
-          className="text-xl font-bold tracking-tight text-white sm:text-2xl md:text-[1.65rem]"
+          className="text-xl font-bold tracking-tight text-orbit-foreground sm:text-2xl md:text-[1.65rem]"
           suppressHydrationWarning
         >
           {greeting}, Bethel{" "}
           <span className="inline-block animate-[wave_2s_ease-in-out_infinite]">👋</span>
         </h1>
-        <p className="mt-1 text-xs text-slate-400 sm:text-sm" suppressHydrationWarning>
+        <p className="mt-1 text-xs text-orbit-muted sm:text-sm" suppressHydrationWarning>
           {tracking}
         </p>
       </div>
@@ -42,12 +41,7 @@ export function DashboardHeader() {
 
         <NotificationsBell />
 
-        <button
-          type="button"
-          className="glass hidden rounded-xl p-2.5 text-slate-300 transition hover:text-white sm:inline-flex"
-        >
-          <Sun size={16} />
-        </button>
+        <ThemeToggle />
 
         <ConnectWalletButton />
       </div>

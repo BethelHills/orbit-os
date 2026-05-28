@@ -21,7 +21,7 @@ export function StandalonePageShell({
 }: StandalonePageShellProps) {
   return (
     <MobileSidebarProvider>
-      <div className="flex min-h-dvh flex-col overflow-x-hidden bg-[#050510] text-white">
+      <div className="flex min-h-dvh flex-col overflow-x-hidden bg-orbit-page text-orbit-foreground">
         <MobileNavBar />
 
         <main
@@ -54,13 +54,13 @@ interface StandalonePageHeaderProps {
 export function StandalonePageHeader({ title, subtitle }: StandalonePageHeaderProps) {
   return (
     <header className="mb-8 md:mb-10">
-      <p className="text-xs uppercase tracking-[0.25em] text-purple-300 sm:text-sm">
+      <p className="text-xs uppercase tracking-[0.25em] text-orbit-accent sm:text-sm">
         OrbitOS
       </p>
       <h1 className="mt-2 text-3xl font-bold leading-tight sm:mt-3 sm:text-4xl md:text-5xl">
         {title}
       </h1>
-      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-400 sm:mt-4 sm:text-base">
+      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-orbit-muted sm:mt-4 sm:text-base">
         {subtitle}
       </p>
     </header>

@@ -19,9 +19,9 @@ export default function AnalyticsPage() {
         {analyticsSignals.map((signal) => (
           <article
             key={signal}
-            className="min-w-0 rounded-2xl border border-purple-500/20 bg-white/[0.035] p-4 sm:p-5"
+            className="min-w-0 rounded-2xl border border-orbit-border bg-orbit-surface-strong p-4 sm:p-5"
           >
-            <p className="text-sm font-medium text-purple-300">AI Signal</p>
+            <p className="text-sm font-medium text-orbit-accent">AI Signal</p>
             <p className="mt-2 break-words text-sm leading-relaxed sm:text-base">
               {signal}
             </p>

@@ -41,7 +41,7 @@ export function PageBackButton({
       className={cn(
         sidebar
           ? "mb-6 md:mb-8"
-          : "sticky top-0 z-30 mb-6 border-b border-purple-500/10 bg-[#050510]/95 py-3 backdrop-blur-md sm:static sm:mb-8 sm:border-0 sm:bg-transparent sm:py-0 sm:backdrop-blur-none",
+          : "sticky top-0 z-30 mb-6 border-b border-orbit-subtle bg-orbit-sticky py-3 backdrop-blur-md sm:static sm:mb-8 sm:border-0 sm:bg-transparent sm:py-0 sm:backdrop-blur-none",
         className
       )}
     >

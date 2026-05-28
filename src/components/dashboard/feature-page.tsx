@@ -19,7 +19,7 @@ export function FeaturePage({ title, subtitle, items }: FeaturePageProps) {
         {items.map((item) => (
           <article
             key={item.title}
-            className="min-w-0 rounded-[28px] border border-purple-500/20 bg-white/[0.03] p-5 transition hover:border-purple-500/40 sm:p-6"
+            className="min-w-0 rounded-[28px] border border-orbit-border bg-orbit-surface p-5 transition hover:border-purple-500/40 sm:p-6"
           >
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
               <h2 className="min-w-0 break-words text-base font-semibold sm:text-lg">
@@ -29,10 +29,10 @@ export function FeaturePage({ title, subtitle, items }: FeaturePageProps) {
                 {item.status}
               </span>
             </div>
-            <p className="mt-3 break-words text-sm leading-relaxed text-slate-400">
+            <p className="mt-3 break-words text-sm leading-relaxed text-orbit-muted">
               {item.description}
             </p>
-            <p className="mt-5 text-xs uppercase tracking-wider text-purple-300/80">
+            <p className="mt-5 text-xs uppercase tracking-wider text-orbit-accent/80">
               {item.network}
             </p>
           </article>

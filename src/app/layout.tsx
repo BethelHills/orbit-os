@@ -6,6 +6,7 @@ import { Providers } from "@/components/providers";
 import { Web3Provider } from "@/components/providers/web3-provider";
 import { GlobePrefetch } from "@/components/globe/globe-prefetch";
 import { SITE_URL } from "@/lib/env";
+import { THEME_STORAGE_KEY } from "@/lib/theme";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -57,17 +58,23 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
+      suppressHydrationWarning
     >
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var k=${JSON.stringify(THEME_STORAGE_KEY)};var t=localStorage.getItem(k)||'dark';var d=t==='system'?window.matchMedia('(prefers-color-scheme: dark)').matches:t==='dark';document.documentElement.classList.remove('light','dark');document.documentElement.classList.add(d?'dark':'light');document.documentElement.style.colorScheme=d?'dark':'light';}catch(e){document.documentElement.classList.add('dark');}})();`,
+          }}
+        />
         <link rel="preload" href="/globe/earth-night.jpg" as="image" />
         <link rel="preload" href="/globe/earth-topology.png" as="image" />
       </head>
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-orbit-page text-orbit-foreground">
         <GlobePrefetch />
-        <Web3Provider>
-          <Providers>{children}</Providers>
-        </Web3Provider>
+        <Providers>
+          <Web3Provider>{children}</Web3Provider>
+        </Providers>
         <Analytics />
       </body>
     </html>
