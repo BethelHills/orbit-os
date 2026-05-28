@@ -51,6 +51,39 @@ export const analyticsSignals = [
   "Top buyers are concentrating around sub-0.01 ETH entries — watch for breakout volume.",
 ];
 
+export const protocols: OrbitFeatureItem[] = [
+  {
+    title: "Zora",
+    description: "Creator coins on Base — launch, monitor holders, and track buyers.",
+    status: "Active",
+    network: "Base",
+  },
+  {
+    title: "Aerodrome",
+    description: "Liquidity and veAERO — track pools, rewards, and rebalancing.",
+    status: "Ready",
+    network: "Base",
+  },
+  {
+    title: "Avantis",
+    description: "Perpetuals on Base — monitor risk, positions, and margin health.",
+    status: "Ready",
+    network: "Base",
+  },
+  {
+    title: "Limitless",
+    description: "Prediction markets — surface odds and agent-detected momentum shifts.",
+    status: "Ready",
+    network: "Base",
+  },
+  {
+    title: "Monad",
+    description: "Early EVM ecosystem — test agent workflows on upcoming chain.",
+    status: "Bonus",
+    network: "Monad",
+  },
+];
+
 export const actions: OrbitFeatureItem[] = [
   {
     title: "Launch Coin",
