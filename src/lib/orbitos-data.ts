@@ -278,3 +278,60 @@ export const settingsItems: OrbitFeatureItem[] = [
     network: "Alerts",
   },
 ];
+
+export type OrbitNotification = {
+  id: string;
+  title: string;
+  message: string;
+  time: string;
+  kind: "alert" | "tx" | "agent" | "system";
+  read: boolean;
+  href?: string;
+};
+
+export const notifications: OrbitNotification[] = [
+  {
+    id: "n1",
+    title: "Holder spike detected",
+    message: "MOONJOY holders grew 17.3% in the last 24 hours on Base.",
+    time: "2m ago",
+    kind: "alert",
+    read: false,
+    href: "/alerts",
+  },
+  {
+    id: "n2",
+    title: "Transaction confirmed",
+    message: "Pool funded with 0.05 ETH liquidity on Zora.",
+    time: "18m ago",
+    kind: "tx",
+    read: false,
+    href: "/transactions",
+  },
+  {
+    id: "n3",
+    title: "Aomi simulation passed",
+    message: "Price alert setup is ready for wallet review and signing.",
+    time: "1h ago",
+    kind: "agent",
+    read: false,
+    href: "/agent-chat",
+  },
+  {
+    id: "n4",
+    title: "Volume above average",
+    message: "24h volume is trending above the 7-day baseline.",
+    time: "3h ago",
+    kind: "alert",
+    read: true,
+    href: "/analytics",
+  },
+  {
+    id: "n5",
+    title: "Wallet connected",
+    message: "OrbitOS linked to your Base wallet successfully.",
+    time: "Yesterday",
+    kind: "system",
+    read: true,
+  },
+];

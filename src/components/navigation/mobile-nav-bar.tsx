@@ -1,8 +1,9 @@
 "use client";
 
-import { Bell, Menu, MessageCircle } from "lucide-react";
+import { Menu, MessageCircle } from "lucide-react";
 import { OrbitBrand } from "@/components/brand/orbit-brand";
 import { useMobileSidebar } from "@/components/navigation/mobile-sidebar-context";
+import { NotificationsBell } from "@/components/navigation/notifications-bell";
 import { ConnectWalletButton } from "@/components/wallet/connect-wallet-button";
 
 interface MobileNavBarProps {
@@ -32,16 +33,7 @@ export function MobileNavBar({ onOpenAssistant }: MobileNavBarProps) {
           </button>
         )}
 
-        <button
-          type="button"
-          className="relative min-h-10 min-w-10 touch-manipulation rounded-lg p-2 text-slate-300 transition hover:text-white"
-          aria-label="Notifications"
-        >
-          <Bell size={18} />
-          <span className="absolute right-1 top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-purple-600 text-[8px] font-bold text-white">
-            3
-          </span>
-        </button>
+        <NotificationsBell compact />
 
         <button
           type="button"

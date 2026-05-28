@@ -1,8 +1,9 @@
 "use client";
 
-import { Bell, Sun } from "lucide-react";
+import { Sun } from "lucide-react";
 
 import { ConnectWalletButton } from "@/components/wallet/connect-wallet-button";
+import { NotificationsBell } from "@/components/navigation/notifications-bell";
 import { useLiveMetrics } from "@/hooks/use-live-metrics";
 import { useMounted } from "@/hooks/use-mounted";
 import { getTimeOfDayGreeting } from "@/lib/greeting";
@@ -39,15 +40,7 @@ export function DashboardHeader() {
           Online
         </span>
 
-        <button
-          type="button"
-          className="glass relative hidden rounded-xl p-2.5 text-slate-300 transition hover:text-white sm:inline-flex"
-        >
-          <Bell size={16} />
-          <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-purple-600 text-[9px] font-bold text-white">
-            3
-          </span>
-        </button>
+        <NotificationsBell />
 
         <button
           type="button"
