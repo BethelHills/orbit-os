@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Loader2, Send, Sparkles, Maximize2 } from "lucide-react";
 import { useAccount } from "wagmi";
 import { OrbitActionConfirmDialog } from "@/components/chat/orbit-action-confirm-dialog";
@@ -130,7 +130,15 @@ function logForMessage(text: string, coinName?: string): AgentLogEntry {
   };
 }
 
-export function AomiChat({ compact = false }: { compact?: boolean }) {
+export function AomiChat({
+  compact = false,
+  className,
+  promptRequest,
+}: {
+  compact?: boolean;
+  className?: string;
+  promptRequest?: { id: number; text: string } | null;
+}) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [flowPhase, setFlowPhase] = useState<TransactionFlowPhase>("idle");
@@ -247,14 +255,23 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
     }
   }
 
+  useEffect(() => {
+    if (!promptRequest?.text) return;
+    void sendMessage(promptRequest.text);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fire when sidebar prompt id changes
+  }, [promptRequest?.id]);
+
   const flowStatus = FLOW_STATUS[flowPhase];
   const loadingLabel = loading
     ? "Aomi is analyzing..."
     : flowStatus ?? null;
   const loadingMode = loading ? "skeleton" : "spinner";
-  const shellClass = compact
-    ? "glass-strong neon-border flex h-full min-h-0 flex-col rounded-2xl p-4"
-    : "flex h-full min-h-0 flex-col rounded-2xl border border-purple-500/25 bg-[#070711]/80 p-4 shadow-[0_0_80px_rgba(126,34,206,0.18)] sm:rounded-[32px] sm:p-6";
+  const shellClass = cn(
+    compact
+      ? "glass-strong neon-border flex h-full min-h-0 flex-col rounded-2xl p-4"
+      : "flex h-full min-h-0 flex-col rounded-2xl border border-purple-500/25 bg-[#070711]/80 p-4 shadow-[0_0_80px_rgba(126,34,206,0.18)] sm:rounded-[32px] sm:p-6",
+    className
+  );
 
   return (
     <>
@@ -338,8 +355,8 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
               onClick={() => sendMessage(item)}
               className={
                 compact
-                  ? "rounded-lg border border-white/10 px-2 py-1.5 text-[10px] text-slate-400 transition hover:border-purple-500/30 hover:text-white disabled:opacity-50"
-                  : "rounded-xl border border-white/10 px-2 py-2 text-[11px] text-slate-300 transition hover:border-purple-500/40 hover:text-white disabled:opacity-50 sm:rounded-2xl sm:px-4 sm:py-3 sm:text-sm"
+                  ? "min-h-9 touch-manipulation rounded-lg border border-white/10 px-2 py-1.5 text-[10px] text-slate-400 transition hover:border-purple-500/30 hover:text-white active:scale-[0.99] disabled:opacity-50"
+                  : "min-h-11 touch-manipulation rounded-xl border border-white/10 px-2 py-2 text-[11px] text-slate-300 transition hover:border-purple-500/40 hover:text-white active:scale-[0.99] disabled:opacity-50 sm:rounded-2xl sm:px-4 sm:py-3 sm:text-sm"
               }
             >
               {item}
@@ -363,7 +380,7 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
             onChange={(event) => setInput(event.target.value)}
             placeholder="Ask Aomi anything…"
             disabled={loading || flowBusy}
-            className={`flex-1 bg-transparent text-white outline-none placeholder:text-slate-500 disabled:opacity-50 ${
+            className={`flex-1 bg-transparent text-base text-white outline-none placeholder:text-slate-500 disabled:opacity-50 ${
               compact ? "text-xs" : ""
             }`}
           />
@@ -372,8 +389,8 @@ export function AomiChat({ compact = false }: { compact?: boolean }) {
             disabled={loading || flowBusy || !input.trim()}
             className={
               compact
-                ? "rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 p-2 text-white disabled:opacity-50"
-                : "rounded-full bg-gradient-to-r from-purple-600 to-blue-600 p-3 text-white disabled:opacity-50"
+                ? "min-h-9 min-w-9 touch-manipulation rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 p-2 text-white disabled:opacity-50"
+                : "min-h-11 min-w-11 touch-manipulation rounded-full bg-gradient-to-r from-purple-600 to-blue-600 p-3 text-white disabled:opacity-50"
             }
           >
             {loading || flowBusy ? (

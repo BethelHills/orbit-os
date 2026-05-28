@@ -33,7 +33,7 @@ export function PageBackButton({
             router.push(fallbackHref);
           }
         }}
-        className="inline-flex min-h-11 items-center gap-2 rounded-full border border-purple-500/25 bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-slate-300 transition hover:border-purple-500/45 hover:bg-white/[0.08] hover:text-white active:scale-[0.98]"
+        className="inline-flex min-h-11 touch-manipulation items-center gap-2 rounded-full border border-purple-500/25 bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-slate-300 transition hover:border-purple-500/45 hover:bg-white/[0.08] hover:text-white active:scale-[0.98]"
         aria-label={`${label} to overview`}
       >
         <ArrowLeft className="h-4 w-4 shrink-0" aria-hidden />
