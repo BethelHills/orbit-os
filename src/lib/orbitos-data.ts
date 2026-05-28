@@ -239,3 +239,42 @@ export const integrations: OrbitFeatureItem[] = [
     network: "Base",
   },
 ];
+
+export const settingsItems: OrbitFeatureItem[] = [
+  {
+    title: "Transaction Safety",
+    description: "Require simulate → review → confirm before any protected on-chain action.",
+    status: "Enabled",
+    network: "Safety",
+  },
+  {
+    title: "Wallet Behavior",
+    description: "Control default signing prompts, address display, and connection persistence.",
+    status: "Configured",
+    network: "Web3",
+  },
+  {
+    title: "Agent Mode",
+    description: "Choose read-only analytics vs. full write access for Aomi agent workflows.",
+    status: "Write",
+    network: "Aomi",
+  },
+  {
+    title: "Network",
+    description: "Base mainnet (8453) for production; fork simulation before execution.",
+    status: "Base",
+    network: "Chain",
+  },
+  {
+    title: "UI Preferences",
+    description: "Theme, compact layout, and dashboard metric refresh behavior.",
+    status: "Default",
+    network: "UI",
+  },
+  {
+    title: "Notifications",
+    description: "Alert delivery for price moves, holder spikes, and transaction outcomes.",
+    status: "Ready",
+    network: "Alerts",
+  },
+];

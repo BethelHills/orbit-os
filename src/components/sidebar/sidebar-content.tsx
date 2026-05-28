@@ -46,7 +46,7 @@ const links: NavItem[] = [
   { name: "Alerts", icon: Bell, href: "/alerts" },
   { name: "Transactions", icon: Receipt, href: "/transactions" },
   { name: "Integrations", icon: Plug, href: "/integrations" },
-  { name: "Settings", icon: Settings },
+  { name: "Settings", icon: Settings, href: "/settings" },
 ];
 
 const EARLY_FORGE_END = new Date("2026-06-01T00:00:00Z");
