@@ -11,3 +11,6 @@ export {
   stageAomiTransactRequest,
 } from "./aomi-transact-client";
 export { processAomi } from "./process-aomi";
+export { classifyOrbitIntent } from "./intent";
+export { processOrbitChatMessage } from "./actions";
+export type { OrbitChatResponse } from "./actions";
