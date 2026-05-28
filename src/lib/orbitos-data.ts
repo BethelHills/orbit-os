@@ -84,6 +84,45 @@ export const protocols: OrbitFeatureItem[] = [
   },
 ];
 
+export const alerts: OrbitFeatureItem[] = [
+  {
+    title: "Holder Growth",
+    description: "Notify when unique holders cross a threshold or spike within a time window.",
+    status: "Active",
+    network: "Base",
+  },
+  {
+    title: "Price Move",
+    description: "Alert on percentage moves above or below your target for a creator coin.",
+    status: "Ready",
+    network: "Base",
+  },
+  {
+    title: "Whale Activity",
+    description: "Detect large buys or sells from tracked wallets and repeat buyers.",
+    status: "Ready",
+    network: "Base",
+  },
+  {
+    title: "Volume Spike",
+    description: "Trigger when 24h volume exceeds rolling averages or session baselines.",
+    status: "Ready",
+    network: "Base",
+  },
+  {
+    title: "Protocol Change",
+    description: "Surface pool updates, reward shifts, and integration status on connected protocols.",
+    status: "Simulate",
+    network: "Base",
+  },
+  {
+    title: "Launch Monitor",
+    description: "Watch new Zora coin launches and flag early momentum from agent signals.",
+    status: "Ready",
+    network: "Base",
+  },
+];
+
 export const actions: OrbitFeatureItem[] = [
   {
     title: "Launch Coin",

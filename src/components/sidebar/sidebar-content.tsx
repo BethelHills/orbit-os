@@ -43,7 +43,7 @@ const links: NavItem[] = [
   { name: "Portfolio", icon: Wallet, href: "/portfolio" },
   { name: "Analytics", icon: BarChart3, href: "/analytics" },
   { name: "Protocols", icon: Layers, href: "/protocols" },
-  { name: "Alerts", icon: Bell },
+  { name: "Alerts", icon: Bell, href: "/alerts" },
   { name: "Transactions", icon: Receipt },
   { name: "Integrations", icon: Plug },
   { name: "Settings", icon: Settings },
