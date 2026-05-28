@@ -1,4 +1,5 @@
 import { execFile } from "node:child_process";
+import path from "node:path";
 import { promisify } from "node:util";
 
 import type { OrbitActionName } from "./orbit-action-types";
@@ -6,8 +7,9 @@ import { ORBIT_CHAIN_ID } from "./orbit-action-types";
 
 const execFileAsync = promisify(execFile);
 
-const AOMI_CLIENT = "npx";
-const AOMI_ARGS = ["@aomi-labs/client@0.1.30"];
+function aomiBin() {
+  return path.join(process.cwd(), "node_modules", ".bin", "aomi");
+}
 
 function buildZoraPrompt(action: OrbitActionName, params: Record<string, unknown>) {
   switch (action) {
@@ -44,7 +46,6 @@ export async function stageAomiTransactRequest(
   }
 
   const args = [
-    ...AOMI_ARGS,
     "chat",
     prompt,
     "--chain",
@@ -57,7 +58,7 @@ export async function stageAomiTransactRequest(
   }
 
   try {
-    const { stdout, stderr } = await execFileAsync(AOMI_CLIENT, args, {
+    const { stdout, stderr } = await execFileAsync(aomiBin(), args, {
       timeout: 60_000,
       env: process.env,
     });
