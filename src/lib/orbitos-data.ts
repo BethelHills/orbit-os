@@ -200,3 +200,42 @@ export const actions: OrbitFeatureItem[] = [
     network: "Base",
   },
 ];
+
+export const integrations: OrbitFeatureItem[] = [
+  {
+    title: "aomi-transact",
+    description: "Natural-language CLI for simulate → sign flows across Base protocols.",
+    status: "Connected",
+    network: "Aomi",
+  },
+  {
+    title: "aomi-build",
+    description: "Scaffold new Aomi apps and agent-callable tools from API specs.",
+    status: "Connected",
+    network: "Aomi",
+  },
+  {
+    title: "Zora Toolkit",
+    description: "Launch coins, update metadata, and pull holder analytics on Base.",
+    status: "Active",
+    network: "Base",
+  },
+  {
+    title: "RainbowKit + WalletConnect",
+    description: "Wallet connection, signing, and staged transaction submission.",
+    status: "Connected",
+    network: "Web3",
+  },
+  {
+    title: "Base RPC",
+    description: "On-chain reads, fork simulation, and calldata execution on chain 8453.",
+    status: "Active",
+    network: "Base",
+  },
+  {
+    title: "Protocol Skills Pack",
+    description: "Aerodrome, Avantis, and Limitless agent skills for expanded workflows.",
+    status: "Coming soon",
+    network: "Base",
+  },
+];

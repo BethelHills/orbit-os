@@ -45,7 +45,7 @@ const links: NavItem[] = [
   { name: "Protocols", icon: Layers, href: "/protocols" },
   { name: "Alerts", icon: Bell, href: "/alerts" },
   { name: "Transactions", icon: Receipt, href: "/transactions" },
-  { name: "Integrations", icon: Plug },
+  { name: "Integrations", icon: Plug, href: "/integrations" },
   { name: "Settings", icon: Settings },
 ];
 
