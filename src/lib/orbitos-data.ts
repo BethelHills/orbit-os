@@ -5,6 +5,12 @@ export type OrbitFeatureItem = {
   network: string;
 };
 
+export type TransactionTimelineRow = {
+  hash: string;
+  title: string;
+  time: string;
+};
+
 export type PortfolioAssetRow = {
   asset: string;
   protocol: string;
@@ -12,6 +18,39 @@ export type PortfolioAssetRow = {
   change: string;
   value: string;
 };
+
+export const transactions: TransactionTimelineRow[] = [
+  {
+    title: "MOONJOY coin launched on Zora",
+    time: "2 minutes ago",
+    hash: "0x8f3c…a91e",
+  },
+  {
+    title: "Pool funded with 0.05 ETH liquidity",
+    time: "18 minutes ago",
+    hash: "0x2b7d…4c02",
+  },
+  {
+    title: "Price alert set at +15% threshold",
+    time: "1 hour ago",
+    hash: "0x9e41…7f88",
+  },
+  {
+    title: "Holder analytics snapshot pulled",
+    time: "3 hours ago",
+    hash: "0x1a6f…d3b5",
+  },
+  {
+    title: "Metadata updated — cover image refreshed",
+    time: "Yesterday",
+    hash: "0x5c92…e610",
+  },
+  {
+    title: "Wallet connected to OrbitOS on Base",
+    time: "2 days ago",
+    hash: "0x0d44…82aa",
+  },
+];
 
 export const portfolioAssets: PortfolioAssetRow[] = [
   {

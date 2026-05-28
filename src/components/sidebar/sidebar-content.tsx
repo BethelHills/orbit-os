@@ -44,7 +44,7 @@ const links: NavItem[] = [
   { name: "Analytics", icon: BarChart3, href: "/analytics" },
   { name: "Protocols", icon: Layers, href: "/protocols" },
   { name: "Alerts", icon: Bell, href: "/alerts" },
-  { name: "Transactions", icon: Receipt },
+  { name: "Transactions", icon: Receipt, href: "/transactions" },
   { name: "Integrations", icon: Plug },
   { name: "Settings", icon: Settings },
 ];
