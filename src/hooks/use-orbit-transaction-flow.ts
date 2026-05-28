@@ -151,7 +151,11 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
   );
 
   const startWriteFlow = useCallback(
-    async (userLabel: string, writeAction: PendingWriteAction) => {
+    async (
+      userLabel: string,
+      writeAction: PendingWriteAction,
+      options?: { skipUserMessage?: boolean }
+    ) => {
       if (busy) return;
 
       setBusy(true);
@@ -159,7 +163,9 @@ export function useOrbitTransactionFlow(callbacks: FlowCallbacks) {
       setSimulation(null);
       setFlowId(null);
       setPendingTxs([]);
-      callbacks.onUserMessage(userLabel);
+      if (!options?.skipUserMessage) {
+        callbacks.onUserMessage(userLabel);
+      }
 
       try {
         setFlowPhase("simulating");

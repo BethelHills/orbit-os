@@ -6,7 +6,8 @@ import { useAccount } from "wagmi";
 import { OrbitActionConfirmDialog } from "@/components/chat/orbit-action-confirm-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { detectWriteAction } from "@/lib/aomi/detect-write-action";
+import type { OrbitChatResponse } from "@/lib/aomi/chat-response";
+import type { PendingWriteAction } from "@/lib/aomi/detect-write-action";
 import type { ProtectedOrbitAction } from "@/lib/aomi/orbit-action-types";
 import {
   useOrbitTransactionFlow,
@@ -202,15 +203,9 @@ export function AomiChat({
 
     setInput("");
 
-    const writeAction = detectWriteAction(text);
-    if (writeAction) {
-      await startWriteFlow(raw === text ? text : raw, writeAction);
-      return;
-    }
+    const userLabel = raw === text ? text : raw;
 
-    const userMessage: Message = { role: "user", text: raw === text ? text : raw };
-
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages((prev) => [...prev, { role: "user", text: userLabel }]);
     setLoading(true);
 
     try {
@@ -226,12 +221,17 @@ export function AomiChat({
 
       if (!response.ok) throw new Error("Chat request failed");
 
-      const data = await response.json();
+      const data = (await response.json()) as OrbitChatResponse;
 
-      setMessages((prev) => [
-        ...prev,
-        { role: "agent", text: data.reply },
-      ]);
+      setMessages((prev) => [...prev, { role: "agent", text: data.reply }]);
+
+      if (data.requiresConfirmation && data.pendingAction) {
+        setLoading(false);
+        await startWriteFlow(userLabel, data.pendingAction as PendingWriteAction, {
+          skipUserMessage: true,
+        });
+        return;
+      }
 
       if (data.coin && data.logs && data.analytics) {
         applyChatResponse({
@@ -239,7 +239,7 @@ export function AomiChat({
           logs: data.logs,
           analytics: data.analytics,
         });
-      } else {
+      } else if (data.status !== "error") {
         appendActivityLog(logForMessage(text, coin.name));
       }
     } catch {

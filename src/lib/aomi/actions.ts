@@ -1,5 +1,7 @@
 import { getOrbitActionCost } from "./action-costs";
 import type { PendingWriteAction } from "./detect-write-action";
+import type { OrbitChatResponse } from "./chat-response";
+export type { OrbitChatResponse, OrbitChatPlanStatus, OrbitChatActionDescriptor } from "./chat-response";
 import {
   classifyOrbitIntent,
   isReadOrbitChatIntent,
@@ -18,29 +20,6 @@ import type {
   CreatorCoin,
   ZoraToolName,
 } from "@/lib/zora/types";
-
-export type OrbitChatPlanStatus = "simulated" | "requires_confirmation" | "error";
-
-export type OrbitChatActionDescriptor = {
-  name: string;
-  requiresWallet: boolean;
-  requiresConfirmation: boolean;
-};
-
-export type OrbitChatResponse = {
-  reply: string;
-  intent: string;
-  protocol: string;
-  network: "Base";
-  status: OrbitChatPlanStatus;
-  steps: string[];
-  action?: OrbitChatActionDescriptor;
-  coin?: CreatorCoin;
-  logs?: AgentLogEntry[];
-  analytics?: AnalyticsPoint[];
-  requiresConfirmation?: boolean;
-  pendingAction?: PendingWriteAction;
-};
 
 const PROTOCOL = "Zora";
 
