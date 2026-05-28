@@ -33,7 +33,7 @@ export function DashboardHeader() {
         </p>
       </div>
 
-      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+      <div className="hidden flex-wrap items-center gap-1.5 md:flex sm:gap-2">
         <span className="glass hidden items-center gap-2 rounded-xl px-3 py-2 text-xs text-green-300 sm:flex">
           <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.8)]" />
           Online
