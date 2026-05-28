@@ -1,4 +1,8 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { MobileNavBar } from "@/components/navigation/mobile-nav-bar";
+import { MobileSidebarProvider } from "@/components/navigation/mobile-sidebar-context";
 import { PageBackButton } from "@/components/navigation/page-back-button";
 import { cn } from "@/lib/utils";
 
@@ -16,23 +20,29 @@ export function StandalonePageShell({
   maxWidth = "7xl",
 }: StandalonePageShellProps) {
   return (
-    <main
-      className={cn(
-        "min-h-dvh overflow-x-hidden bg-[#050510] p-4 pb-10 text-white md:p-6 md:pb-12 lg:p-8",
-        className
-      )}
-    >
-      <PageBackButton />
-      <section
-        className={cn(
-          "mx-auto w-full min-w-0",
-          maxWidth === "5xl" ? "max-w-5xl" : "max-w-7xl",
-          contentClassName
-        )}
-      >
-        {children}
-      </section>
-    </main>
+    <MobileSidebarProvider>
+      <div className="flex min-h-dvh flex-col overflow-x-hidden bg-[#050510] text-white">
+        <MobileNavBar />
+
+        <main
+          className={cn(
+            "flex-1 p-4 pb-10 md:p-6 md:pb-12 lg:p-8",
+            className
+          )}
+        >
+          <PageBackButton />
+          <section
+            className={cn(
+              "mx-auto w-full min-w-0",
+              maxWidth === "5xl" ? "max-w-5xl" : "max-w-7xl",
+              contentClassName
+            )}
+          >
+            {children}
+          </section>
+        </main>
+      </div>
+    </MobileSidebarProvider>
   );
 }
 

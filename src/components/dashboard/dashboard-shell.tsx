@@ -15,6 +15,8 @@ import {
 import { useViewportTier } from "@/hooks/use-viewport-tier";
 import { cn } from "@/lib/utils";
 
+import { MobileSidebarProvider } from "@/components/navigation/mobile-sidebar-context";
+
 interface DashboardShellProps {
   children: ReactNode;
   assistant: ReactNode;
@@ -77,50 +79,52 @@ export function DashboardShell({ children, assistant }: DashboardShellProps) {
   const showMobileNav = tier === "mobile";
 
   return (
-    <div className="flex h-[100dvh] overflow-hidden text-white">
-      <Sidebar />
+    <MobileSidebarProvider>
+      <div className="flex h-[100dvh] overflow-hidden text-white">
+        <Sidebar />
 
-      <div className="relative flex min-w-0 flex-1 flex-col">
-        {showMobileNav && (
-          <MobileNav onOpenAssistant={() => setAssistantOpen(true)} />
-        )}
+        <div className="relative flex min-w-0 flex-1 flex-col">
+          {showMobileNav && (
+            <MobileNav onOpenAssistant={() => setAssistantOpen(true)} />
+          )}
 
-        {showPanels ? (
-          <MainAssistantPanels
-            tier={tier === "desktop" ? "desktop" : "tablet"}
-            assistant={assistant}
-          >
-            {children}
-          </MainAssistantPanels>
-        ) : (
-          <main className="min-h-0 flex-1 overflow-y-auto p-3 pb-24 sm:p-4 md:p-6 md:pb-28">
-            <DashboardErrorBoundary name="Dashboard main">
-              {children}
-            </DashboardErrorBoundary>
-          </main>
-        )}
-
-        <StatusBar tier={tier} hasAssistantPanel={showPanels} />
-
-        {showMobileNav && (
-          <Sheet open={assistantOpen} onOpenChange={setAssistantOpen}>
-            <SheetContent
-              side="right"
-              className={cn(
-                "flex w-[min(100vw,24rem)] flex-col border-l border-purple-500/10",
-                "bg-[#0a0a14]/95 p-0 text-white backdrop-blur-xl sm:max-w-md"
-              )}
+          {showPanels ? (
+            <MainAssistantPanels
+              tier={tier === "desktop" ? "desktop" : "tablet"}
+              assistant={assistant}
             >
-              <SheetTitle className="sr-only">Aomi Assistant</SheetTitle>
-              <div className="flex h-full min-h-0 flex-col p-4">
-                <DashboardErrorBoundary name="Aomi assistant" compact>
-                  {assistant}
-                </DashboardErrorBoundary>
-              </div>
-            </SheetContent>
-          </Sheet>
-        )}
+              {children}
+            </MainAssistantPanels>
+          ) : (
+            <main className="min-h-0 flex-1 overflow-y-auto p-3 pb-24 sm:p-4 md:p-6 md:pb-28">
+              <DashboardErrorBoundary name="Dashboard main">
+                {children}
+              </DashboardErrorBoundary>
+            </main>
+          )}
+
+          <StatusBar tier={tier} hasAssistantPanel={showPanels} />
+
+          {showMobileNav && (
+            <Sheet open={assistantOpen} onOpenChange={setAssistantOpen}>
+              <SheetContent
+                side="right"
+                className={cn(
+                  "flex w-[min(100vw,24rem)] flex-col border-l border-purple-500/10",
+                  "bg-[#0a0a14]/95 p-0 text-white backdrop-blur-xl sm:max-w-md"
+                )}
+              >
+                <SheetTitle className="sr-only">Aomi Assistant</SheetTitle>
+                <div className="flex h-full min-h-0 flex-col p-4">
+                  <DashboardErrorBoundary name="Aomi assistant" compact>
+                    {assistant}
+                  </DashboardErrorBoundary>
+                </div>
+              </SheetContent>
+            </Sheet>
+          )}
+        </div>
       </div>
-    </div>
+    </MobileSidebarProvider>
   );
 }
