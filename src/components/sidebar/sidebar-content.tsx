@@ -38,7 +38,7 @@ type NavItem = {
 
 const links: NavItem[] = [
   { name: "Overview", icon: LayoutDashboard, href: "/" },
-  { name: "Agent Chat", icon: MessageCircle, href: "/chat" },
+  { name: "Agent Chat", icon: MessageCircle, href: "/agent-chat" },
   { name: "Trade / Actions", icon: ArrowLeftRight, href: "/actions" },
   { name: "Portfolio", icon: Wallet },
   { name: "Analytics", icon: BarChart3, href: "/analytics" },

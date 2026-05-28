@@ -1,5 +1,5 @@
-import { AomiChat } from "@/components/chat/aomi-chat";
+import { redirect } from "next/navigation";
 
 export default function ChatPage() {
-  return <AomiChat />;
+  redirect("/agent-chat");
 }
