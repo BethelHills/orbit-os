@@ -8,17 +8,22 @@ import { useMounted } from "@/hooks/use-mounted";
 import { cn } from "@/lib/utils";
 import { useLiveMetrics } from "@/hooks/use-live-metrics";
 import { SSR_METRIC_PLACEHOLDER } from "@/lib/ssr-safe";
+import {
+  NetworkMapOverlay,
+  NetworkNodeStrip,
+  type NetworkNode,
+} from "@/components/globe/network-map-overlay";
 
 const GlobeScene = dynamic(
   () => import("@/components/globe/globe-scene").then((m) => m.GlobeScene),
   { ssr: false }
 );
 
-const nodes = [
+const nodes: NetworkNode[] = [
   {
     name: "AERODROME",
     count: "2,341 agents",
-    side: "left" as const,
+    side: "left",
     top: "12%",
     left: "30%",
     mobileTop: "10%",
@@ -27,7 +32,7 @@ const nodes = [
   {
     name: "ZORA",
     count: "3,214 agents",
-    side: "left" as const,
+    side: "left",
     top: "38%",
     left: "28%",
     mobileTop: "32%",
@@ -36,7 +41,7 @@ const nodes = [
   {
     name: "LIMITLESS",
     count: "2,018 agents",
-    side: "left" as const,
+    side: "left",
     top: "68%",
     left: "32%",
     mobileTop: "66%",
@@ -45,7 +50,7 @@ const nodes = [
   {
     name: "AVANTIS",
     count: "2,945 agents",
-    side: "right" as const,
+    side: "right",
     top: "12%",
     right: "4%",
     mobileTop: "14%",
@@ -54,7 +59,7 @@ const nodes = [
   {
     name: "MONAD",
     count: "1,940 agents",
-    side: "right" as const,
+    side: "right",
     top: "58%",
     right: "4%",
     mobileTop: "52%",
@@ -73,6 +78,7 @@ const pulseDots = [
 export function OrbitGlobe() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
+  const [mapOpen, setMapOpen] = useState(false);
   const mounted = useMounted();
   const isDesktopQuery = useMediaQuery("(min-width: 1024px)");
   const isDesktop = mounted && isDesktopQuery;
@@ -151,67 +157,87 @@ export function OrbitGlobe() {
   }, []);
 
   return (
-    <section className="relative min-h-[560px] overflow-hidden rounded-2xl border border-violet-500/20 bg-[#050510] shadow-[0_0_70px_rgba(124,58,237,0.18)] sm:min-h-[640px] sm:rounded-[28px] lg:min-h-[430px]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(124,58,237,0.22),transparent_35%),radial-gradient(circle_at_45%_70%,rgba(37,99,235,0.16),transparent_30%)] lg:bg-[radial-gradient(circle_at_60%_50%,rgba(124,58,237,0.22),transparent_35%),radial-gradient(circle_at_45%_70%,rgba(37,99,235,0.16),transparent_30%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(124,58,237,0.25),transparent_45%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(168,85,247,0.8)_1px,transparent_1px)] opacity-60 [background-size:34px_34px]" />
+    <>
+      <section className="relative min-h-[520px] overflow-x-clip rounded-2xl border border-orbit-border bg-orbit-page shadow-[0_0_70px_rgba(124,58,237,0.12)] sm:min-h-[600px] sm:rounded-[28px] lg:min-h-[430px] dark:shadow-[0_0_70px_rgba(124,58,237,0.18)]">
+        <div className="absolute inset-0 overflow-hidden rounded-[inherit] bg-[radial-gradient(circle_at_50%_50%,rgba(124,58,237,0.22),transparent_35%),radial-gradient(circle_at_45%_70%,rgba(37,99,235,0.16),transparent_30%)] lg:bg-[radial-gradient(circle_at_60%_50%,rgba(124,58,237,0.22),transparent_35%),radial-gradient(circle_at_45%_70%,rgba(37,99,235,0.16),transparent_30%)]" />
+        <div className="absolute inset-0 overflow-hidden rounded-[inherit] bg-[radial-gradient(circle_at_center,rgba(124,58,237,0.25),transparent_45%)]" />
+        <div className="absolute inset-0 overflow-hidden rounded-[inherit] bg-[radial-gradient(circle,rgba(168,85,247,0.8)_1px,transparent_1px)] opacity-60 [background-size:34px_34px]" />
 
-      <div className="relative z-20 flex items-center gap-2 px-4 pt-4 sm:px-6 sm:pt-6">
-        <h2 className="text-xs font-bold tracking-[0.1em] text-violet-100 sm:text-sm sm:tracking-[0.12em] md:text-base">
-          AOMI NETWORK VISUALIZATION
-        </h2>
-        <Info size={14} className="shrink-0 text-blue-400 sm:size-4" />
-      </div>
-
-      <StatsPanel className="relative z-20 mx-4 mt-3 sm:mx-6 lg:absolute lg:left-6 lg:top-20 lg:mx-0 lg:mt-0 lg:w-[250px]" compact />
-
-      <div
-        ref={containerRef}
-        className="relative z-10 mx-auto mt-2 h-[440px] w-full max-w-full touch-none sm:mt-3 sm:h-[500px] lg:mt-0 lg:h-[430px]"
-      >
-        {dims ? (
-          <GlobeScene
-            width={dims.w}
-            height={dims.h}
-            globeOffset={globeOffset}
-          />
-        ) : null}
-
-        <div className="hidden lg:contents">
-          <Lightning className="left-[44%] top-[30%] rotate-[18deg]" />
-          <Lightning className="left-[56%] top-[43%] rotate-[-35deg]" />
-          <Lightning className="left-[49%] top-[61%] rotate-[55deg]" />
+        <div className="relative z-20 flex items-center gap-2 px-4 pt-4 sm:px-6 sm:pt-6">
+          <h2 className="text-xs font-bold tracking-[0.1em] text-violet-100 sm:text-sm sm:tracking-[0.12em] md:text-base">
+            AOMI NETWORK VISUALIZATION
+          </h2>
+          <Info size={14} className="shrink-0 text-blue-400 sm:size-4" />
         </div>
 
-        <div className="lg:hidden">
-          <Lightning className="left-[50%] top-[30%] w-20 rotate-[18deg]" />
-          <Lightning className="left-[58%] top-[43%] w-20 rotate-[-35deg]" />
-          <Lightning className="left-[54%] top-[61%] w-20 rotate-[55deg]" />
+        <StatsPanel
+          className="relative z-20 mx-4 mt-3 sm:mx-6 lg:absolute lg:left-6 lg:top-20 lg:mx-0 lg:mt-0 lg:w-[min(100%,250px)]"
+          compact
+          onViewMap={() => setMapOpen(true)}
+        />
+
+        <div
+          ref={containerRef}
+          className="relative z-10 mx-auto mt-2 h-[min(52dvh,380px)] w-full max-w-full touch-none px-2 sm:mt-3 sm:h-[min(52dvh,440px)] sm:px-4 lg:mt-0 lg:h-[430px] lg:px-0"
+        >
+          {dims ? (
+            <GlobeScene
+              width={dims.w}
+              height={dims.h}
+              globeOffset={globeOffset}
+            />
+          ) : null}
+
+          <div className="hidden lg:contents">
+            <Lightning className="left-[44%] top-[30%] rotate-[18deg]" />
+            <Lightning className="left-[56%] top-[43%] rotate-[-35deg]" />
+            <Lightning className="left-[49%] top-[61%] rotate-[55deg]" />
+          </div>
+
+          <div className="lg:hidden">
+            <Lightning className="left-[50%] top-[30%] w-20 rotate-[18deg]" />
+            <Lightning className="left-[58%] top-[43%] w-20 rotate-[-35deg]" />
+            <Lightning className="left-[54%] top-[61%] w-20 rotate-[55deg]" />
+          </div>
+
+          {pulseDots.map((pos) => (
+            <span
+              key={pos}
+              className={`pointer-events-none absolute ${pos} z-20 h-2 w-2 animate-[orbit-pulse-dot_2s_ease-in-out_infinite] rounded-full bg-fuchsia-400 shadow-[0_0_20px_rgba(217,70,239,1)] sm:h-3 sm:w-3`}
+            />
+          ))}
+
+          <div className="pointer-events-none absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 animate-[orbit-glow-orb_4s_ease-in-out_infinite] rounded-full bg-violet-600/20 blur-3xl sm:h-48 sm:w-48 lg:h-64 lg:w-64" />
+
+          {isDesktop
+            ? liveNodes.map((node) => (
+                <Node key={node.name} {...node} isDesktop={isDesktop} />
+              ))
+            : null}
         </div>
 
-        {pulseDots.map((pos) => (
-          <span
-            key={pos}
-            className={`pointer-events-none absolute ${pos} z-20 h-2 w-2 animate-[orbit-pulse-dot_2s_ease-in-out_infinite] rounded-full bg-fuchsia-400 shadow-[0_0_20px_rgba(217,70,239,1)] sm:h-3 sm:w-3`}
-          />
-        ))}
+        <div className="relative z-20 px-4 pb-4 sm:px-6 sm:pb-6 lg:hidden">
+          <NetworkNodeStrip nodes={liveNodes} />
+        </div>
+      </section>
 
-        <div className="pointer-events-none absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 animate-[orbit-glow-orb_4s_ease-in-out_infinite] rounded-full bg-violet-600/20 blur-3xl sm:h-48 sm:w-48 lg:h-64 lg:w-64" />
-
-        {liveNodes.map((node) => (
-          <Node key={node.name} {...node} isDesktop={isDesktop} />
-        ))}
-      </div>
-    </section>
+      <NetworkMapOverlay
+        open={mapOpen}
+        onOpenChange={setMapOpen}
+        nodes={liveNodes}
+      />
+    </>
   );
 }
 
 function StatsPanel({
   className,
   compact = false,
+  onViewMap,
 }: {
   className?: string;
   compact?: boolean;
+  onViewMap?: () => void;
 }) {
   const live = useLiveMetrics();
 
@@ -250,7 +276,7 @@ function StatsPanel({
   return (
     <div
       className={cn(
-        "rounded-xl border border-white/10 bg-white/[0.04] p-3 backdrop-blur-xl sm:p-4 lg:rounded-2xl lg:p-5",
+        "rounded-xl border border-orbit-subtle bg-orbit-surface-strong p-3 backdrop-blur-xl sm:p-4 lg:rounded-2xl lg:p-5",
         className
       )}
     >
@@ -276,7 +302,8 @@ function StatsPanel({
       />
       <button
         type="button"
-        className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-violet-500/50 bg-violet-600/15 px-3 py-2 text-[11px] font-semibold text-white shadow-[0_0_25px_rgba(168,85,247,0.28)] transition hover:bg-violet-600/25 sm:mt-4 sm:gap-3 sm:rounded-xl sm:px-4 sm:py-3 sm:text-sm lg:mt-6"
+        onClick={onViewMap}
+        className="mt-3 flex min-h-11 w-full touch-manipulation items-center justify-center gap-2 rounded-lg border border-violet-500/50 bg-violet-600/15 px-3 py-2.5 text-xs font-semibold text-orbit-foreground shadow-[0_0_25px_rgba(168,85,247,0.28)] transition hover:bg-violet-600/25 active:scale-[0.99] sm:mt-4 sm:gap-3 sm:rounded-xl sm:px-4 sm:py-3 sm:text-sm lg:mt-6"
       >
         View Network Map
         <ArrowRight size={16} className="sm:size-[18px]" />
@@ -300,16 +327,21 @@ function Stat({
     <div>
       <p
         className={cn(
-          "font-semibold tracking-widest text-slate-400",
+          "font-semibold tracking-widest text-orbit-muted",
           compact ? "text-[9px] sm:text-[10px] lg:text-xs" : "text-xs"
         )}
       >
         {label}
       </p>
-      <div className={cn("mt-1 flex items-end gap-1.5 sm:mt-2 sm:gap-2", compact && "flex-wrap")}>
+      <div
+        className={cn(
+          "mt-1 flex items-end gap-1.5 sm:mt-2 sm:gap-2",
+          compact && "flex-wrap"
+        )}
+      >
         <h3
           className={cn(
-            "font-semibold text-white",
+            "font-semibold text-orbit-foreground",
             compact ? "text-lg sm:text-xl lg:text-3xl" : "text-3xl"
           )}
         >
@@ -318,7 +350,9 @@ function Stat({
         <span
           className={cn(
             "font-semibold text-emerald-400",
-            compact ? "pb-0.5 text-[10px] sm:text-xs lg:pb-1 lg:text-sm" : "pb-1 text-sm"
+            compact
+              ? "pb-0.5 text-[10px] sm:text-xs lg:pb-1 lg:text-sm"
+              : "pb-1 text-sm"
           )}
         >
           {growth}
@@ -329,7 +363,14 @@ function Stat({
 }
 
 function Divider({ compact = false }: { compact?: boolean }) {
-  return <div className={cn("h-px w-full bg-white/10", compact ? "my-2.5 sm:my-3 lg:my-5" : "my-5")} />;
+  return (
+    <div
+      className={cn(
+        "h-px w-full bg-orbit-subtle",
+        compact ? "my-2.5 sm:my-3 lg:my-5" : "my-5"
+      )}
+    />
+  );
 }
 
 function Node({
@@ -339,28 +380,10 @@ function Node({
   top,
   left,
   right,
-  mobileTop,
-  mobileLeft,
-  mobileRight,
   isDesktop,
-}: {
-  name: string;
-  count: string;
-  side: "left" | "right";
-  top: string;
-  left?: string;
-  right?: string;
-  mobileTop: string;
-  mobileLeft?: string;
-  mobileRight?: string;
-  isDesktop: boolean;
-}) {
-  const style = isDesktop
-    ? { top, left, right }
-    : { top: mobileTop, left: mobileLeft, right: mobileRight };
-
+}: NetworkNode & { isDesktop: boolean }) {
   return (
-    <div className="absolute z-30" style={style}>
+    <div className="absolute z-30" style={{ top, left, right }}>
       <div className="relative">
         <div
           className={cn(
@@ -379,8 +402,10 @@ function Node({
           )}
         />
         <div className="rounded-lg border border-violet-500/25 bg-black/50 px-2 py-1.5 backdrop-blur-xl shadow-[0_0_35px_rgba(124,58,237,0.18)] sm:rounded-xl sm:px-3 sm:py-2 lg:rounded-2xl lg:px-5 lg:py-4">
-          <h4 className="text-[9px] font-bold text-white sm:text-[10px] lg:text-sm">{name}</h4>
-          <p className="mt-0.5 text-[8px] text-violet-300 sm:text-[9px] lg:mt-2 lg:text-sm">
+          <h4 className="text-[9px] font-bold text-white sm:text-[10px] lg:text-sm">
+            {name}
+          </h4>
+          <p className="mt-0.5 max-w-[8.5rem] break-words text-[8px] text-violet-300 sm:max-w-none sm:text-[9px] lg:mt-2 lg:text-sm">
             {count}
           </p>
         </div>
