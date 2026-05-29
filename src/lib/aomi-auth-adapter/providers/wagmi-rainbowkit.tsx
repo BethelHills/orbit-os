@@ -6,10 +6,13 @@ import {
   useConnectModal,
 } from "@rainbow-me/rainbowkit";
 import type { WalletEip712Payload, WalletTxPayload } from "@aomi-labs/react";
-import { toViemSignTypedDataArgs } from "@aomi-labs/react";
+import { toViemSignTypedDataArgs, useControl, useThreadContext } from "@aomi-labs/react";
+import { getAddress } from "viem";
 
+import { CHAIN_ID } from "@/lib/env";
 import { AomiAuthAdapterProvider } from "../context";
 import { AOMI_AUTH_DISCONNECTED_IDENTITY } from "../identity";
+import { resolveRuntimeControlSessionId } from "../runtime-session";
 import type { AomiAuthAdapter, AomiAuthIdentity } from "../types";
 import {
   useSafeCapabilities,
@@ -23,9 +26,22 @@ import {
 } from "../safe-wagmi-hooks";
 import { executeAdapterTransaction, getPreferredRpcUrl } from "../wallet-execution";
 
+function normalizeWalletAddress(
+  address?: `0x${string}`,
+): `0x${string}` | undefined {
+  if (!address) return undefined;
+  try {
+    return getAddress(address);
+  } catch {
+    return address;
+  }
+}
+
 export function AomiWagmiAuthProvider({ children }: { children: ReactNode }) {
   const { openConnectModal } = useConnectModal();
   const { openAccountModal } = useAccountModal();
+  const { getControlState } = useControl();
+  const { currentThreadId } = useThreadContext();
   const { address, chainId, isConnected } = useSafeWagmiAccount();
   const { switchChainAsync, isPending } = useSafeSwitchChain();
   const { sendTransactionAsync } = useSafeSendTransaction();
@@ -41,21 +57,33 @@ export function AomiWagmiAuthProvider({ children }: { children: ReactNode }) {
     [supportedChains],
   );
 
+  const normalizedAddress = normalizeWalletAddress(address);
+  const effectiveChainId = chainId ?? CHAIN_ID;
+  const runtimeSessionId = resolveRuntimeControlSessionId(
+    getControlState().clientId,
+    currentThreadId,
+  );
+  const canPublishConnectedIdentity = Boolean(
+    isConnected &&
+      normalizedAddress &&
+      effectiveChainId &&
+      runtimeSessionId,
+  );
+
   const adapter = useMemo<AomiAuthAdapter>(() => {
-    const identity: AomiAuthIdentity =
-      isConnected && address
+    const identity: AomiAuthIdentity = canPublishConnectedIdentity
         ? {
             status: "connected",
             isConnected: true,
-            address,
+            address: normalizedAddress,
             walletKind: "eoa",
             aaMode: "none",
-            chainId: chainId ?? undefined,
+            chainId: effectiveChainId,
             authMethod: "wagmi",
           }
         : {
             ...AOMI_AUTH_DISCONNECTED_IDENTITY,
-            chainId: chainId ?? undefined,
+            chainId: effectiveChainId,
           };
 
     return {
@@ -87,7 +115,7 @@ export function AomiWagmiAuthProvider({ children }: { children: ReactNode }) {
             executeAdapterTransaction({
               payload,
               state: {
-                currentChainId: chainId,
+                currentChainId: effectiveChainId,
                 capabilities,
                 sendCallsSyncAsync,
                 sendTransactionAsync,
@@ -109,13 +137,15 @@ export function AomiWagmiAuthProvider({ children }: { children: ReactNode }) {
         : undefined,
     };
   }, [
-    address,
+    canPublishConnectedIdentity,
     capabilities,
     chainId,
     chainsById,
     disconnectAsync,
+    effectiveChainId,
     isConnected,
     isPending,
+    normalizedAddress,
     openAccountModal,
     openConnectModal,
     sendCallsSyncAsync,

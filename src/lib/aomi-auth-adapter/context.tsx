@@ -2,6 +2,8 @@
 
 import { createContext, useContext, useEffect, type ReactNode } from "react";
 import { useUser } from "@aomi-labs/react";
+
+import { CHAIN_ID } from "@/lib/env";
 import { AOMI_AUTH_DISCONNECTED_IDENTITY } from "./identity";
 import type { AomiAuthAdapter } from "./types";
 
@@ -32,11 +34,16 @@ function AomiAuthAdapterSync({
     // and providers read them back via `useUser()`. Forwarding them from
     // identity would create a write loop (UserState -> identity -> setUser
     // -> UserState). walletKind is provider-static and forwarded normally.
+    const chainId =
+      identity.isConnected && identity.chainId === undefined
+        ? CHAIN_ID
+        : identity.chainId;
+
     setUser({
       address: identity.address ?? undefined,
       walletKind: identity.walletKind ?? undefined,
-      chainId: identity.chainId ?? undefined,
-      isConnected: identity.isConnected,
+      chainId,
+      isConnected: identity.isConnected && chainId !== undefined,
       svmAddress: identity.svmAddress ?? undefined,
       walletProvider: identity.isConnected
         ? (identity.walletProvider ?? null)
