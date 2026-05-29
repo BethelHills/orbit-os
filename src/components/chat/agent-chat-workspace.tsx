@@ -1,37 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { AomiChat } from "@/components/chat/aomi-chat";
+import { AomiFramePanel } from "@/components/chat/aomi-frame-panel";
 import {
   StandalonePageHeader,
   StandalonePageShell,
 } from "@/components/layout/standalone-page";
 
-const SIDEBAR_PROMPTS: Record<string, string> = {
-  "Launch Coin": "Launch coin",
-  "Analyze Holders": "Show holders",
-  "Set Alert": "Set price alert",
-  "Monitor Buyers": "Show top buyers and holder activity",
-};
-
 export function AgentChatWorkspace() {
-  const [prompt, setPrompt] = useState<{ id: number; text: string } | null>(null);
-
-  function triggerPrompt(label: string) {
-    const text = SIDEBAR_PROMPTS[label] ?? label;
-    setPrompt({ id: Date.now(), text });
-  }
-
   return (
     <StandalonePageShell>
       <StandalonePageHeader
         title="Agent Chat"
-        subtitle="Talk to Aomi agents, simulate actions, review transactions and execute safely."
+        subtitle="Full Aomi assistant shell with thread history, runtime controls, and wallet-backed transactions on Base."
       />
 
       <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_min(100%,320px)]">
-        <div className="min-h-[min(70dvh,640px)] min-w-0 lg:min-h-[560px]">
-          <AomiChat className="h-full" promptRequest={prompt} />
+        <div className="min-h-[min(70dvh,640px)] min-w-0 overflow-hidden rounded-[28px] border border-orbit-border bg-orbit-surface lg:min-h-[560px]">
+          <AomiFramePanel className="h-full min-h-[min(70dvh,640px)] lg:min-h-[560px]" />
         </div>
 
         <aside className="min-w-0 space-y-4 sm:space-y-6">
@@ -43,17 +28,23 @@ export function AgentChatWorkspace() {
 
           <SidebarPanel title="Suggested Actions">
             <div className="mt-4 flex flex-col gap-3">
-              {Object.keys(SIDEBAR_PROMPTS).map((action) => (
-                <button
+              {[
+                "Launch coin",
+                "Show holders",
+                "Set price alert",
+                "Show top buyers and holder activity",
+              ].map((action) => (
+                <div
                   key={action}
-                  type="button"
-                  onClick={() => triggerPrompt(action)}
-                  className="min-h-11 touch-manipulation rounded-xl border border-white/10 p-4 text-left text-sm transition hover:border-purple-500 active:scale-[0.99] active:border-purple-500/70"
+                  className="min-h-11 rounded-xl border border-white/10 p-4 text-left text-sm text-orbit-muted"
                 >
                   {action}
-                </button>
+                </div>
               ))}
             </div>
+            <p className="mt-4 text-xs text-orbit-muted">
+              Use the composer in the Aomi frame to send these prompts.
+            </p>
           </SidebarPanel>
 
           <SidebarPanel title="Execution Timeline">
