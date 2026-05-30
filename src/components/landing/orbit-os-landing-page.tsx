@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -252,12 +253,16 @@ export default function OrbitOSLandingPage() {
       <div className="pointer-events-none fixed inset-0 opacity-30 [background-image:linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] [background-size:80px_80px]" />
 
       <nav className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-5 py-6 lg:px-8">
-        <div className="flex items-center gap-3">
-          <div className="relative h-10 w-10 rounded-full border border-violet-400/50 bg-gradient-to-br from-violet-500/20 to-blue-500/20 shadow-[0_0_30px_rgba(124,58,237,0.45)]">
-            <div className="absolute inset-2 rounded-full bg-gradient-to-br from-violet-400 to-blue-500" />
-          </div>
-          <span className="text-2xl font-bold tracking-tight">OrbitOS</span>
-        </div>
+        <a href="/" className="flex shrink-0 items-center">
+          <Image
+            src="/images/OrbitOS.logo.png"
+            alt="OrbitOS"
+            width={180}
+            height={62}
+            priority
+            className="h-10 w-auto object-contain sm:h-12"
+          />
+        </a>
         <div className="hidden items-center gap-8 text-sm text-slate-300 lg:flex">
           {navItems.map((item) => (
             <a key={item} href={`#${item.toLowerCase().replace(/\s+/g, "-")}`} className="transition hover:text-white">
@@ -456,12 +461,15 @@ export default function OrbitOSLandingPage() {
 
       <footer className="relative z-10 border-t border-white/10 px-5 py-10 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-6 text-sm text-slate-500 md:flex-row md:items-center">
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-violet-500 to-blue-500" />
-            <div>
-              <p className="font-bold text-white">OrbitOS</p>
-              <p>AI Operating System for On-Chain Actions.</p>
-            </div>
+          <div className="flex min-w-0 items-center gap-4">
+            <Image
+              src="/images/OrbitOS.logo.png"
+              alt="OrbitOS"
+              width={160}
+              height={56}
+              className="h-10 w-auto object-contain sm:h-11"
+            />
+            <p className="text-slate-400">AI Operating System for On-Chain Actions.</p>
           </div>
           <div className="flex flex-wrap gap-5">
             <a href="/agent-chat" className="hover:text-white">Agent Chat</a>
