@@ -118,6 +118,36 @@ OrbitOS integrates with:
 
 Base Mainnet (8453)
 
+## Screenshots
+
+### Overview
+
+![OrbitOS overview dashboard](assets/screenshots/Overview%20page.png)
+
+### Agent Chat
+
+![Aomi conversation in Agent Chat](assets/screenshots/Aomi%20conversation.png)
+
+### Portfolio
+
+![Portfolio page with wallet and holdings](assets/screenshots/Portfolio%20page.png)
+
+### Protocol Universe
+
+![Protocol Universe page](assets/screenshots/Protocols%20page.png)
+
+### Analytics
+
+![Analytics dashboard](assets/screenshots/Analytics%20page.png)
+
+### AI Watchtower
+
+![AI Watchtower alerts page](assets/screenshots/Alert%20page.png)
+
+### Blockchain Timeline
+
+![Blockchain Timeline transactions page](assets/screenshots/Transaction%20page.png)
+
 ## Demo Flow
 
 1. Connect wallet
