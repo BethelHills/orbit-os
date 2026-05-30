@@ -45,6 +45,7 @@ import { NetworkSelect } from "@/components/control-bar/network-select";
 import { ConnectButton } from "@/components/control-bar/connect-button";
 import { SecretGate } from "@/components/control-bar/secret-gate";
 import { PaymentRequiredGate } from "@/components/control-bar/payment-required-gate";
+import { AgentChatPromptSync } from "@/components/chat/agent-chat-prompt-sync";
 import {
   useAssistantApi,
   useAssistantState,
@@ -75,6 +76,7 @@ export const Thread: FC = () => {
             ["--thread-max-width" as string]: "44rem",
           }}
         >
+          <AgentChatPromptSync />
           <SecretGate />
           <PaymentRequiredGate />
           <ThreadPrimitive.Viewport className="aui-thread-viewport relative flex min-h-0 flex-1 flex-col overflow-x-auto overflow-y-scroll px-2 [scrollbar-gutter:stable_both-edges]">

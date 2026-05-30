@@ -1,12 +1,5 @@
-import { FeaturePage } from "@/components/dashboard/feature-page";
-import { actions } from "@/lib/orbitos-data";
+import { TradeActionsWorkspace } from "@/components/trade/trade-actions-workspace";
 
 export default function TradeActionsPage() {
-  return (
-    <FeaturePage
-      title="Trade / Actions"
-      subtitle="Simulate, review, and execute Aomi-powered on-chain actions safely."
-      items={actions}
-    />
-  );
+  return <TradeActionsWorkspace />;
 }
