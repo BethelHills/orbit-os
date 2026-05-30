@@ -1,20 +1,145 @@
 # OrbitOS
 
-**Aomi-powered Zora Creator Assistant on Base.**
+AI Operating System for On-Chain Actions
 
-OrbitOS helps non-crypto creators launch, monitor, and manage a Zora creator coin from one chat interface — powered by [Aomi](https://aomi.dev) on Base.
+OrbitOS is an Aomi-powered command center that enables users to interact with blockchain protocols through natural language.
+
+Instead of navigating multiple dashboards, users can ask OrbitOS to discover opportunities, analyze protocols, monitor wallets, prepare transactions, and manage on-chain workflows from a single interface.
+
+## Problem
+
+Web3 tools are fragmented.
+
+Users often need to:
+
+- Learn multiple protocols
+- Switch between dashboards
+- Monitor activity manually
+- Understand complex transaction flows
+- Manage wallets and protocol interactions separately
+
+This creates friction for creators, traders, and on-chain users.
+
+## Solution
+
+OrbitOS transforms blockchain interactions into conversations.
+
+Users can:
+
+- Discover trending creator coins
+- Monitor wallets and balances
+- Analyze protocols
+- Create alerts
+- Review transactions
+- Execute Aomi-powered workflows
+
+All from one AI-native operating system.
 
 ## Features
 
-- **Aomi Chat** — plain-English commands for coin launch and management
-- **Zora tools** — mint, pricing, pool funding, metadata, holders, volume, buyers, alerts
-- **Dashboard** — protocol cards, agent execution log, analytics, network visualization
+### Agent Chat
 
-## Stack
+Aomi-powered AI assistant connected to supported protocols and wallet context.
 
-- Next.js 16 · TypeScript · Tailwind · shadcn/ui
-- Aomi skills: `aomi-transact`, `aomi-build`
-- Protocol: Zora on Base (chain id 8453)
+### Trade / Actions
+
+Quick-launch workflows for common on-chain actions.
+
+### Portfolio
+
+Wallet overview, balances, risk monitoring, and AI recommendations.
+
+### Protocol Universe
+
+Explore supported protocols:
+
+- Zora
+- Aerodrome
+- Avantis
+- Across
+- Stargate
+- Monad
+
+### Analytics
+
+Market intelligence, protocol activity, and agent insights.
+
+### AI Watchtower
+
+Alert creation and monitoring for:
+
+- Price movements
+- Holder growth
+- Whale activity
+- Volume spikes
+- Wallet balances
+
+### Blockchain Timeline
+
+Track staged, signed, confirmed, and failed transactions.
+
+### Skills Hub
+
+Manage Aomi skills and integrations.
+
+### AI Control Center
+
+Configure safety settings, wallet preferences, and agent behavior.
+
+## Technology Stack
+
+- Next.js
+- TypeScript
+- React
+- Tailwind CSS
+- shadcn/ui
+- RainbowKit
+- wagmi
+- WalletConnect
+- Aomi SDK
+- Aomi Frame
+- Recharts
+
+## Aomi Integration
+
+OrbitOS integrates with:
+
+- Aomi Runtime
+- Aomi Frame
+- aomi-transact
+- aomi-build
+- coinbase-agentkit
+- goat
+- brian-api
+- x402
+- eliza
+
+## Supported Network
+
+Base Mainnet (8453)
+
+## Demo Flow
+
+1. Connect wallet
+2. Open Agent Chat
+3. Discover trending creator coins
+4. Analyze wallet balances
+5. Explore protocols
+6. Review analytics
+7. Create alerts
+8. Monitor transactions
+
+## Future Roadmap
+
+- Live protocol analytics
+- Advanced portfolio management
+- Automated agent workflows
+- Multi-chain support
+- Expanded protocol integrations
+
+## Built For
+
+Aomi Early Forge
 
 ## Getting started
 
@@ -36,9 +161,9 @@ cp .env.example .env.local
 | Variable | Description |
 |----------|-------------|
 | `NEXT_PUBLIC_WALLETCONNECT_ID` | WalletConnect Cloud project ID ([cloud.walletconnect.com](https://cloud.walletconnect.com)) |
-| `NEXT_PUBLIC_SITE_URL` | Public app URL for WalletConnect metadata and Open Graph — production: `https://orbit-os-rho.vercel.app` |
+| `NEXT_PUBLIC_SITE_URL` | Public app URL for WalletConnect metadata and Open Graph |
 | `NEXT_PUBLIC_CHAIN` | EVM chain id — `8453` for Base |
-| `NODE_ENV` | Set to `production` automatically on Vercel / `next build` |
+| `NEXT_PUBLIC_BACKEND_URL` | Aomi runtime API for Agent Chat — `https://api.aomi.dev` |
 
 Production defaults live in `.env.production`. Set `NEXT_PUBLIC_WALLETCONNECT_ID` in the Vercel project dashboard before deploying.
 
@@ -55,7 +180,7 @@ Sentry is integrated via `@sentry/nextjs`. Set `NEXT_PUBLIC_SENTRY_DSN` in Verce
 
 ## Aomi execution
 
-OrbitOS uses `@aomi-labs/client` (aomi-transact) for Zora actions on Base:
+OrbitOS uses `@aomi-labs/client` (aomi-transact) for protocol actions on Base:
 
 - **Read chat** (holders, analytics, buyers) → Aomi CLI read prompts
 - **Write flow** (launch, alerts) → Aomi prepare → fork simulate → confirm → wallet signs staged calldata
@@ -65,10 +190,11 @@ OrbitOS uses `@aomi-labs/client` (aomi-transact) for Zora actions on Base:
 
 ```
 src/
-├── app/           # Routes + /api/chat
-├── components/    # Dashboard UI
-├── lib/zora/      # Zora tool registry + executor
-└── store/         # Shared dashboard state
+├── app/              # Routes (dashboard + standalone pages)
+├── components/       # UI workspaces (chat, portfolio, alerts, …)
+├── hooks/            # Client data hooks
+├── lib/              # Aomi adapter, protocol data, env
+└── store/            # Shared dashboard state
 ```
 
 ## Aomi skills
