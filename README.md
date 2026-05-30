@@ -1,128 +1,84 @@
 # OrbitOS
 
-AI Operating System for On-Chain Actions
+**AI Operating System for On-Chain Actions**
 
-OrbitOS is an Aomi-powered command center that enables users to interact with blockchain protocols through natural language.
+OrbitOS is an Aomi-powered command center on **Base (8453)**. Users interact with DeFi protocols, creator coins, wallets, alerts, and transactions through natural language — from a single AI-native interface.
 
-Instead of navigating multiple dashboards, users can ask OrbitOS to discover opportunities, analyze protocols, monitor wallets, prepare transactions, and manage on-chain workflows from a single interface.
+**Live demo:** [https://orbit-os-rho.vercel.app](https://orbit-os-rho.vercel.app)
 
-## Problem
+Built for **Aomi Early Forge**.
 
-Web3 tools are fragmented.
+---
 
-Users often need to:
+## Overview
 
-- Learn multiple protocols
-- Switch between dashboards
-- Monitor activity manually
-- Understand complex transaction flows
-- Manage wallets and protocol interactions separately
+Web3 tooling is fragmented: dashboards, wallets, protocol UIs, and analytics live in separate silos. OrbitOS unifies them into one **conversation-driven operating system**.
 
-This creates friction for creators, traders, and on-chain users.
+| Layer | What it does |
+|-------|----------------|
+| **Landing** | Marketing site at `/` — protocols, features, security, launch CTAs |
+| **Dashboard** | Command overview at `/dashboard` — matrix, globe, portfolio snapshot |
+| **Standalone workspaces** | Portfolio, Protocols, Analytics, Alerts, Transactions, Integrations, Settings |
+| **Agent Chat** | Full Aomi Frame shell — wallet-backed reads and staged writes |
+| **Trade / Actions** | Quick-launch cards that prefill Agent Chat prompts |
 
-## Solution
+OrbitOS does **not** custody keys. Writes flow through **simulate → review → wallet sign** via Aomi and RainbowKit.
 
-OrbitOS transforms blockchain interactions into conversations.
-
-Users can:
-
-- Discover trending creator coins
-- Monitor wallets and balances
-- Analyze protocols
-- Create alerts
-- Review transactions
-- Execute Aomi-powered workflows
-
-All from one AI-native operating system.
+---
 
 ## Features
 
-### Agent Chat
+### Landing Page (`/`)
 
-Aomi-powered AI assistant connected to supported protocols and wallet context.
+Cyberpunk marketing site with protocol cards, feature grid, dashboard preview, and links to `/dashboard` and `/agent-chat`.
 
-### Trade / Actions
+### Agent Chat (`/agent-chat`)
 
-Quick-launch workflows for common on-chain actions.
+Aomi-powered assistant with thread history, runtime controls, and wallet context on Base. Powered by [Aomi Frame](https://aomi.dev) → `https://api.aomi.dev`.
 
-### Portfolio
+### Trade / Actions (`/trade-actions`)
 
-Wallet overview, balances, risk monitoring, and AI recommendations.
+Six action cards (Zora, swaps, alerts, etc.) with one-click **Agent Chat** prompts.
 
-### Protocol Universe
+### Portfolio (`/portfolio`)
 
-Explore supported protocols:
+Wallet summary, ETH/USDC balances (live when connected), holdings table, risk panels, and AI recommendation sidebars.
 
-- Zora
-- Aerodrome
-- Avantis
-- Across
-- Stargate
-- Monad
+### Protocol Universe (`/protocols`)
 
-### Analytics
+Cards for **Zora**, **Aerodrome**, **Avantis**, **Across**, **Stargate**, and **Monad** — each with CTAs to Agent Chat and Trade Actions.
 
-Market intelligence, protocol activity, and agent insights.
+### Analytics (`/analytics`)
 
-### AI Watchtower
+Recharts dashboards: agent usage, Zora trending, protocol activity, wallet cards, and market intelligence.
 
-Alert creation and monitoring for:
+### AI Watchtower (`/alerts`)
 
-- Price movements
-- Holder growth
-- Whale activity
-- Volume spikes
-- Wallet balances
+Price, holder, whale, volume, and balance alerts — create panel, active rules, and history timeline.
 
-### Blockchain Timeline
+### Blockchain Timeline (`/transactions`)
 
-Track staged, signed, confirmed, and failed transactions.
+Summary cards, staged queue, completed table, failed/reverted section, and status badges.
 
-### Skills Hub
+### Skills Hub (`/integrations`)
 
-Manage Aomi skills and integrations.
+Installed Aomi skills, WalletConnect / RainbowKit / wagmi status, backend URL, OpenRouter BYOK reminder.
 
-### AI Control Center
+### AI Control Center (`/settings`)
 
-Configure safety settings, wallet preferences, and agent behavior.
+Safety mode, manual confirmation, network (Base 8453), wallet, theme, notifications, agent presets (Safe / Balanced / Autonomous).
 
-## Technology Stack
-
-- Next.js
-- TypeScript
-- React
-- Tailwind CSS
-- shadcn/ui
-- RainbowKit
-- wagmi
-- WalletConnect
-- Aomi SDK
-- Aomi Frame
-- Recharts
-
-## Aomi Integration
-
-OrbitOS integrates with:
-
-- Aomi Runtime
-- Aomi Frame
-- aomi-transact
-- aomi-build
-- coinbase-agentkit
-- goat
-- brian-api
-- x402
-- eliza
-
-## Supported Network
-
-Base Mainnet (8453)
+---
 
 ## Screenshots
 
-### Overview
+### Landing Page
 
-![OrbitOS overview dashboard](assets/screenshots/Overview%20page.png)
+![OrbitOS landing page](assets/screenshots/OrbitOS%20landing%20page.png)
+
+### Dashboard
+
+![OrbitOS dashboard overview](assets/screenshots/Overview%20page.png)
 
 ### Agent Chat
 
@@ -130,107 +86,224 @@ Base Mainnet (8453)
 
 ### Portfolio
 
-![Portfolio page with wallet and holdings](assets/screenshots/Portfolio%20page.png)
-
-### Protocol Universe
-
-![Protocol Universe page](assets/screenshots/Protocols%20page.png)
+![Portfolio page](assets/screenshots/Portfolio%20page.png)
 
 ### Analytics
 
 ![Analytics dashboard](assets/screenshots/Analytics%20page.png)
 
-### AI Watchtower
+### Protocol Universe
 
-![AI Watchtower alerts page](assets/screenshots/Alert%20page.png)
+![Protocol Universe](assets/screenshots/Protocols%20page.png)
 
-### Blockchain Timeline
+### AI Watchtower (Alerts)
 
-![Blockchain Timeline transactions page](assets/screenshots/Transaction%20page.png)
+![Alerts page](assets/screenshots/Alert%20page.png)
 
-## Demo Flow
+### Blockchain Timeline (Transactions)
 
-1. Connect wallet
-2. Open Agent Chat
-3. Discover trending creator coins
-4. Analyze wallet balances
-5. Explore protocols
-6. Review analytics
-7. Create alerts
-8. Monitor transactions
+![Transactions page](assets/screenshots/Transaction%20page.png)
 
-## Future Roadmap
+> **Trade / Actions** — open [`/trade-actions`](https://orbit-os-rho.vercel.app/trade-actions) on the live app (screenshot coming soon).
 
-- Live protocol analytics
-- Advanced portfolio management
-- Automated agent workflows
-- Multi-chain support
-- Expanded protocol integrations
+---
 
-## Built For
+## Architecture
 
-Aomi Early Forge
+```text
+┌─────────────────────────────────────────────────────────────┐
+│                     OrbitOS (Next.js 16)                     │
+├──────────────┬──────────────────────────────┬───────────────┤
+│   Landing    │   Dashboard + Workspaces     │  Agent Chat   │
+│      /       │  /dashboard, /portfolio, …   │  /agent-chat  │
+├──────────────┴──────────────────────────────┴───────────────┤
+│  RainbowKit + wagmi + WalletConnect  │  Mock → Live hooks   │
+├──────────────────────────────────────┴──────────────────────┤
+│              Aomi Frame  →  api.aomi.dev (runtime)           │
+│              aomi-transact / aomi-build (skills)               │
+├─────────────────────────────────────────────────────────────┤
+│                    Base Mainnet (chain 8453)                 │
+│     Zora · Aerodrome · Avantis · Across · Stargate · Monad   │
+└─────────────────────────────────────────────────────────────┘
+```
 
-## Getting started
+### Route map
+
+| Route | Purpose |
+|-------|---------|
+| `/` | Landing page |
+| `/dashboard` | Overview dashboard |
+| `/agent-chat` | Aomi Frame workspace |
+| `/trade-actions` | Action launcher |
+| `/portfolio` | Wallet & holdings |
+| `/protocols` | Protocol Universe |
+| `/analytics` | Charts & signals |
+| `/alerts` | AI Watchtower |
+| `/transactions` | Blockchain Timeline |
+| `/integrations` | Skills Hub |
+| `/settings` | AI Control Center |
+
+### Project structure
+
+```text
+src/
+├── app/                    # App Router pages + API routes
+├── components/
+│   ├── landing/            # Marketing landing page
+│   ├── dashboard/          # Dashboard shell & widgets
+│   ├── chat/               # Agent Chat workspace
+│   ├── portfolio/          # Portfolio workspace
+│   ├── protocols/          # Protocol Universe
+│   ├── analytics/          # Analytics workspace
+│   ├── alerts/             # AI Watchtower
+│   ├── transactions/       # Blockchain Timeline
+│   ├── integrations/       # Skills Hub
+│   └── settings/           # AI Control Center
+├── hooks/                  # Client data hooks (mock → live swap-in)
+├── lib/
+│   ├── aomi-auth-adapter/  # Aomi Frame + wagmi session
+│   ├── aomi/               # Orbit action execution
+│   └── *-data.ts           # Mock data layers per workspace
+└── store/                  # Shared dashboard state
+
+.agents/skills/             # Aomi skills (aomi-transact, aomi-build, …)
+assets/screenshots/         # README & demo captures
+```
+
+Data layers (`*-data.ts` + hooks) use **mock data by default**, structured so Aomi tx lists, wallet history, and live feeds can replace them without UI changes.
+
+---
+
+## Tech stack
+
+| Category | Tools |
+|----------|--------|
+| Framework | Next.js 16, React, TypeScript |
+| Styling | Tailwind CSS, shadcn/ui |
+| Web3 | RainbowKit, wagmi, WalletConnect, viem |
+| AI runtime | Aomi Frame, Aomi SDK, `@aomi-labs/client` |
+| Charts | Recharts |
+| Motion | Framer Motion (landing) |
+| Monitoring | Sentry (optional) |
+| Deploy | Vercel |
+
+### Aomi & agent skills
+
+- **Aomi Runtime** + **Aomi Frame** — Agent Chat backend
+- **aomi-transact** — simulate → sign flows on Base
+- **aomi-build** — scaffold protocol tools from specs
+- **coinbase-agentkit**, **goat**, **brian-api**, **x402**, **eliza** — integration catalog in Skills Hub
+
+---
+
+## Installation
+
+### Prerequisites
+
+- Node.js 20+
+- npm
+- Optional: `@aomi-labs/client` CLI for local write flows
+
+### Setup
 
 ```bash
+git clone https://github.com/BethelHills/orbit-os.git
+cd orbit-os
 npm install --legacy-peer-deps
+cp .env.example .env.local
+# Edit .env.local with your WalletConnect project ID
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000) — landing page  
+Open [http://localhost:3000/dashboard](http://localhost:3000/dashboard) — app overview
 
-## Environment
-
-Copy `.env.example` to `.env.local` for local development:
+### Production build
 
 ```bash
-cp .env.example .env.local
+npm run build
+npm start
 ```
 
-| Variable | Description |
-|----------|-------------|
-| `NEXT_PUBLIC_WALLETCONNECT_ID` | WalletConnect Cloud project ID ([cloud.walletconnect.com](https://cloud.walletconnect.com)) |
-| `NEXT_PUBLIC_SITE_URL` | Public app URL for WalletConnect metadata and Open Graph |
-| `NEXT_PUBLIC_CHAIN` | EVM chain id — `8453` for Base |
-| `NEXT_PUBLIC_BACKEND_URL` | Aomi runtime API for Agent Chat — `https://api.aomi.dev` |
-
-Production defaults live in `.env.production`. Set `NEXT_PUBLIC_WALLETCONNECT_ID` in the Vercel project dashboard before deploying.
-
-Add these **allowed domains** in [WalletConnect Cloud](https://cloud.walletconnect.com) for your project:
-
-- `https://orbit-os-rho.vercel.app` (production)
-- `http://localhost:3000` (local dev)
-
-Legacy names `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` and `NEXT_PUBLIC_CHAIN_ID` are still supported.
-
-## Monitoring
-
-Sentry is integrated via `@sentry/nextjs`. Set `NEXT_PUBLIC_SENTRY_DSN` in Vercel to enable error and performance monitoring. Optional CI vars: `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN` (source maps).
-
-## Aomi execution
-
-OrbitOS uses `@aomi-labs/client` (aomi-transact) for protocol actions on Base:
-
-- **Read chat** (holders, analytics, buyers) → Aomi CLI read prompts
-- **Write flow** (launch, alerts) → Aomi prepare → fork simulate → confirm → wallet signs staged calldata
-- **Mock fallback** → set `AOMI_USE_MOCK=1` only for local dev without the CLI
-
-## Project structure
-
-```
-src/
-├── app/              # Routes (dashboard + standalone pages)
-├── components/       # UI workspaces (chat, portfolio, alerts, …)
-├── hooks/            # Client data hooks
-├── lib/              # Aomi adapter, protocol data, env
-└── store/            # Shared dashboard state
-```
-
-## Aomi skills
+### Aomi skills (optional)
 
 ```bash
 npx skills add aomi-labs/skills
 ```
 
-Skills live in `.agents/skills/`.
+Skills install to `.agents/skills/`.
+
+---
+
+## Environment variables
+
+Copy `.env.example` → `.env.local`:
+
+```bash
+cp .env.example .env.local
+```
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_WALLETCONNECT_ID` | Yes | WalletConnect Cloud project ID — [cloud.walletconnect.com](https://cloud.walletconnect.com) |
+| `NEXT_PUBLIC_SITE_URL` | Yes | Public URL for WalletConnect metadata & OG tags |
+| `NEXT_PUBLIC_CHAIN` | Yes | EVM chain ID — `8453` for Base |
+| `NEXT_PUBLIC_BACKEND_URL` | Yes | Aomi runtime API — `https://api.aomi.dev` |
+| `OPENROUTER_API_KEY` | No | BYOK model routing (server/local only — never commit) |
+| `NEXT_PUBLIC_SENTRY_DSN` | No | Error monitoring |
+| `AOMI_ENABLED` | No | Enable aomi-transact CLI on server |
+| `AOMI_USE_MOCK` | No | Force mock Zora tools (local dev only) |
+
+**WalletConnect allowed domains:**
+
+- `https://orbit-os-rho.vercel.app`
+- `http://localhost:3000`
+
+Legacy aliases `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` and `NEXT_PUBLIC_CHAIN_ID` are supported.
+
+---
+
+## Demo walkthrough
+
+Full judge script: **[DEMO.md](./DEMO.md)**
+
+### Quick flow (10 steps)
+
+1. **Landing** — `/`
+2. **Connect wallet** — Base mainnet
+3. **Portfolio** — `/portfolio`
+4. **Protocol Universe** — `/protocols`
+5. **Agent Chat** — ask *“What can I do on Base?”* and *“Show my wallet balance”*
+6. **Analytics** — `/analytics`
+7. **Alerts** — `/alerts`
+8. **Transactions** — `/transactions`
+9. **Skills Hub** — `/integrations`
+10. **Settings** — `/settings`
+
+---
+
+## Aomi execution model
+
+| Flow | Behavior |
+|------|----------|
+| **Read** | Natural-language queries → Aomi CLI / runtime (holders, trending, analytics) |
+| **Write** | Prepare → fork simulate → user confirm → wallet signs staged calldata |
+| **Safety** | Non-custodial; manual confirmation encouraged in Settings |
+
+Mock fallback: set `AOMI_USE_MOCK=1` for local dev without the CLI.
+
+---
+
+## Roadmap
+
+- Live protocol analytics feeds
+- Aomi tx list / wallet history replacing mock transaction data
+- OpenRouter BYOK wiring in production
+- Multi-chain expansion beyond Base
+- Trade / Actions screenshot & expanded action catalog
+
+---
+
+## License
+
+MIT — see repository for details.
