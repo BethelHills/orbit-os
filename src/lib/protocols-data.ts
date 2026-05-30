@@ -87,6 +87,7 @@ export const PROTOCOL_UNIVERSE: ProtocolUniverseCard[] = [
     ],
     agentChatPrompt:
       "Bridge 1 USDC from Ethereum mainnet to Base via Across. Show required transaction steps only.",
+    logoPath: "/images/protocols/across.webp",
     accent: "green",
   },
   {
@@ -105,6 +106,7 @@ export const PROTOCOL_UNIVERSE: ProtocolUniverseCard[] = [
     ],
     agentChatPrompt:
       "Show Stargate bridge routes and fees for moving USDC to Base.",
+    logoPath: "/images/protocols/stargate.webp",
     accent: "amber",
   },
   {
@@ -123,6 +125,7 @@ export const PROTOCOL_UNIVERSE: ProtocolUniverseCard[] = [
     ],
     agentChatPrompt:
       "What Monad ecosystem apps and test workflows can Aomi help me explore?",
+    logoPath: "/images/protocols/monad.webp",
     accent: "violet",
   },
 ];
