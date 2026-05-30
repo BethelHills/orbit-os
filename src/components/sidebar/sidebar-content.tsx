@@ -37,7 +37,7 @@ type NavItem = {
 };
 
 const links: NavItem[] = [
-  { name: "Overview", icon: LayoutDashboard, href: "/" },
+  { name: "Overview", icon: LayoutDashboard, href: "/dashboard" },
   { name: "Agent Chat", icon: MessageCircle, href: "/agent-chat" },
   { name: "Trade / Actions", icon: ArrowLeftRight, href: "/trade-actions" },
   { name: "Portfolio", icon: Wallet, href: "/portfolio" },
@@ -52,7 +52,7 @@ const links: NavItem[] = [
 const EARLY_FORGE_END = new Date("2026-06-01T00:00:00Z");
 
 function isNavActive(pathname: string, href: string) {
-  if (href === "/") return pathname === "/";
+  if (href === "/dashboard") return pathname === "/dashboard";
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 

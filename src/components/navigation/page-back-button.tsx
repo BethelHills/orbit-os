@@ -14,7 +14,7 @@ interface PageBackButtonProps {
 }
 
 export function PageBackButton({
-  fallbackHref = "/",
+  fallbackHref = "/dashboard",
   label = "Back",
   className,
 }: PageBackButtonProps) {
