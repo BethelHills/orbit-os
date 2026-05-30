@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
+import { OrbitBrand } from "@/components/brand/orbit-brand";
 import {
   ArrowRight,
   Play,
@@ -254,14 +254,7 @@ export default function OrbitOSLandingPage() {
 
       <nav className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-5 py-6 lg:px-8">
         <a href="/" className="flex shrink-0 items-center">
-          <Image
-            src="/images/OrbitOS.logo.png"
-            alt="OrbitOS"
-            width={180}
-            height={62}
-            priority
-            className="h-10 w-auto object-contain sm:h-12"
-          />
+          <OrbitBrand showTagline={false} />
         </a>
         <div className="hidden items-center gap-8 text-sm text-slate-300 lg:flex">
           {navItems.map((item) => (
@@ -461,16 +454,7 @@ export default function OrbitOSLandingPage() {
 
       <footer className="relative z-10 border-t border-white/10 px-5 py-10 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-6 text-sm text-slate-500 md:flex-row md:items-center">
-          <div className="flex min-w-0 items-center gap-4">
-            <Image
-              src="/images/OrbitOS.logo.png"
-              alt="OrbitOS"
-              width={160}
-              height={56}
-              className="h-10 w-auto object-contain sm:h-11"
-            />
-            <p className="text-slate-400">AI Operating System for On-Chain Actions.</p>
-          </div>
+          <OrbitBrand />
           <div className="flex flex-wrap gap-5">
             <a href="/agent-chat" className="hover:text-white">Agent Chat</a>
             <a href="/trade-actions" className="hover:text-white">Trade Actions</a>
