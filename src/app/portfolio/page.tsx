@@ -1,18 +1,5 @@
-import { PortfolioHoldings } from "@/components/portfolio/portfolio-holdings";
-import {
-  StandalonePageHeader,
-  StandalonePageShell,
-} from "@/components/layout/standalone-page";
-import { portfolioAssets } from "@/lib/orbitos-data";
+import { PortfolioWorkspace } from "@/components/portfolio/portfolio-workspace";
 
 export default function PortfolioPage() {
-  return (
-    <StandalonePageShell>
-      <StandalonePageHeader
-        title="AI Portfolio Manager"
-        subtitle="Track creator coins, risk, holdings, and Aomi recommendations."
-      />
-      <PortfolioHoldings assets={portfolioAssets} />
-    </StandalonePageShell>
-  );
+  return <PortfolioWorkspace />;
 }
