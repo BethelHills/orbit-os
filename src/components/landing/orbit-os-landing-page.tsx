@@ -1,8 +1,10 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { OrbitBrand } from "@/components/brand/orbit-brand";
+import { PROTOCOL_LOGOS, type ProtocolName } from "@/lib/protocol-logos";
 import {
   ArrowRight,
   Play,
@@ -19,7 +21,6 @@ import {
   Sparkles,
   CheckCircle2,
   Cpu,
-  Network,
   Rocket,
 } from "lucide-react";
 
@@ -104,6 +105,8 @@ function GlowOrb({ className }: { className?: string }) {
 }
 
 function ProtocolCard({ protocol }: { protocol: (typeof protocols)[number] }) {
+  const logoPath = PROTOCOL_LOGOS[protocol.name as ProtocolName];
+
   return (
     <motion.div
       whileHover={{ y: -6, scale: 1.01 }}
@@ -111,8 +114,16 @@ function ProtocolCard({ protocol }: { protocol: (typeof protocols)[number] }) {
       className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.035] p-5 shadow-[0_0_60px_rgba(124,58,237,0.08)] backdrop-blur-xl"
     >
       <div className={`absolute -right-10 -top-10 h-28 w-28 rounded-full bg-gradient-to-br ${protocol.accent} opacity-20 blur-2xl transition group-hover:opacity-40`} />
-      <div className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${protocol.accent} shadow-[0_0_30px_rgba(124,58,237,0.35)]`}>
-        <Network size={24} />
+      <div className="relative mb-5 flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] shadow-[0_0_30px_rgba(124,58,237,0.35)]">
+        {logoPath ? (
+          <Image
+            src={logoPath}
+            alt={protocol.name}
+            fill
+            className="object-cover"
+            sizes="56px"
+          />
+        ) : null}
       </div>
       <h3 className="text-xl font-semibold text-white">{protocol.name}</h3>
       <p className="mt-1 text-sm text-violet-300">{protocol.label}</p>
@@ -152,9 +163,14 @@ function DashboardPreview() {
       <div className="absolute -inset-8 -z-10 rounded-full bg-violet-600/20 blur-3xl" />
       <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-violet-500 to-blue-500" />
+          <Image
+            src="/images/OrbitOS.logo.png"
+            alt="OrbitOS"
+            width={120}
+            height={42}
+            className="h-8 w-auto object-contain object-left"
+          />
           <div>
-            <p className="text-sm font-semibold text-white">OrbitOS</p>
             <p className="text-xs text-slate-500">Aomi Command Center</p>
           </div>
         </div>
